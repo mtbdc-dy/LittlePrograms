@@ -14,7 +14,7 @@ writer = csv.writer(g)
 flag = True
 for row in reader:
 
-    if flag:    #标题行忽略
+    if flag:    # 标题行忽略
         print(row[1])
         flag = False
     else:

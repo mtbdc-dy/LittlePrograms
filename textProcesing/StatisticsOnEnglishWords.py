@@ -3,7 +3,6 @@
 # 2.提取单词(正交表达)
 #
 
-import DocProcess
 import re
 import operator
 

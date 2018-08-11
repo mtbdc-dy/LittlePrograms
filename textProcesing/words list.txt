@@ -14,7 +14,6 @@ scattered 2
 Kyoto 2
 trail 2
 smoggy 1
-
 exhaustion 1
 finally 1
 breakdown 1
@@ -22,11 +21,8 @@ downward 1
 slope 1
 instance 1
 feel 1
-(37)______ 1
 impossible 1
 impatient 1
-(38 1
-_____(annoy 1
 unimportant 1
 yes 1
 extent 1
@@ -573,8 +569,3 @@ chinese 1
 deadline 1
 photos 1
 stadium 1
-
-
-
-
-
