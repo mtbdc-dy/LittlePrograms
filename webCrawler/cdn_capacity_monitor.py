@@ -47,3 +47,8 @@ print("%.2f" % (maximum/1024/1024/1024*1.0735))
 
 
 # part2 华为
+# https://39.134.87.216:31943/itpaas/login.action
+
+# part3 iptv
+# JSESSIONID=542449E9565629E86261AA0D6EFE800D
+# https://117.135.56.61:8443/iam/realtimeReport_list.action?t=1534084772787&startTime=2018-08-endTime=2018-08-12+22%3A39%3A20&queryType=all&queryparam=%7B%22areaids%22%3A%22%22%7D12+00%3A00%3A00&
