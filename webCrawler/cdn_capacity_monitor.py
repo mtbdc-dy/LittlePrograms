@@ -12,7 +12,6 @@ import os
 # 1、烽火
 # 2、华为
 # 3、iptv
-
 # part1 烽火
 # 时间获取
 te = int(time.mktime((time.localtime()[0], time.localtime()[1], time.localtime()[2], 0, 0, 0, 0, 0, 0)))

@@ -1,3 +1,5 @@
+import urllib.request
+import urllib.parse
 import time
 import csv
 from bs4 import BeautifulSoup
@@ -5,8 +7,7 @@ import random
 import urllib.error
 import ssl
 import datetime
-import webCrawler.login
-
+import os
 
 # 爬取网络全景可视化管控系统——用户分析
 # 浏览器登入后，复制其所用的jsessionid
@@ -88,8 +89,8 @@ my_form = {
 context = ssl._create_unverified_context()
 
 # 打开输出文件
-f = open(file_name, 'a')
-writer = csv.writer(f)
+fo = open(file_name, 'a')
+writer = csv.writer(fo)
 
 # 获取时间
 now = datetime.datetime.now()
@@ -145,7 +146,10 @@ for i in range(7):
     writer.writerow(row)
     time.sleep(random.randint(0, 2))
 
-print('Good Job!!!!')
+fo.close()
+print('run part 3')
+with open('GuGanDianXinLianTong_part3.py', 'r', encoding='UTF-8') as f:
+    exec(f.read())
 
 
 
