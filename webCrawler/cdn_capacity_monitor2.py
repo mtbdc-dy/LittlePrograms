@@ -8,73 +8,45 @@ import webCrawler.login
 import webCrawler.webcrawler
 import os
 
-# cookie = webCrawler.login.zte_anyservice_uniportal()
-cookie = 'JSESSIONID=63C2852468457BBE5E14D858BBDB1E0C'
-# 先去取 anti_csrf_token
 
+cookie = 'JSESSIONID=C3510015E4066BBC6E607C2B56A58C2B'
+cookie = 'JSESSIONID=B8A6BCFD9B6515E73EEA38E95978C159'
 
-url = 'https://117.135.56.61:8443/frame/frame.action'
-webCrawler.webcrawler.get_web_page_ssl(url, cookie)
+url = 'http://106.14.197.84:65009/evqmaster/configaction!login.action'
 
-url = 'https://117.135.56.61:8443/iam/iampage.action'
-webCrawler.webcrawler.get_web_page_ssl(url, cookie)
-
-url = 'https://117.135.56.61:8443/iam/realtimeReport_init.action'
-
-f = webCrawler.webcrawler.get_web_page_ssl(url, cookie)
-a = f.find('sec_csrf_token')
-csrf_token = f[a+18: a + 18 + 32]
-# 8db5afbce72a4019973dd9cf0b32296e
-# 144c9de7e22745b1b82660050c0eaa7e
-print(csrf_token)
-
-# 查询时间
-now = datetime.datetime.now()
-delta = datetime.timedelta(days=1)
-ts = now - delta
-sjc = str(int(time.time() * 1000))
-startTime = ts.strftime('%Y-%m-%d')  # 调整时间格式
-endTime = now.strftime('%Y-%m-%d')  # 调整时间格式
-
-url = 'https://117.135.56.61:8443/iam/realtimeReport_list.action?t=' + sjc + '&startTime=' + startTime + '+00%3A00%3A00&endTime=' + endTime + '+13%3A44%3A36&queryType=all&queryparam=%7B%22areaids%22%3A%22%22%7D'
-
-context = ssl._create_unverified_context()
-header = {
-    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) '
-                  'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36',
-    'Cookie': cookie,
-    'Anti-CSRF-Token': csrf_token,
-    # 'Referer': 'https://117.135.56.61:8443/iam/realtimeReport_init.action'
+form = {
+    'username': 'xuyuan',
+    'password': '2EF60361839CBA359266E62F16E21A7A',
+    'checkcode': '0005'
 }
-proxy = {
-    'http': 'http://cmnet:cmnet@211.136.113.69:808'
+
+form = {
+    "location": 4,
+    "secFrom": "2018-07-20 00:00:00",
+    "secTo": "2018-08-19 00:00:00",
+    "dimension": "1",
+    "idfilter": "4",
+    "type": "activeuser",
+    "dataType": "1"
 }
-# 挂代理Handler
-proxy_support = urllib.request.ProxyHandler(proxy)
-opener = urllib.request.build_opener(proxy_support)
-urllib.request.install_opener(opener)
-# 伪装浏览器申请
-request = urllib.request.Request(url, headers=header)
-# 读取页面
-response = urllib.request.urlopen(request, context=context)
-f = response.read().decode("utf8")
-time.sleep(random.randint(0, 1))
 
-f = f[f.find('服务带宽(Gbps)'):]
+url = 'http://106.14.197.84:65009/evqmaster/report/reportaction!returnKpiData.action'
+f = webCrawler.webcrawler.post_web_page(url, form, cookie)
+print('1:')
+print(f)
 
-f1 = f[:f.find('回源带宽')]
-f1 = f1[f1.find('[')+1:f1.find(']')]
-max_rate = 0
-for item in f1.split(","):
-    if float(item) > max_rate:
-        max_rate = float(item)
+url = 'http://106.14.197.84:65009/evqmaster/useraction!SaveUSActionInfo.action'
 
-print(max_rate)
-f2 = f[f.find('在线用户会话数'):]
-f2 = f2[f2.find('[')+1:f2.find(']')]
+form = {
+    "location": 4,
+    "secFrom": "2018-07-20 00:00:00",
+    "secTo": "2018-08-19 00:00:00",
+    "dimension": "1",
+    "idfilter": "4",
+    "type": "activeuser",
+    "dataType": "1"
+}
 
-max_user = 0
-for item in f2.split(","):
-    if float(item) > max_user:
-        max_user = float(item)
-print(max_user/10000)
+f = webCrawler.webcrawler.post_web_page(url, form, cookie)
+print('2:')
+print(f)
