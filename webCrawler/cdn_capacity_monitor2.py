@@ -8,7 +8,7 @@ import webCrawler.login
 import webCrawler.webcrawler
 import os
 
-
+# SQM
 cookie = 'JSESSIONID=22A6B376FD58EEF915EF84D6F2E93ECE'
 # cookie = webCrawler.login.sqm()
 url = 'http://106.14.197.84:65009/evqmaster/configaction!returnMasterVersion.action'
