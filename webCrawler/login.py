@@ -58,3 +58,36 @@ def zte_anyservice_uniportal():
 
     return cookie
 
+
+def sqm():
+
+    cookie = 'JSESSIONID=B8A6BCFD9B6515E73EEA38E95978C159'
+
+    url = 'http://106.14.197.84:65009/evqmaster/CheckCode'
+    webCrawler.webcrawler.get_validate_code(url, cookie)
+
+    url = 'http://106.14.197.84:65009/evqmaster/configaction!login.action'
+
+    pwd = input('输入验证码，谢谢')
+    # 字段没匹配
+    # 字段没匹配
+    # 字段没匹配
+
+    form = {
+        'username': 'xuyuan',
+        'password': '2EF60361839CBA359266E62F16E21A7A',
+        'checkcode': pwd
+    }
+
+    webCrawler.webcrawler.post_web_page(url, form, cookie)
+
+    # configuration 2
+    url = 'http://106.14.197.84:65009/evqmaster/configaction!returnIDByCode.action'
+
+    form = {
+        'paramData': '{\'code\': \'02\'}'
+    }
+
+    f = webCrawler.webcrawler.post_web_page(url, form, cookie)
+    print(f)
+    return cookie

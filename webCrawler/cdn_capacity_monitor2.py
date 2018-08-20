@@ -9,25 +9,15 @@ import webCrawler.webcrawler
 import os
 
 
-cookie = 'JSESSIONID=C3510015E4066BBC6E607C2B56A58C2B'
-cookie = 'JSESSIONID=B8A6BCFD9B6515E73EEA38E95978C159'
-
-url = 'http://106.14.197.84:65009/evqmaster/configaction!login.action'
-
-form = {
-    'username': 'xuyuan',
-    'password': '2EF60361839CBA359266E62F16E21A7A',
-    'checkcode': '0005'
-}
+cookie = 'JSESSIONID=22A6B376FD58EEF915EF84D6F2E93ECE'
+# cookie = webCrawler.login.sqm()
+url = 'http://106.14.197.84:65009/evqmaster/configaction!returnMasterVersion.action'
+f = webCrawler.webcrawler.get_web_page(url, cookie)
+print('0:')
+print(f)
 
 form = {
-    "location": 4,
-    "secFrom": "2018-07-20 00:00:00",
-    "secTo": "2018-08-19 00:00:00",
-    "dimension": "1",
-    "idfilter": "4",
-    "type": "activeuser",
-    "dataType": "1"
+    'paramData': '{\"location\":4,\"secFrom\":\"2018-07-20 00:00:00\",\"secTo\":\"2018-08-19 00:00:00\",\"dimension\":\"1\",\"idfilter\":\"4\",\"type\":\"activeuser\",\"dataType\":\"1\"}'
 }
 
 url = 'http://106.14.197.84:65009/evqmaster/report/reportaction!returnKpiData.action'
@@ -38,13 +28,7 @@ print(f)
 url = 'http://106.14.197.84:65009/evqmaster/useraction!SaveUSActionInfo.action'
 
 form = {
-    "location": 4,
-    "secFrom": "2018-07-20 00:00:00",
-    "secTo": "2018-08-19 00:00:00",
-    "dimension": "1",
-    "idfilter": "4",
-    "type": "activeuser",
-    "dataType": "1"
+    'paramData': '{\"location\":4,\"secFrom\":\"2018-07-20 00:00:00\",\"secTo\":\"2018-08-19 00:00:00\",\"dimension\":\"1\",\"idfilter\":\"4\",\"type\":\"activeuser\",\"dataType\":\"1\"}'
 }
 
 f = webCrawler.webcrawler.post_web_page(url, form, cookie)
