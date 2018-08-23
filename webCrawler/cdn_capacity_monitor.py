@@ -49,6 +49,7 @@ print("%.2f" % (maximum/1024/1024/1024))
 # https://39.134.87.216:31943/itpaas/login.action
 
 # part3 iptv
+# 表头多了一个csrf_token 不规则了~
 # JSESSIONID=542449E9565629E86261AA0D6EFE800D
 cookie = webCrawler.login.zte_anyservice_uniportal()
 # cookie = 'JSESSIONID=63C2852468457BBE5E14D858BBDB1E0C'
