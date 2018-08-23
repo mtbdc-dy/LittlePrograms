@@ -1,10 +1,10 @@
 import csv
 
 filename = 'output.csv'
-
-# g = open(file_output, 'r', encoding='gb2312')
+file_output = 'output.csv'
+g = open(file_output, 'r', encoding='utf-8')
 f = open(filename, 'r')
-reader = csv.reader(f)
+reader = csv.reader(g)
 print(type(reader))
 for item in reader:
     print(item[0])

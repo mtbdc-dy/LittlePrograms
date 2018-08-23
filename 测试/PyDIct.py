@@ -1,5 +1,9 @@
-
+a = '1231312 123123123'
+a.split()
+print(a)
 f = 1
+
+print(a)
 header = {
 
     'a': 'b',
@@ -7,9 +11,14 @@ header = {
     'e': f
 
 }
+for item in header:
+    print(type(item))
+    print(header[item])
 
 f = 2
 header['a'] = header['a'] + ',e'
+
+
 
 print(header)
 print(header['a'])
