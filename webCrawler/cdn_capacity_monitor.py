@@ -6,7 +6,11 @@ import ssl
 import datetime
 import webCrawler.login
 import webCrawler.webcrawler
-import os
+import myPackages.mailtools
+
+
+flag_fenghuo = False
+
 
 # OTT、IPTV 流量查询
 # 1、烽火
@@ -14,35 +18,36 @@ import os
 # 3、iptv
 # part1 烽火
 # 时间获取
-te = int(time.mktime((time.localtime()[0], time.localtime()[1], time.localtime()[2], 0, 0, 0, 0, 0, 0)))
-ts = te - (1533484800-1533398400)
-te = str(te)
-ts = str(ts)
+if flag_fenghuo:
+    te = int(time.mktime((time.localtime()[0], time.localtime()[1], time.localtime()[2], 0, 0, 0, 0, 0, 0)))
+    ts = te - (1533484800-1533398400)
+    te = str(te)
+    ts = str(ts)
 
 
-url = 'http://39.134.89.13:3000/api/datasources/proxy/1/api/v1/query_range?query=sum(irate(node_network_transmit_bytes%7Bgroup%3D%22%E5%A5%89%E8%B4%A4%E4%B8%AD%E5%BF%83%E8%8A%82%E7%82%B9%22%2Cdevice%3D~%22%5Elo%7Cbond0%7Cbond1%22%7D%5B5m%5D))%20%20*%208&start=' + ts + '&end=' + te + '&step=240'
-f = webCrawler.webcrawler.get_web_page(url)
-f = f[83:-5]
-maximum = 0
-for item in f.split("\""):
-    if item <= ':':
-        if float(item) > maximum:
-            maximum = float(item)
+    url = 'http://39.134.89.13:3000/api/datasources/proxy/1/api/v1/query_range?query=sum(irate(node_network_transmit_bytes%7Bgroup%3D%22%E5%A5%89%E8%B4%A4%E4%B8%AD%E5%BF%83%E8%8A%82%E7%82%B9%22%2Cdevice%3D~%22%5Elo%7Cbond0%7Cbond1%22%7D%5B5m%5D))%20%20*%208&start=' + ts + '&end=' + te + '&step=240'
+    f = webCrawler.webcrawler.get_web_page(url)
+    f = f[83:-5]
+    maximum = 0
+    for item in f.split("\""):
+        if item <= ':':
+            if float(item) > maximum:
+                maximum = float(item)
 
-# print(maximum)
-print("%.2f" % (maximum/1024/1024/1024))
+    # print(maximum)
+    print("%.2f" % (maximum/1024/1024/1024))
 
-url = 'http://39.134.89.13:3000/api/datasources/proxy/1/api/v1/query_range?query=sum(irate(node_network_transmit_bytes%7Bgroup%3D%22%E6%9D%A8%E6%B5%A6%E8%BE%B9%E7%BC%98%E8%8A%82%E7%82%B9%22%2Cdevice%3D~%22%5Elo%7Cbond0%7Cbond1%22%7D%5B5m%5D))%20%20*%208&start=' + ts + '&end=' + te + '&step=240'
-f = webCrawler.webcrawler.get_web_page(url)
-f = f[83:-5]
-maximum = 0
-for item in f.split("\""):
-    if item <= ':':
-        if float(item) > maximum:
-            maximum = float(item)
+    url = 'http://39.134.89.13:3000/api/datasources/proxy/1/api/v1/query_range?query=sum(irate(node_network_transmit_bytes%7Bgroup%3D%22%E6%9D%A8%E6%B5%A6%E8%BE%B9%E7%BC%98%E8%8A%82%E7%82%B9%22%2Cdevice%3D~%22%5Elo%7Cbond0%7Cbond1%22%7D%5B5m%5D))%20%20*%208&start=' + ts + '&end=' + te + '&step=240'
+    f = webCrawler.webcrawler.get_web_page(url)
+    f = f[83:-5]
+    maximum = 0
+    for item in f.split("\""):
+        if item <= ':':
+            if float(item) > maximum:
+                maximum = float(item)
 
-# print(maximum)
-print("%.2f" % (maximum/1024/1024/1024))
+    # print(maximum)
+    print("%.2f" % (maximum/1024/1024/1024))
 
 
 # part2 华为
@@ -57,12 +62,9 @@ cookie = webCrawler.login.zte_anyservice_uniportal()
 
 url = 'https://117.135.56.61:8443/frame/frame.action'
 webCrawler.webcrawler.get_web_page_ssl(url, cookie)
-
 url = 'https://117.135.56.61:8443/iam/iampage.action'
 webCrawler.webcrawler.get_web_page_ssl(url, cookie)
-
 url = 'https://117.135.56.61:8443/iam/realtimeReport_init.action'
-
 f = webCrawler.webcrawler.get_web_page_ssl(url, cookie)
 a = f.find('sec_csrf_token')
 csrf_token = f[a+18: a + 18 + 32]
@@ -115,3 +117,29 @@ for item in f2.split(","):
         max_user = float(item)
 print(max_user/10000)
 
+####
+# SQM
+cookie = webCrawler.login.sqm()
+
+form = {
+    'paramData': '{\"location\": 4, \"secFrom\": \"' + startTime + ' 00:00:00\", \"secTo\": \"' + startTime + ' 00:00:00\", \"dimension\": \"1\",\"idfilter\": \"4\", \"type\": \"activeuser\", \"dataType\": \"1\"}'
+}
+# 取数据
+url = 'http://106.14.197.84:65009/evqmaster/report/reportaction!returnKpiData.action'
+f = webCrawler.webcrawler.post_web_page(url, form, cookie)
+print(f)
+tmp = f[f.find('maxStreamSTBs') + 18:]
+maxStreamSTBs = f[f.find('maxStreamSTBs') + 18: f.find('maxStreamSTBs') + 18 + tmp.index('\\')]
+email_content = 'OTT峰值流用户数: {}人; IPTV峰值流用户数: {}人; IPTV峰值流量: {} Gbps'.format(maxStreamSTBs, max_rate, max_user/10000)
+
+
+# 发送邮件
+email_content = startTime + ': ' + email_content
+print(email_content)
+user = ['xuyuan2@sh.chinamobile.com', 'yxu9428@163.com']
+if input('y or n').lower() == 'y':
+    ret = myPackages.mailtools.mail_customise(email_content, user)
+    if ret:
+        print("ok")  # 如果发送成功则会返回ok，稍等20秒左右就可以收到邮件
+    else:
+        print("filed")  # 如果发送失败则会返回filed

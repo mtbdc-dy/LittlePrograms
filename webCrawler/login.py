@@ -1,6 +1,7 @@
 # keep this file local, please!!!
 
 import webCrawler.webcrawler
+import random
 import ssl
 import urllib.request
 
@@ -36,7 +37,7 @@ def zte_anyservice_uniportal():
         cookie = item.name + '=' + item.value
     print(cookie)
 
-    # cookie = 'JSESSIONID=3276F5B76C95383468C71976890DF58C'
+        # cookie = 'JSESSIONID=3276F5B76C95383468C71976890DF58C'
     url = 'https://117.135.56.61:8443/authimg'
     webCrawler.webcrawler.get_validate_code(url, cookie)
 
@@ -67,8 +68,8 @@ def sqm():
         cookie = item.name + '=' + item.value
     print(cookie)
 
-    # 获取验证码
-    url = 'http://106.14.197.84:65009/evqmaster/CheckCode'
+    # 获取验证码 加random 是为了改一下请求 那样就不会去缓存中获取这张图片了
+    url = 'http://106.14.197.84:65009/evqmaster/CheckCode?' + str(random.random())
     webCrawler.webcrawler.get_validate_code(url, cookie)
     pwd = input('输入验证码，谢谢')
 
@@ -82,6 +83,8 @@ def sqm():
 
     f = webCrawler.webcrawler.post_web_page(url, form, cookie)
     print(f)
+    return cookie
+
     # configuration 2
     # url = 'http://106.14.197.84:65009/evqmaster/configaction!returnIDByCode.action'
     #
@@ -91,4 +94,4 @@ def sqm():
     #
     # f = webCrawler.webcrawler.post_web_page(url, form, cookie)
     # print(f)
-    return cookie
+
