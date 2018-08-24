@@ -7,13 +7,13 @@ receiver = 'yxu9428@163.com'  # 收件人邮箱账号，为了后面易于维护
 receiver = 'xuyuan2@sh.chinamobile.com'
 
 
-def mail_customise(content, my_user):
+def mail_customise(title, content, my_user):
     flag = True
     try:
         msg=MIMEText(content, 'plain', 'utf-8')
         msg['From'] = formataddr(["徐缘", my_sender])   # 括号里的对应发件人邮箱昵称、发件人邮箱账号
         msg['To'] = formataddr(["收件人", my_user[0]])   # 收件人，必须是一个字符串
-        msg['Subject'] = "主题"  # 邮件的主题，也可以说是标题
+        msg['Subject'] = title  # 邮件的主题，也可以说是标题
 
         server = smtplib.SMTP("smtp.163.com", 25)  # 发件人邮箱中的SMTP服务器，端口是25
         server.login(my_sender, "Sqm940208")    # 括号中对应的是发件人邮箱账号、邮箱密码

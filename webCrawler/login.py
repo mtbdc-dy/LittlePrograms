@@ -85,13 +85,5 @@ def sqm():
     print(f)
     return cookie
 
-    # configuration 2
-    # url = 'http://106.14.197.84:65009/evqmaster/configaction!returnIDByCode.action'
-    #
-    # form = {
-    #     'paramData': '{\'code\': \'02\'}'
-    # }
-    #
-    # f = webCrawler.webcrawler.post_web_page(url, form, cookie)
-    # print(f)
+
 

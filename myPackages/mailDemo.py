@@ -22,6 +22,7 @@ def mail():
         flag = False
     return flag
 
+
 ret = mail()
 if ret:
     print("ok")  # 如果发送成功则会返回ok，稍等20秒左右就可以收到邮件

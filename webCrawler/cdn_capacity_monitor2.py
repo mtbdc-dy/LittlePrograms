@@ -1,5 +1,5 @@
-import time
-import csv
+import myPackages.getime
+import xlrd
 import random
 import urllib.error
 import ssl
@@ -8,17 +8,18 @@ import webCrawler.login
 import webCrawler.webcrawler
 import os
 
-# SQM
+# OTT rate
 if __name__ == '__main__':
-    cookie = webCrawler.login.sqm()
+    date = myPackages.getime.yesterday(1)
+    print(date)
+    filename = 'CMNET出口数据统计报表(' + date + ').xlsx'
 
-    form = {
-        'paramData': '{\"location\": 4, \"secFrom\": \"2018-08-22 00:00:00\", \"secTo\": \"2018-08-22 00:00:00\", \"dimension\": \"1\",\"idfilter\": \"4\", \"type\": \"activeuser\", \"dataType\": \"1\"}'
-    }
-    # 取数据
-    url = 'http://106.14.197.84:65009/evqmaster/report/reportaction!returnKpiData.action'
-    f = webCrawler.webcrawler.post_web_page(url, form, cookie)
-    print(f)
-    tmp = f[f.find('maxStreamSTBs')+18:]
-    maxStreamSTBs = f[f.find('maxStreamSTBs')+18: f.find('maxStreamSTBs')+18+tmp.index('\\')]
-    print(maxStreamSTBs)
+    f = xlrd.open_workbook(filename)
+    table = f.sheet_by_name("CMNET出口数据统计报表")
+    nrows = table.nrows
+
+    for i in range(nrows):
+        row = table.row_values(i)
+        if row[1] == 'OTT/IPTV（总）':
+            ott_max_rate = row[4]
+    print(ott_max_rate/1024)

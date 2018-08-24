@@ -1,7 +1,9 @@
 import random
 
 count = 0
-
+a = 1123123.1231
+a = a/1042*100
+print('{:.2f}'.format(a))
 for i in range(0,5):
     if i == 2:
         break

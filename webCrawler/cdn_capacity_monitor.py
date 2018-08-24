@@ -1,5 +1,5 @@
 import time
-import csv
+import xlrd
 import random
 import urllib.error
 import ssl
@@ -7,23 +7,22 @@ import datetime
 import webCrawler.login
 import webCrawler.webcrawler
 import myPackages.mailtools
+import myPackages.getime
 
+# OTT、IPTV 流量统计四部部分组成：
+# 1、iptv
+# 2、SQM
+# 3、CMNET出口数据统计报表
+# 4、发送邮件
 
-flag_fenghuo = False
-
-
-# OTT、IPTV 流量查询
-# 1、烽火
-# 2、华为
-# 3、iptv
-# part1 烽火
+# part1 烽火（不需要了）
 # 时间获取
+flag_fenghuo = False
 if flag_fenghuo:
     te = int(time.mktime((time.localtime()[0], time.localtime()[1], time.localtime()[2], 0, 0, 0, 0, 0, 0)))
     ts = te - (1533484800-1533398400)
     te = str(te)
     ts = str(ts)
-
 
     url = 'http://39.134.89.13:3000/api/datasources/proxy/1/api/v1/query_range?query=sum(irate(node_network_transmit_bytes%7Bgroup%3D%22%E5%A5%89%E8%B4%A4%E4%B8%AD%E5%BF%83%E8%8A%82%E7%82%B9%22%2Cdevice%3D~%22%5Elo%7Cbond0%7Cbond1%22%7D%5B5m%5D))%20%20*%208&start=' + ts + '&end=' + te + '&step=240'
     f = webCrawler.webcrawler.get_web_page(url)
@@ -50,20 +49,14 @@ if flag_fenghuo:
     print("%.2f" % (maximum/1024/1024/1024))
 
 
-# part2 华为
-# https://39.134.87.216:31943/itpaas/login.action
-
-# part3 iptv
+# part1 iptv
 # 表头多了一个csrf_token 不规则了~
-# JSESSIONID=542449E9565629E86261AA0D6EFE800D
 cookie = webCrawler.login.zte_anyservice_uniportal()
-# cookie = 'JSESSIONID=63C2852468457BBE5E14D858BBDB1E0C'
 # 先去取 anti_csrf_token
-
-url = 'https://117.135.56.61:8443/frame/frame.action'
-webCrawler.webcrawler.get_web_page_ssl(url, cookie)
-url = 'https://117.135.56.61:8443/iam/iampage.action'
-webCrawler.webcrawler.get_web_page_ssl(url, cookie)
+# url = 'https://117.135.56.61:8443/frame/frame.action'
+# webCrawler.webcrawler.get_web_page_ssl(url, cookie)
+# url = 'https://117.135.56.61:8443/iam/iampage.action'
+# webCrawler.webcrawler.get_web_page_ssl(url, cookie)
 url = 'https://117.135.56.61:8443/iam/realtimeReport_init.action'
 f = webCrawler.webcrawler.get_web_page_ssl(url, cookie)
 a = f.find('sec_csrf_token')
@@ -117,8 +110,9 @@ for item in f2.split(","):
         max_user = float(item)
 print(max_user/10000)
 
+
 ####
-# SQM
+# part2 SQM
 cookie = webCrawler.login.sqm()
 
 form = {
@@ -130,15 +124,36 @@ f = webCrawler.webcrawler.post_web_page(url, form, cookie)
 print(f)
 tmp = f[f.find('maxStreamSTBs') + 18:]
 maxStreamSTBs = f[f.find('maxStreamSTBs') + 18: f.find('maxStreamSTBs') + 18 + tmp.index('\\')]
-email_content = 'OTT峰值流用户数: {}人; IPTV峰值流用户数: {}人; IPTV峰值流量: {} Gbps'.format(maxStreamSTBs, max_rate, max_user/10000)
 
 
-# 发送邮件
+# part3 CMNET出口数据统计报表
+date = myPackages.getime.yesterday(1)
+filename = 'CMNET出口数据统计报表(' + date + ').xlsx'
+f = xlrd.open_workbook(filename)
+table = f.sheet_by_name("CMNET出口数据统计报表")
+nrows = table.nrows
+ott_max_rate = 'None'
+for i in range(nrows):
+    row = table.row_values(i)
+    if row[1] == 'OTT/IPTV（总）':
+        ott_max_rate = row[4]
+
+
+# part4 发送邮件
+ott_max_rate = float(ott_max_rate)
+max_rate = float(max_rate)
+maxStreamSTBs = float(maxStreamSTBs)
+max_user = float(max_user)
+print(maxStreamSTBs, max_rate, max_user, ott_max_rate)
+title = date + '互联网电视指标'
+email_content = 'OTT峰值流用户数: {:.2f}万人; OTT峰值流速: {:.2f}Gbps; OTT利用率: {:.2f}%; IPTV峰值流用户数: {:.2f}万人; IPTV峰值流速: {:.2f}Gbps; IPTV利用率: {:.2f}%。'.format(maxStreamSTBs/10000, ott_max_rate/1024, ott_max_rate/1024/850*100, max_user/10000, max_rate, max_rate/579*100)
 email_content = startTime + ': ' + email_content
 print(email_content)
-user = ['xuyuan2@sh.chinamobile.com', 'yxu9428@163.com']
+user = ['xuyuan2@sh.chinamobile.com', 'bianningyan@sh.chinamobile.com', 'chenlei5@sh.chinamobile.com', 'huanglinling@sh.chinamobile.com', 'lilin2@sh.chinamobile.com', 'liujinlin@sh.chinamobile.com', 'wuzhouhao@sh.chinamobile.com', 'xulingxia@sh.chinamobile.com', 'yanmin@sh.chinamobile.com', 'yuxf@sh.chinamobile.com', 'zhenj@sh.chinamobile.com', 'yanmin@sh.chinamobile.com']
+
+
 if input('y or n').lower() == 'y':
-    ret = myPackages.mailtools.mail_customise(email_content, user)
+    ret = myPackages.mailtools.mail_customise(title, email_content, user)
     if ret:
         print("ok")  # 如果发送成功则会返回ok，稍等20秒左右就可以收到邮件
     else:
