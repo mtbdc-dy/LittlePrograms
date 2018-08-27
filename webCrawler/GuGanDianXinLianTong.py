@@ -119,6 +119,7 @@ for i in range(7):
     request = urllib.request.Request(url, form_data, headers=header)
     response = urllib.request.urlopen(request, context=context)
     f = response.read().decode('UTF8')
+    print(f)
     f = f[f.find("平均值")+62:f.find("平均值")+200]
     ans = f[f.find('>')+1: f.find('>') + 11]
     list.append(ans)

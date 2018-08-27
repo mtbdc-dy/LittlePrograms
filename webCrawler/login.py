@@ -21,8 +21,8 @@ def login_wangluoquanjingkeshihua():
 
     pwd = input('输入验证码，谢谢')
     form = {
-        'username': 'shanghai_qw',
-        'password': 'sh_50331061',
+        'username': 'Xw1OfZDqN27WleNrhSAYAQ==',
+        'password': 'gS4MY8BMAeRRfMVQswEVWA==',
         'exPwd': pwd
     }
     webCrawler.webcrawler.post_web_page_ssl(url, form, cookie)
