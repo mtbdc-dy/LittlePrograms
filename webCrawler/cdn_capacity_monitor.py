@@ -53,10 +53,10 @@ if flag_fenghuo:
 # 表头多了一个csrf_token 不规则了~
 cookie = webCrawler.login.zte_anyservice_uniportal()
 # 先去取 anti_csrf_token
-# url = 'https://117.135.56.61:8443/frame/frame.action'
-# webCrawler.webcrawler.get_web_page_ssl(url, cookie)
-# url = 'https://117.135.56.61:8443/iam/iampage.action'
-# webCrawler.webcrawler.get_web_page_ssl(url, cookie)
+url = 'https://117.135.56.61:8443/frame/frame.action'
+webCrawler.webcrawler.get_web_page_ssl(url, cookie)
+url = 'https://117.135.56.61:8443/iam/iampage.action'
+webCrawler.webcrawler.get_web_page_ssl(url, cookie)
 url = 'https://117.135.56.61:8443/iam/realtimeReport_init.action'
 f = webCrawler.webcrawler.get_web_page_ssl(url, cookie)
 a = f.find('sec_csrf_token')
@@ -153,7 +153,7 @@ user = ['xuyuan2@sh.chinamobile.com', 'bianningyan@sh.chinamobile.com', 'chenlei
 
 
 if input('y or n').lower() == 'y':
-    ret = myPackages.mailtools.mail_customise(title, email_content, user)
+    ret = myPackages.mailtools.mail139_customise(title, email_content, user)
     if ret:
         print("ok")  # 如果发送成功则会返回ok，稍等20秒左右就可以收到邮件
     else:
