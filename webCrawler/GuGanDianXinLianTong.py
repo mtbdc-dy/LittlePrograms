@@ -4,11 +4,8 @@ import random
 import ssl
 import datetime
 import webCrawler.login
-import os
 import urllib.request
 import urllib.parse
-
-
 
 
 # 爬取 网络全景可视化管控系统 ——业务分析
@@ -30,7 +27,7 @@ header = {
 my_form = {
     'isPost': '1',
     'deviceName': '所有设备',
-    'devGrpName': '骨干电信联通互联-上海出口',
+    'devGrpName': '骨干电信联通互联全部',
     'groupName': '上海移动',
     'clusterName': '所有用户组',
     'userTypeName': '所有用户分类',
