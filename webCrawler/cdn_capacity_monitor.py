@@ -13,11 +13,13 @@ import myPackages.getime
 # 现复制CMNET出口报表，重要的事情说三遍
 # 现复制CMNET出口报表，重要的事情说三遍
 
+
 # OTT、IPTV 流量统计四部部分组成：
 # 1、iptv
 # 2、SQM
 # 3、CMNET出口数据统计报表
 # 4、发送邮件
+
 
 # part1 烽火（不需要了）
 # 时间获取
