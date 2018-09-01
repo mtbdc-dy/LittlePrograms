@@ -89,12 +89,16 @@ my_form = {
 context = ssl._create_unverified_context()
 
 # 打开输出文件
-fo = open(file_name, 'a')
+fo = open(file_name, 'a', newline='')
 writer = csv.writer(fo)
 
 # 获取时间
 now = datetime.datetime.now()
 
+average_idc = 0
+average_fc = 0
+average_gc = 0
+average_2g3g4g = 0
 for i in range(7):
     print(i+1, ': ')
     delta_begin = datetime.timedelta(days=7 - i)
@@ -137,8 +141,11 @@ for i in range(7):
         users = tds[1].text.strip()  # 网内用户
         for item in list_users:
             if users == item:
-                usrs_dict[item] = tds[4].text.strip()
-
+                usrs_dict[item] = float(tds[4].text.strip().replace(',', ''))
+    average_idc = average_idc + usrs_dict['IDC-上海（骨干）']
+    average_fc = average_fc + usrs_dict['家客-上海（骨干）']
+    average_gc = average_gc + usrs_dict['集客-上海（骨干）']
+    average_2g3g4g = average_2g3g4g + usrs_dict['2/3/4G-上海（骨干）']
     row = []
     print(usrs_dict)
     for item in list_users:
@@ -146,6 +153,8 @@ for i in range(7):
     writer.writerow(row)
     time.sleep(random.randint(0, 2))
 
+row = [average_idc/7] + [' '] + [average_fc/7] + [average_gc/7] + [average_2g3g4g/7]
+writer.writerow(row)
 fo.close()
 print('run part 3')
 with open('GuGanDianXinLianTong_part3.py', 'r', encoding='UTF-8') as f:

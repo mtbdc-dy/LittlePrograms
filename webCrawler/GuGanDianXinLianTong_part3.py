@@ -97,7 +97,7 @@ my_form = {
 context = ssl._create_unverified_context()
 
 # 打开输出文件
-f = open(file_name, 'a')
+f = open(file_name, 'a', newline='')
 writer = csv.writer(f)
 
 # 获取时间
@@ -108,8 +108,11 @@ for i in range(7):
     delta_end = datetime.timedelta(days=6 - i)
     tb = now - delta_begin
     te = now - delta_end
+    if tb.strftime('%Y-%m-%d') == '2018-08-21':
+        continue
     my_form['beginDate'] = tb.strftime('%Y-%m-%d')  # 调整时间格式
     my_form['endDate'] = te.strftime('%Y-%m-%d')  # 调整时间格式
+
 
     form_data = urllib.parse.urlencode(my_form).encode('utf8')
     request = urllib.request.Request(url, form_data, headers=header)

@@ -8,6 +8,7 @@ import webCrawler.login
 import webCrawler.webcrawler
 import myPackages.mailtools
 import myPackages.getime
+import csv
 
 # 现复制CMNET出口报表，重要的事情说三遍
 # 现复制CMNET出口报表，重要的事情说三遍
@@ -20,6 +21,9 @@ import myPackages.getime
 # 3、CMNET出口数据统计报表
 # 4、发送邮件
 
+file_output = 'cdn_rate.csv'
+g = open(file_output, 'ab')
+writer = csv.writer
 
 # part1 烽火（不需要了）
 # 时间获取

@@ -2,8 +2,8 @@
 
 import webCrawler.webcrawler
 import random
-import ssl
-import urllib.request
+import myPackages.number_base_conversion
+import time
 
 
 # 认证过程一般是 先去网站获取一个cookie 然后用账号密码认证这个cookie
@@ -14,7 +14,9 @@ def login_wangluoquanjingkeshihua():
         cookie = item.name + '=' + item.value
     print(cookie)
     # cookie = 'JSESSIONID=3276F5B76C95383468C71976890DF58C'
-    url = 'https://117.136.129.122/cmnet/validateCode.htm?temp=jjhpxaxi'
+    date = int(time.time()*1000)
+    temp = myPackages.number_base_conversion.base_n(date, 36)
+    url = 'https://117.136.129.122/cmnet/validateCode.htm?temp=' + temp
     webCrawler.webcrawler.get_validate_code(url, cookie)
 
     url = 'https://117.136.129.122/cmnet/login.htm'
@@ -23,7 +25,7 @@ def login_wangluoquanjingkeshihua():
     form = {
         'username': 'Xw1OfZDqN27WleNrhSAYAQ==',
         'password': 'gS4MY8BMAeRRfMVQswEVWA==',
-        'exPwd': pwd
+        'exPassword': pwd
     }
     webCrawler.webcrawler.post_web_page_ssl(url, form, cookie)
 

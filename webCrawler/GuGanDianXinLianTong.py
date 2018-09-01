@@ -10,7 +10,7 @@ import urllib.parse
 
 # 爬取 网络全景可视化管控系统 ——业务分析
 #
-file_name = 'gugandianxinliantong.csv'
+file_name = 'gugandianxinliantong.csv'  # 输出文件名
 tb = '2018-06-04'   # default beginDate'2018-06-04'
 te = '2018-06-05'   # default endDate'2018-06-05'
 list = []   # 上海移动
@@ -84,19 +84,14 @@ my_form = {
     'timeInterval': '60'
 
 }
-
 # 禁用ssl认证
 context = ssl._create_unverified_context()
-
 # 获取时间
 now = datetime.datetime.now()
-# print(now)
-
 # 打开输出文件
-fo = open(file_name, 'w')
+fo = open(file_name, 'w', newline='')
 writer = csv.writer(fo)
-
-# 把cookie存入文件
+# 把cookie写入输出文件
 row = [cookie]
 writer.writerow(row)
 
@@ -116,9 +111,9 @@ for i in range(7):
     request = urllib.request.Request(url, form_data, headers=header)
     response = urllib.request.urlopen(request, context=context)
     f = response.read().decode('UTF8')
-    print(f)
     f = f[f.find("平均值")+62:f.find("平均值")+200]
     ans = f[f.find('>')+1: f.find('>') + 11]
+    ans = float(ans.replace(',', ''))
     list.append(ans)
     print(ans)
     time.sleep(random.randint(0, 2))
@@ -134,6 +129,7 @@ for i in range(7):
     f = response.read().decode('UTF8')
     f = f[f.find("平均值") + 62:f.find("平均值") + 200]
     ans = f[f.find('>') + 1: f.find('>') + 8]
+    ans = float(ans.replace(',', ''))
     list_direct.append(ans)
     print(ans)
 
@@ -141,6 +137,9 @@ for i in range(7):
     row = [list[i]] + [list_direct[i]]
     writer.writerow(row)
     time.sleep(random.randint(0, 2))
+
+row = [sum(list)/len(list) + sum(list_direct)/len(list_direct)]
+writer.writerow(row)
 
 fo.close()
 print('run part 2')
