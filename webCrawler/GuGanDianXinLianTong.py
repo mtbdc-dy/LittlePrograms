@@ -9,7 +9,7 @@ import urllib.parse
 
 
 # 爬取 网络全景可视化管控系统 ——业务分析
-#
+# 入境流量
 file_name = 'gugandianxinliantong.csv'  # 输出文件名
 tb = '2018-06-04'   # default beginDate'2018-06-04'
 te = '2018-06-05'   # default endDate'2018-06-05'
@@ -27,7 +27,7 @@ header = {
 my_form = {
     'isPost': '1',
     'deviceName': '所有设备',
-    'devGrpName': '骨干电信联通互联全部',
+    'devGrpName': '骨干电信联通互联全部',  # 这个是传着玩玩的，没用der!!!
     'groupName': '上海移动',
     'clusterName': '所有用户组',
     'userTypeName': '所有用户分类',
@@ -52,7 +52,7 @@ my_form = {
     'svcId': '0',
     'subServiceId': '0',
     'deviceType': '2',
-    'devGrpId': '161',
+    'devGrpId': '57',   # 这个才是区分设备组
     'deviceId': '0',
     'filterMask': '32',
     'filterMaskNet': '256',
@@ -81,7 +81,7 @@ my_form = {
     'beginHour': '8',
     'endDate': te,
     'endHour': '0',
-    'timeInterval': '60'
+    'timeInterval': '-1'
 
 }
 # 禁用ssl认证
