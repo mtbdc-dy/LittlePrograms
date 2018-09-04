@@ -145,7 +145,35 @@ tmp_index = f.find('上海市(')
 tmp_index_ed = f[tmp_index:].find(')')
 sum_box = f[tmp_index+4:tmp_index + tmp_index_ed]
 
-#
+# SQM故障用户占比
+url = 'http://106.14.197.84:65009/evqmaster/report/reportaction!returnKpiData.action'
+form = {
+    'paramData': '{\"location\": 4, \"secFrom\": \"' + startTime + ' 00:00:00\", \"secTo\": \"2018-09-03 00:00:00\", '
+                 '\"dimension\": \"1\", \"idfilter\": \"4\", \"type\": \"usercard\", \"dataType\": \"1\"}'
+}
+f = webCrawler.webcrawler.post_web_page(url, form, cookie)
+tmp_index = f.find('GrnDevices')
+f = f[tmp_index:]
+tmp_normal_device = f[f.find(':')+1:f.find(',')]
+tmp_index = f.find('RedDevices')
+f = f[tmp_index:]
+tmp_red_device = f[f.find(':') + 1:f.find(',')]
+tmp_index = f.find('YlwDevices')
+f = f[tmp_index:]
+tmp_ylw_device = f[f.find(':') + 1:f.find(',')]
+tmp_index = f.find('BlueDevices')
+f = f[tmp_index:]
+f = f[f.find(':') + 1:]
+tmp_blue_device = ''
+for i in f:
+    if i.isdigit():
+        tmp_blue_device = tmp_blue_device + i
+    else:
+        continue
+laggy_device_ratio = 100 - (float(tmp_normal_device)/(float(tmp_normal_device)+float(tmp_blue_device)+float(tmp_ylw_device)+float(tmp_red_device)) * 100)
+
+# SQM去NEI相关
+
 
 # part3 CMNET出口数据统计报表
 date = myPackages.getime.yesterday(1)

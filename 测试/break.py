@@ -1,6 +1,7 @@
 import random
-
+print("\033[32;0m您输入的帐号或密码错误！\033[0m")
 count = 0
+a = 'a'
 a = 1123123.1231
 a = a/1042*100
 print('{:.2f}'.format(a))
