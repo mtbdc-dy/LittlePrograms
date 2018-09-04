@@ -10,16 +10,16 @@ import os
 
 # OTT rate
 if __name__ == '__main__':
-    date = myPackages.getime.yesterday(1)
-    print(date)
-    filename = 'CMNET出口数据统计报表(' + date + ').xlsx'
+    cookie = webCrawler.login.sqm()
 
-    f = xlrd.open_workbook(filename)
-    table = f.sheet_by_name("CMNET出口数据统计报表")
-    nrows = table.nrows
+    url = 'http://106.14.197.84:65009/evqmaster/report/reportaction!returnMiguData.action'
+    form = {
+        'paramData': '{\"secFrom\": \"2018-09-03 00:00:00\", \"secTo\": \"2018-09-03 00:00:00\", \"location\": '
+                     '4, \"dimension\": \"platform\", \"platform\": \"\", \"tType\": 2, \"isMigu\": false, \"is'
+                     'MiguShanxi\": false, \"bIncludeShanxi\": false}'
 
-    for i in range(nrows):
-        row = table.row_values(i)
-        if row[1] == 'OTT/IPTV（总）':
-            ott_max_rate = row[4]
-    print(ott_max_rate/1024)
+    }
+
+    f = webCrawler.webcrawler.post_web_page(url, form, cookie)
+    print(f)
+

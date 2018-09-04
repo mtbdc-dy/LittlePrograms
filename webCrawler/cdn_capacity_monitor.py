@@ -121,20 +121,31 @@ for item in f2.split(","):
 print(max_user/10000)
 
 
-####
+########
 # part2 SQM
 cookie = webCrawler.login.sqm()
-
+# SQM峰值流用户数
 form = {
     'paramData': '{\"location\": 4, \"secFrom\": \"' + startTime + ' 00:00:00\", \"secTo\": \"' + startTime + ' 00:00:00\", \"dimension\": \"1\",\"idfilter\": \"4\", \"type\": \"activeuser\", \"dataType\": \"1\"}'
 }
-# 取数据
 url = 'http://106.14.197.84:65009/evqmaster/report/reportaction!returnKpiData.action'
 f = webCrawler.webcrawler.post_web_page(url, form, cookie)
 print(f)
 tmp = f[f.find('maxStreamSTBs') + 18:]
 maxStreamSTBs = f[f.find('maxStreamSTBs') + 18: f.find('maxStreamSTBs') + 18 + tmp.index('\\')]
 
+# SQM终端盒子总数
+url = 'http://106.14.197.84:65009/evqmaster/networkaction!returnAreaDetailByID.action'
+form = {
+    'paramData': '{\"id\":4,\"KPIUTCSec\":\"2000-01-01 00:00:00\",\"SampleInterval\":86400,\"ty'
+                 'pe\":\"2\",\"realtime\":\"realtime\"}'
+}
+f = webCrawler.webcrawler.post_web_page(url, form, cookie)
+tmp_index = f.find('上海市(')
+tmp_index_ed = f[tmp_index:].find(')')
+sum_box = f[tmp_index+4:tmp_index + tmp_index_ed]
+
+#
 
 # part3 CMNET出口数据统计报表
 date = myPackages.getime.yesterday(1)
