@@ -197,7 +197,7 @@ def post_web_page(url, my_form, cookie):
     response = urllib.request.urlopen(request, data=form_data)  # context=context
 
     f = response.read().decode("utf8")
-    time.sleep(random.randint(0, 1))
+    time.sleep(random.randint(1, 2))
     return f
 
 

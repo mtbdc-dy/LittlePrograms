@@ -22,8 +22,8 @@ import csv
 # 4、发送邮件
 
 file_output = 'cdn_rate.csv'
-g = open(file_output, 'ab')
-writer = csv.writer
+g = open(file_output, 'a', newline='')
+writer = csv.writer(g)
 
 # part1 烽火（不需要了）
 # 时间获取
@@ -148,8 +148,7 @@ sum_box = f[tmp_index+4:tmp_index + tmp_index_ed]
 # SQM故障用户占比
 url = 'http://106.14.197.84:65009/evqmaster/report/reportaction!returnKpiData.action'
 form = {
-    'paramData': '{\"location\": 4, \"secFrom\": \"' + startTime + ' 00:00:00\", \"secTo\": \"2018-09-03 00:00:00\", '
-                 '\"dimension\": \"1\", \"idfilter\": \"4\", \"type\": \"usercard\", \"dataType\": \"1\"}'
+    'paramData': '{\"location\": 4, \"secFrom\": \"' + startTime + ' 00:00:00\", \"secTo\": \"' + startTime + ' 00:00:00\", \"dimension\": \"1\", \"idfilter\": \"4\", \"type\": \"usercard\", \"dataType\": \"1\"}'
 }
 f = webCrawler.webcrawler.post_web_page(url, form, cookie)
 tmp_index = f.find('GrnDevices')
@@ -172,8 +171,38 @@ for i in f:
         continue
 laggy_device_ratio = 100 - (float(tmp_normal_device)/(float(tmp_normal_device)+float(tmp_blue_device)+float(tmp_ylw_device)+float(tmp_red_device)) * 100)
 
-# SQM去NEI相关
+# SQM取NEI相关
+url = 'http://106.14.197.84:65009/evqmaster/report/reportaction!returnMiguData.action'
+form = {
+    'paramData': '{\"secFrom\": \"2018-09-03 00:00:00\", \"secTo\": \"2018-09-03 00:00:00\", \"location\": '
+                 '4, \"dimension\": \"platform\", \"platform\": \"\", \"tType\": 2, \"isMigu\": false, \"is'
+                 'MiguShanxi\": false, \"bIncludeShanxi\": false}'
 
+}
+
+f = webCrawler.webcrawler.post_web_page(url, form, cookie)
+fc = f
+# EPG响应时长
+tmp_index = f.find('CntEpgRspTime')
+f = f[tmp_index:]
+CntEpgRspTime = f[f.find(':') + 1:f.find(',')]
+CntEpgRspTime = float(CntEpgRspTime)
+tmp_index = f.find('TotEpgRspTime')
+f = f[tmp_index:]
+TotEpgRspTime = f[f.find(':') + 1:f.find(',')]
+TotEpgRspTime = float(TotEpgRspTime)
+epg_latency = TotEpgRspTime/CntEpgRspTime / 1000000
+
+# EPG响应成功率
+tmp_index = fc.find('Requests')
+fc = fc[tmp_index:]
+Requests = fc[fc.find(':') + 1:fc.find(',')]
+Requests = float(Requests)
+tmp_index = fc.find('Responses')
+fc = fc[tmp_index:]
+Responses = fc[fc.find(':') + 1:fc.find(',')]
+Responses = float(Responses)
+epg_success_ratio = Responses / Requests * 100
 
 # part3 CMNET出口数据统计报表
 date = myPackages.getime.yesterday(1)
@@ -197,11 +226,15 @@ print(maxStreamSTBs, max_rate, max_user, ott_max_rate)
 title = date + '互联网电视指标'
 email_content = 'OTT峰值流用户数: {:.2f}万人; OTT峰值流速: {:.2f}Gbps; OTT利用率: {:.2f}%; IPTV峰值流用户数: {:.2f}万人; IPTV峰值流速: {:.2f}Gbps; IPTV利用率: {:.2f}%。'.format(maxStreamSTBs/10000, ott_max_rate/1024, ott_max_rate/1024/850*100, max_user/10000, max_rate, max_rate/579*100)
 email_content = startTime + ': ' + email_content
-print(email_content)
+csv_content = ['{:.2f}'.format(maxStreamSTBs/10000)] + ['{:.2f}'.format(ott_max_rate/1024)] + ['{:.2f}'.format(ott_max_rate/1024/850*100)] + ['{:.2f}'.format(max_user/10000)] + ['{:.2f}'.format(max_rate)] + ['{:.2f}'.format(max_rate/579*100)] + ['{:.2f}'.format(laggy_device_ratio)] + [sum_box] + [epg_success_ratio] + [epg_latency]
+print('email_content: ', email_content)
+print('csv_content:', csv_content)
 user = ['xuyuan2@sh.chinamobile.com', 'bianningyan@sh.chinamobile.com', 'chenlei5@sh.chinamobile.com', 'huanglinling@sh.chinamobile.com', 'lilin2@sh.chinamobile.com', 'liujinlin@sh.chinamobile.com', 'wuzhouhao@sh.chinamobile.com', 'xulingxia@sh.chinamobile.com', 'yanmin@sh.chinamobile.com', 'yuxf@sh.chinamobile.com', 'zhenj@sh.chinamobile.com', 'yanmin@sh.chinamobile.com', 'shaoweihua@sh.chinamobile.com']
 
 
 if input('y or n').lower() == 'y':
+    writer.writerow(csv_content)
+    print('EPG响应成功率：', epg_success_ratio)
     ret = myPackages.mailtools.mail139_customise(title, email_content, user)
     if ret:
         print("ok")  # 如果发送成功则会返回ok，稍等20秒左右就可以收到邮件
