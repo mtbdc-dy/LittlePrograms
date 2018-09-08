@@ -1,4 +1,5 @@
 import random
+print('\033[1;32mGI appers!! But im afraid i wont be able to notice this little poor sentence\033[0m')
 print("\033[32;0m您输入的帐号或密码错误！\033[0m")
 count = 0
 a = 'a'

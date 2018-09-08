@@ -139,6 +139,8 @@ for i in range(7):
         tds = tr.find_all('td')
 
         users = tds[1].text.strip()  # 网内用户
+        if users == 'GI':
+            print('\033[1;32mGI appers!! But im afraid i wont be able to notice this little poor sentence.\033[0m')
         for item in list_users:
             if users == item:
                 usrs_dict[item] = float(tds[4].text.strip().replace(',', ''))

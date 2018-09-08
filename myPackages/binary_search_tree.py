@@ -99,5 +99,4 @@ if __name__ == '__main__':
     bst.inOrderTraverse(bst.root)  # 中序遍历
 
     bst.delete(bst.root, 49)
-    print
     bst.inOrderTraverse(bst.root)
