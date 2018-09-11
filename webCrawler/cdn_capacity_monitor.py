@@ -229,7 +229,7 @@ print(maxStreamSTBs, max_rate, max_user, ott_max_rate)
 title = date + '互联网电视指标'
 email_content = 'OTT峰值流用户数: {:.2f}万人; OTT峰值流速: {:.2f}Gbps; OTT利用率: {:.2f}%; IPTV峰值流用户数: {:.2f}万人; IPTV峰值流速: {:.2f}Gbps; IPTV利用率: {:.2f}%。'.format(maxStreamSTBs/10000, ott_max_rate/1024, ott_max_rate/1024/850*100, max_user/10000, max_rate, max_rate/579*100)
 email_content = startTime + ': ' + email_content
-csv_content = ['{:.2f}'.format(maxStreamSTBs/10000)] + ['{:.2f}'.format(ott_max_rate/1024)] + ['%.2f' % (ott_mean_rate/1024)] + ['{:.2f}'.format(ott_max_rate/1024/850*100)] + ['{:.2f}'.format(max_user/10000)] + ['{:.2f}'.format(max_rate)] + ['{:.2f}'.format(max_rate/579*100)] + ['{:.2f}'.format(laggy_device_ratio)] + [sum_box] + ['%.2f' % epg_success_ratio] + ['%.2f' % epg_latency]
+csv_content = [startTime] + ['{:.2f}'.format(maxStreamSTBs/10000)] + ['{:.2f}'.format(ott_max_rate/1024)] + ['%.2f' % (ott_mean_rate/1024)] + ['{:.2f}'.format(ott_max_rate/1024/850*100)] + ['{:.2f}'.format(max_user/10000)] + ['{:.2f}'.format(max_rate)] + ['{:.2f}'.format(max_rate/579*100)] + ['{:.2f}'.format(laggy_device_ratio)] + [sum_box] + ['%.2f' % epg_success_ratio] + ['%.2f' % epg_latency]
 print('email_content: ', email_content)
 print('csv_content:', csv_content)
 user = ['xuyuan2@sh.chinamobile.com', 'bianningyan@sh.chinamobile.com', 'chenlei5@sh.chinamobile.com', 'huanglinling@sh.chinamobile.com', 'lilin2@sh.chinamobile.com', 'liujinlin@sh.chinamobile.com', 'wuzhouhao@sh.chinamobile.com', 'xulingxia@sh.chinamobile.com', 'yanmin@sh.chinamobile.com', 'yuxf@sh.chinamobile.com', 'zhenj@sh.chinamobile.com', 'yanmin@sh.chinamobile.com', 'shaoweihua@sh.chinamobile.com', 'yushu@sh.chinamobile.com']
