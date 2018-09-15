@@ -1,3 +1,4 @@
+# 去重算法
 nums = [1, 1, 2]
 
 nums_length = len(nums)

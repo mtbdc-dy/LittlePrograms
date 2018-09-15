@@ -1,5 +1,6 @@
 import xlrd
 
+# excel 文件都
 filename_output = '附件五、物联网HLR-ID（截至2018年2月）.xlsx'
 
 f3 = xlrd.open_workbook(filename_output)

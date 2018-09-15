@@ -1,12 +1,6 @@
 import time
-import datetime
 
-# now = datetime.datetime.now()
-#
-# print(time.gmtime())
-# print(now)
-# print(time.time())
-# print(time.localtime())
+# time 模块
 print(time.localtime())
 
 t = (time.localtime()[0], time.localtime()[1], time.localtime()[2], 0, 0, 0, 0, 0, 0)

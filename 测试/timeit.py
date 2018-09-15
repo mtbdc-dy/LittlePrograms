@@ -1,6 +1,7 @@
 from timeit import Timer
 
 
+# 还没跑通
 def t1():
     list1 = []
     for i in range(2000):

@@ -1,5 +1,8 @@
 import csv
 
+'''
+    测试CSV文件读取
+'''
 filename = 'output.csv'
 file_output = 'output.csv'
 g = open(file_output, 'r', encoding='utf-8')

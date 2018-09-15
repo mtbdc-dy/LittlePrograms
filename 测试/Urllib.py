@@ -14,7 +14,7 @@ header = {
         }
 
 proxy = {
-    'https':'114.228.73.105:6666'
+    'https': '114.228.73.105:6666'
 }
 # https://www.baidu.com/baidu?wd=ip&tn=monline_dg&ie=utf-8 百度查ip
 # http://www.xicidaili.com/nn/1 西刺代理 前七页都是验证过的
@@ -31,7 +31,7 @@ f = response.read().decode('UTF8')
 print(response.getcode())
 # print(f)
 
-soup = BeautifulSoup(f,"html.parser")
+soup = BeautifulSoup(f, "html.parser")
 # print(soup.prettify())
 print("===============================")
 titles = soup.find_all('td')

@@ -4,6 +4,7 @@ import time
 from bs4 import BeautifulSoup
 import random
 
+# 测被爬虫ip封禁频率
 # 注意有无使用代理
 # soft-coding
 

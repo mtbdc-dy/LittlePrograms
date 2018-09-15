@@ -17,7 +17,7 @@ list_a = []
 flag = True
 for row in reader:
 
-    if flag:    #标题行忽略
+    if flag:    # 标题行忽略
         print(row[9])
         flag = False
     else:

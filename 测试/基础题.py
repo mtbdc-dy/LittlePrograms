@@ -115,7 +115,6 @@ if __name__ == '__main__':
             if row[4][0:1] == '8':
                 list_hlr.append(int(row[4][2:].replace(' ', '')))
 
-
     # 再处理 usernumber20170830.csv
     for un in reader2:
         if un[0][0:1].isdigit():

@@ -1,4 +1,6 @@
 import sys
+
+# 得系统默认编码
 print(sys.getdefaultencoding())
 
 a = 'asdasd a'

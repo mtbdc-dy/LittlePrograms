@@ -1,5 +1,6 @@
 import os
 
+# 终端指令测试
 cmd = 'ls'
 
 # os.system(cmd)
