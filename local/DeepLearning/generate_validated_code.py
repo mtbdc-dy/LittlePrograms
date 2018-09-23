@@ -22,7 +22,6 @@ for i in range(4):
     draw1.text([i * 14 + 5, -6], char1, color1, font=font1)
 
 
-
 with open("pic.jpg", "wb") as f:
     img1.save(f)
 img1.show()
