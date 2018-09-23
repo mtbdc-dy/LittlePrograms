@@ -1,0 +1,31 @@
+sheetIdStringExpression:like
+main.sheetId:
+titleStringExpression:like
+main.title:关于配合市场部
+main.status:
+statusChoiceExpression:
+task.taskName:
+sendRoleIdStringExpression:in
+main.sendRoleId:
+sendDeptIdStringExpression:in
+main.sendDeptId:
+sendUserIdStringExpression:in
+main.sendUserId:
+operateRoleIdStringExpression:in
+link.operateRoleId:
+operateDeptIdStringExpression:in
+link.operateDeptId:
+operateUserIdStringExpression:in
+link.operateUserId:
+main.mainNetSort1:
+mainNetSort1ChoiceExpression:
+main.mainNetSort2:
+main.mainNetSort3:
+main.sendTime:
+sendTimeStartDateExpression:>=
+sendTimeStartDate:2018-06-17 00:00:00
+sendTimeLogicExpression:and
+sendTimeEndDateExpression:<=
+sendTimeEndDate:2018-09-15 15:26:31
+queryType:record
+method.save:提交
