@@ -4,10 +4,10 @@ import random
 import urllib.error
 import ssl
 import datetime
+import myPackages.getime
 import web.webCrawler.login
 import web.webCrawler.webcrawler
 import myPackages.mailtools
-import myPackages.getime
 import csv
 
 """
@@ -176,10 +176,9 @@ laggy_device_ratio = 100 - (float(tmp_normal_device)/(float(tmp_normal_device)+f
 # SQM取NEI相关
 url = 'http://106.14.197.84:65009/evqmaster/report/reportaction!returnMiguData.action'
 form = {
-    'paramData': '{\"secFrom\": \"2018-09-03 00:00:00\", \"secTo\": \"2018-09-03 00:00:00\", \"location\": '
-                 '4, \"dimension\": \"platform\", \"platform\": \"\", \"tType\": 2, \"isMigu\": false, \"is'
-                 'MiguShanxi\": false, \"bIncludeShanxi\": false}'
-
+    'paramData': '{\"secFrom\": \"' + startTime + ' 00:00:00\", \"secTo\": \"' + startTime + ' 00:00:00\", \"location\"'
+                 ': 4, \"dimension\": \"platform\", \"platform\": \"\", \"tType\": 2, \"isMigu\": false, \"isMiguShanxi'
+                 '\": false, \"bIncludeShanxi\": false}'
 }
 
 f = web.webCrawler.webcrawler.post_web_page(url, form, cookie)

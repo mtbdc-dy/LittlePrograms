@@ -6,8 +6,6 @@ import urllib.parse
 import xlrd
 import xlwt
 import sys
-
-
 import web.webCrawler.login
 import web.webCrawler.webcrawler as ww
 import myPackages.getime
