@@ -1,0 +1,175 @@
+<html>
+<body>
+<div id="page">
+
+
+  <div id="content" class="clearfix">
+    <div id="main"><br/><br/>
+<div id="sheet-detail-page">
+  <div id="sheetinfo">
+<table class="formTable">
+		<caption>工单基本信息
+
+	      <input type="button" value="打印基本信息" class="btn" onclick="popPrintPage('1')"/>
+
+		</caption>
+
+        <tr>
+			<td class="label">工单流水号</td>
+			<td class="content">SH-001-180910-00032</td>
+			<td class="label">工单状态</td>
+			<td class="content">运行中</td>
+		</tr>
+       <tr>
+			<td class="label">主题</td>
+			<td colspan='3'>JT-001-20180906-000044关于配合市场部制作第二十九批任我看内容计费局数据的通知</td>
+		</tr>
+
+
+
+		<tr>
+			<td class="label">操作人</td>
+			<td class="content">
+              网管中心
+		    </td>
+			<td class="label">操作人部门</td>
+			<td class="content">网络运行管理中心</td>
+		</tr>
+
+		<tr>
+<!-- 	    <td class="label">
+               操作人当前角色
+            </td>
+		    <td>
+
+		    </td> -->
+		    <td class="label">操作时间</td>
+			<td>2018年09月10日 10:14:55</td>
+
+            <td class="label">
+               操作人联系方式
+           </td>
+		   <td>
+               58998336
+		   </td>
+        </tr>
+ </table>
+	<br/>
+	<table class="formTable">
+	  <caption></caption>
+			     <tr>
+				     <td class="label"></td>
+				     <td class="content"></td>
+			         <td class="label">回复时限（总）</td>
+			         <td class="content">2018年09月12日 15:00:55</td>
+			 	</tr>
+		<tr>
+		    <td class="label">所属专业</td>
+		    <td class="content">
+		        集团任务工单-其他
+			</td>
+			<td class="label">回复是否必须带附件</td>
+		    <td class="content">
+		        否
+			</td>
+		 </tr>
+
+
+
+	               <tr>
+		           		<td class="label">网络分类一级类别</td>
+		            	<td class="content">
+		            		其他
+			        	</td>
+		            	<td class="label">网络分类二级类别</td>
+		                <td class="content">
+		                	其他
+			        	</td>
+		           </tr>
+
+	                <tr>
+		                <td class="label">网络分类三级类别</td>
+		                <td class="content">
+		                	其他
+			        	</td>
+		                <td  class="label">任务类型</td>
+		                <td class="content">
+		                	一般
+			        	</td>
+		            </tr>
+		            <tr>
+		            	  <td class="label">是否涉及查询用户敏感信息</td>
+						<td class="content" colspan="3"> </td>
+						</tr>
+
+			      <tr>
+		            <td class="label">任务描述</td>
+		            <td class="content" colspan="3">
+		              	关于配合市场部制作第二十九批任我看内容计费局数据的通知
+
+各省公司：
+    根据市场对前向定向视频流量业务的需求，现需为百度新增除前向定向流量需求制作内容计费局数据。
+为保证计费准确，需添加禁止cache缓存内容，缓存内容详见附件：缓存-0203-180906-0063-全国-百度
+   请各省公司通过精细去缓存方案实现任我系列业务取消，即同时区分合作商及手机用户，只取消合作视频手机缓存部分。缓存内容去除后，参考附件:验证缓存去除效果。
+   请于9月12日前完成数据制作，谢谢。
+总部联系人：乔星旻 13911111397 qiaoxingmin@chinamobile.com
+                   	</td>
+		          </tr>
+
+<!--  			      <tr>
+		            <td  class="label">备注</td>
+		            <td class="content" colspan="3">
+
+                    </td>
+		          </tr>  -->
+				<tr>
+					<td class="label">附件</td>
+				    <td colspan='3'>
+				    <iframe id="VIFrame1-sheetAccessories" name="VIFrame1-sheetAccessories" class="uploadframe" frameborder="0" scrolling="auto" src="/eoms35/accessories/pages/view.jsp?appId=commontask&filelist='201809101015179816.xlsx'&idField=sheetAccessories&startsWith=0" style="height:80%;width:100%"></iframe>
+
+				    </td>
+				</tr>
+				<tr id="attachContent" style="display:none">
+					<td class="label">附件内容</td>
+					<td  colspan='5' >
+			   			<textarea colspan='5' id="textfield" class="textarea max"></textarea>
+					</td>
+				</tr>
+	</table>
+
+
+  </div>
+
+  <!-- Sheet Detail Tab End -->
+</div>
+<!-- Sheet Tabs End -->
+
+
+
+
+
+
+    <div class="sheet-deal-content" id="sheet-deal-content"></div>
+
+   <div id="advice" style="display:block">
+
+
+
+ </div>
+
+
+
+
+
+<script type="text/javascript">
+   	function popPrintPage(flag)
+	{
+		url="/eoms35/sheet/commontask/commontask.do?method=showMainDetailPage&sheetKey=8a5d76ed65b03c320165c145b43b1b0b&printFlag="+flag;
+		window.open(url, 'printwindow', 'height=800, width=1000, top=200, left=200,toolbar=no, menubar=no, scrollbars=yes, resizable=yes,location=no, status=no');
+	}
+</script>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

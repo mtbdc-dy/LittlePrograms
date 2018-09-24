@@ -22,3 +22,14 @@ def n_days_ago(n):
     n_days.strftime('%Y-%m-%d')  # 不会改变对象的值
     print(n_days)
     return n_days
+
+
+def today():
+    now = datetime.datetime.now()
+    return now.strftime('%Y-%m-%d+%H:%M:%S')
+
+
+if __name__ == '__main__':
+    print(today())
+    print()
+

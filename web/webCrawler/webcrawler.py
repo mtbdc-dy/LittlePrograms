@@ -1,3 +1,5 @@
+# encoding=utf8
+
 import urllib.request
 import urllib.parse
 import time
@@ -26,7 +28,7 @@ def get_web_page(url, cookie=''):
     # 读取页面
     response = urllib.request.urlopen(request)
     f = response.read().decode("utf8")
-    time.sleep(random.randint(0, 1))
+    time.sleep(1)
     return f
 
 

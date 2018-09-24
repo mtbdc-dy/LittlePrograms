@@ -1,7 +1,7 @@
 import random
-# print('a' > 'b' or 'c')
-a = 2 ** 1
-print(a)
+filename = 'eoms_tasks01.xlsx'
+f = open(filename, 'rb')
+print(f.read())
 # a = [1,2,3,4,5]
 # print(a[-1])
 # b = [1,2,3,4,5]
