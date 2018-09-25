@@ -1,78 +1,52 @@
-import random
-filename = 'eoms_tasks01.xlsx'
-f = open(filename, 'rb')
-print(f.read())
-# a = [1,2,3,4,5]
-# print(a[-1])
-# b = [1,2,3,4,5]
-# c = a + b
-# print(c)
-# c = {
-#     '1': 'a'
-# }
-# b = dict()
-# b['a'] = c
-# print(b)
-# for i,item in enumerate(a):
-#     print(i)
-#     print(item)
-#
-#
-# def quzhen(x):
-#     if x*10-float(int(x*10)) >= 0.5:
-#         return float(int(x*10)/10) + 0.1
-#     else:
-#         return float(int(x*10)/10)
-#
-# f = quzhen(1.44)
-# # f = 1.4499999999
-# print(f)
-# f =1.55
-# print('%0.1f' %f)
-# a = -1
-# print(abs(a))
-# s = set()
-# s.add(1)
-# s.add(1)
-# print(s)
-#
-# d = dict()
-# d[1] = 2
-# if 1 in d.keys():
-#     d[1] = 3
-# print(d)
-#
-# if 1 is int:
-#     print(type(1))
-# print(type(1))
-# a = list()
-# b = [1,2,3,4]
-# b.insert(0,0)
-# a.append(b)
-# print(a)
-#
-# # print 颜色字体 \033为格式 【格式；颜色 + 字符串
-# print('\033[1;32mGI appers!! But im afraid i wont be able to notice this little poor sentence\033[0m')
-# print("\033[32;0m您输入的帐号或密码错误！\033[0m")
-#
-#
-# count = 0
-# a = 'a'
-# a = 1123123.1231
-# a = a/1042*100
-#
-# # 格式化输出
-# print('{:.2f}'.format(a))
-# for i in range(0, 5):
-#     if i == 2:
-#         break
-#
-# print(i)
-#
-# # 字符串末尾index可以超过范围
-# i = '12'
-# print(i[0:3])
-#
-# # 字符串split 不填默认消除全部空格
-# i = '   4-8613515200000           11         11         8'
-# print(i.split())
+def foo():
+    print('I am foo')
+
+
+def bar():
+    print('I am bar')
+
+
+# 函数都是对象，所以既可以有属性，又可以作为属性
+# 下面bar被定义为foo的属性
+foo.bar = bar
+foo.bar()
+print(type(foo))
+
+
+def deco(func):
+    string = 'I am deco'
+
+    def wrapper():
+        print(string)
+        func()
+
+    return wrapper
+
+
+def foo():
+    print('I am foo')
+
+
+# 第一句话赋值，但没有输出。把函数foo作为参数传递给deco函数得到返回值wrapper
+# wrapper是一个定义在函数里的函数，打印一个string 并且执行传递进来的foo。
+foo = deco(foo)
+foo()
+"""
+输出:
+I am deco
+Iam foo
+"""
+print(foo.__closure__)
+
+
+def print_msg(msg):
+    """This is the outer enclosing function"""
+    def printer():
+        """This is the nested function"""
+        print(msg)
+    return printer
+
+# Now let's try calling this function.
+# Output: Hello
+another = print_msg("Hello")
+another()
