@@ -11,9 +11,9 @@ import myPackages.mailtools
 import csv
 
 """
-现复制CMNET出口报表，重要的事情说三遍
-现复制CMNET出口报表，重要的事情说三遍
-现复制CMNET出口报表，重要的事情说三遍
+先复制CMNET出口报表，重要的事情说三遍
+先复制CMNET出口报表，重要的事情说三遍
+先复制CMNET出口报表，重要的事情说三遍
 """
 
 # OTT、IPTV 流量统计四部部分组成：

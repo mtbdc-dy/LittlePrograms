@@ -10,7 +10,7 @@ import random
 import urllib.error
 import ssl
 import datetime
-from PIL import Image
+from PIL import Image   # 这个包叫pillow就很奇怪
 import socket
 
 
