@@ -109,7 +109,7 @@ def get_validate_code(*url):
     if len(url) == 3:
         filename = 'validateCode' + str(url[2]) + '.jpeg'
     else:
-        filename = 'validateCode.jpeg'
+        filename = 'validateCode0.jpeg'
 
     if len(url) == 3:
         g = open(url[3] + filename, 'wb')
@@ -121,7 +121,7 @@ def get_validate_code(*url):
         g = open(filename, 'wb')
         g.write(f)
         g.close()
-        im = Image.open("validateCode.jpeg")
+        im = Image.open("validateCode0.jpeg")
         im.show()
 
 

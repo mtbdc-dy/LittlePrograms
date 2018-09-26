@@ -12,7 +12,7 @@ def base_n(num,b):
 
 if __name__ == '__main__':      # 仅在自身运行时才会执行
 
-    filename = 'validateCode.jpeg'
+    filename = 'validateCode0.jpeg'
     g = open(filename, 'wb')
 
     n = base_n(int((time.time() * 1000)), 36)
@@ -22,7 +22,7 @@ if __name__ == '__main__':      # 仅在自身运行时才会执行
     g.write(f)
     g.close()
 
-    im = Image.open("validateCode.jpeg")
+    im = Image.open("validateCode0.jpeg")
     im.show()
 
     vc = input("输入验证码")
