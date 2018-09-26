@@ -14,6 +14,7 @@ import csv
 先复制CMNET出口报表，重要的事情说三遍
 先复制CMNET出口报表，重要的事情说三遍
 先复制CMNET出口报表，重要的事情说三遍
+max_rate 和 max_user 调整0.95
 """
 
 # OTT、IPTV 流量统计四部部分组成：
@@ -111,6 +112,7 @@ for item in f1.split(","):
     if float(item) > max_rate:
         max_rate = float(item)
 
+max_rate = 0.95 * max_rate
 print(max_rate)
 f2 = f[f.find('在线用户会话数'):]
 f2 = f2[f2.find('[')+1:f2.find(']')]
@@ -119,6 +121,7 @@ max_user = 0
 for item in f2.split(","):
     if float(item) > max_user:
         max_user = float(item)
+max_user = 0.95 * max_user
 print(max_user/10000)
 
 
