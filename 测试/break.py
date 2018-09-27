@@ -50,3 +50,9 @@ def print_msg(msg):
 # Output: Hello
 another = print_msg("Hello")
 another()
+
+
+def a():
+
+    return max(r for r in range(5))
+
