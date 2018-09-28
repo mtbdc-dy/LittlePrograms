@@ -2,6 +2,7 @@ import time
 import xlrd
 import random
 import urllib.error
+import urllib.request
 import ssl
 import datetime
 import myPackages.getime
