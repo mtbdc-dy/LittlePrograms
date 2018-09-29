@@ -241,7 +241,7 @@ print('EPG请求成功率：%.2f' % epg_success_ratio, end=' ')
 if epg_success_ratio < 99:
     print('\033[32;0m<99%\033[0m')
 if epg_latency > 0.02:
-    print('\033epg_latency过高\033[0m')
+    print('\033[32;0mepg_latency过高\033[0m')
 
 
 if input('y or n').lower() == 'y':
