@@ -21,3 +21,10 @@ for item in a:
 print([sum(i if True else 0 for i in B)for B in [[1,2],[2,3],[4,5]]])
 
 sum(max(grid[i]) for i in range(len(grid))) + len(grid) * len(grid[0]) + sum(max(grid[j][i] for j in range(len(grid))) for i in range(len(grid[0])))
+
+a = ['a', 'b', 'c']
+c = ''.join(a)
+print(c)
+# for i, a in enumerate():
+a = 0b111
+print(a)
