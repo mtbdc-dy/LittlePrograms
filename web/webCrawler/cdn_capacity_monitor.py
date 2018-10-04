@@ -12,7 +12,6 @@ import myPackages.mailtools
 import csv
 
 """
-max_rate 和 max_user 调整0.95
 先复制CMNET出口报表，重要的事情说三遍
 先复制CMNET出口报表，重要的事情说三遍
 先复制CMNET出口报表，重要的事情说三遍
