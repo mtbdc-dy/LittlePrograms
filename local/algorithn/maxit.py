@@ -1,3 +1,5 @@
+# max()函数
+
 grid = []
 grid.append([1, 2, 3])
 print(grid)

@@ -11,6 +11,12 @@ header = {
     'e': f
 }
 
+l = [1]
+r = [1]
+if l == r:
+    print(l)
+# if 'a' iin header.keys():
+#     print('OK')
 for item in header:
     print(type(item))
     print(header[item])
@@ -22,7 +28,6 @@ print(header)
 print(header['a'])
 header.popitem()
 header.pop('c')
-header.pop('e')
 a = len(header)
 print(header)
 print(a)
