@@ -95,6 +95,7 @@ context = ssl._create_unverified_context()
 # 获取时间
 now = datetime.datetime.now()
 now = now - datetime.timedelta(days=n)
+print('Today is ' + now)
 # 打开输出文件
 fo = open(file_name, 'w', newline='')
 writer = csv.writer(fo)
