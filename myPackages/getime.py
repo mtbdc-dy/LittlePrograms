@@ -31,5 +31,6 @@ def today():
 
 if __name__ == '__main__':
     print(today())
+    print(datetime.datetime.now())
     print()
 
