@@ -1,7 +1,7 @@
 import pandas as pd
-f = open('互联网电视指标.csv')
+f = open('互联网电视指标.csv', encoding='gbk')
 marks = pd.read_csv(f)      # 文件名有中文会报错
-f = open('互联网电视指标.csv')
+f = open('互联网电视指标.csv', encoding='gbk')
 table = pd.read_table(f, sep=",")   # 读table
 print(marks)
 # print(table)
