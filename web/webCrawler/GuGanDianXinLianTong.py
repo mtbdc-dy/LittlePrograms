@@ -12,7 +12,7 @@ import urllib.parse
 Note!!!
 超过几天，n就赋值几，默认设为0。
 """
-n = 0
+n = 4
 
 # 爬取 网络全景可视化管控系统 ——业务分析
 # 入境流量
@@ -95,7 +95,8 @@ context = ssl._create_unverified_context()
 # 获取时间
 now = datetime.datetime.now()
 now = now - datetime.timedelta(days=n)
-print('Today is ' + now)
+print('Today is ', end='')
+print(now)
 # 打开输出文件
 fo = open(file_name, 'w', newline='')
 writer = csv.writer(fo)

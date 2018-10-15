@@ -4,7 +4,7 @@ import codecs
 
 # SLB POLICY 和 Group Method
 # POLICY、Group Method 对应 组
-# 组里有 很多real ip 和 一个virtual ip 但是他们又有很多借口
+# 组里有 很多real ip 和 一个virtual ip 但是他们又有很多接口
 
 
 input_filename = 'array1运行配置20180712.txt'
