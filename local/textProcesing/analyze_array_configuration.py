@@ -7,9 +7,9 @@ import codecs
 # 组里有 很多real ip 和 一个virtual ip 但是他们又有很多接口
 
 
-input_filename = 'array1运行配置20180712.txt'
-output_filename = 'array1配置.csv'
-output_filename2 = 'array1配置_组成员.csv'
+input_filename = 'array配置.txt'
+output_filename = 'array配置.csv'
+output_filename2 = 'array配置_组成员.csv'
 
 f = open(input_filename, 'r')
 lines = f.readlines()
