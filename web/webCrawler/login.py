@@ -38,12 +38,12 @@ def login_wangluoquanjingkeshihua():
 def zte_anyservice_uniportal():
     cookie = 'ERROR'
     url = 'https://117.135.56.61:8443/frame/loginOut.action'
-    cj = ww.get_cookie_without_form(url) # 这个函数默认输出结果
+    cj = ww.get_cookie_without_form(url)  # 这个函数默认输出结果
     for item in cj:
         cookie = item.name + '=' + item.value
     print(cookie)
 
-        # cookie = 'JSESSIONID=3276F5B76C95383468C71976890DF58C'
+    # cookie = 'JSESSIONID=3276F5B76C95383468C71976890DF58C'
     url = 'https://117.135.56.61:8443/authimg'
     ww.get_validate_code(url, cookie)
 
@@ -63,6 +63,23 @@ def zte_anyservice_uniportal():
 
     ww.post_web_page_ssl(url, form, cookie)
 
+    return cookie
+
+
+def zte_anyservice_uniportal_v2():
+    cookie = 'ERROR'
+    url = 'https://117.135.56.61:8443/frame/loginOut.action'
+    cj = ww.get_cookie_without_form(url)
+    for item in cj:
+        cookie = item.name + '=' + item.value
+    print(cookie)
+    url = 'https://117.135.56.61:8443/frame/login.action'
+    form = {
+        'authCodeable': 'false',
+        'password': 'tgNxV4VE9BlKZXt1G6f9CQ==',
+        'userName': 'super'
+    }
+    ww.post_web_page_ssl(url, form, cookie)
     return cookie
 
 
@@ -133,6 +150,7 @@ def eoms():
 
 if __name__ == '__main__':
     # eoms()
+
     print()
 
 
