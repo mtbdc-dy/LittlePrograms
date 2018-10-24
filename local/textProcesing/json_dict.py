@@ -1,6 +1,7 @@
 import myPackages.process_txt as pt
 
-mode = 1  # 1 for pc. 0 for mac
+"""IMPORTANT"""
+mode = 0  # 1 for pc. 0 for mac
 
 if mode == 0:
     filename = 'json_dict.txt'

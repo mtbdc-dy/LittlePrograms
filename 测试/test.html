@@ -1,0 +1,127 @@
+<html>
+<head>
+<LINK href="./style/global.css" type="text/css" rel=stylesheet />
+<LINK href="./style/table.css" type="text/css" rel=stylesheet />
+<LINK href="./style/page.css" type="text/css" rel=stylesheet />
+<script language="javascript" src="./script/dom.js"></script>
+<script language="javascript" src="./script/tools.js"></script>
+<script language="javascript" src="./script/key.js"></script>
+<script language="javascript" src="./script/tooltip.js"></script>
+<script>
+
+function chgShowGraph(show, hide, chart)
+{
+    $(show).style.display = "none";
+    $(hide).style.display = "block";
+    $(chart).style.display = "block";
+}
+
+function chgHideGraph(show, hide, chart)
+{
+    $(show).style.display = "block";
+    $(hide).style.display = "none";
+    $(chart).style.display = "none";
+}
+
+function viewIP(ip)
+{
+    var winwidth = 700;
+    var winheight = 560;
+    var winleft = (screen.availWidth - winwidth)/2;
+    var wintop = (screen.availHeight - winheight)/2;
+    var winDimension = "toolbar=no,menubar=no,resizable=yes,scrollbars=yes,status=yes," + "height=" + winheight + ",width=" + winwidth + ",left=" + winleft + ",top=" + wintop;
+
+    var pos = ip.indexOf("/");
+    if(pos == -1)
+    {
+        pos = ip.length;
+    }
+    var jspurl = "http://ipwhois.cnnic.net.cn/ipwhoisresult.php?query_option=ipv4&txtquery=" + ip.substr(0, pos);
+    window.open(jspurl,"",winDimension);
+}
+
+window.onload=pageInit;
+function pageInit()
+{
+    parent.hideLoading();
+    alertInfo();
+}
+
+function toPage(index)
+{
+    $("currentPage").value = index;
+    $("form1").submit();
+}
+
+function reload()
+{
+    $("form1").submit();
+}
+</script>
+</head>
+<body>
+
+
+
+
+
+
+
+
+
+<form id="form1" action="viewAnaIPTopNList.htm" method="post">
+<input type="hidden" id="currentPage" name="currentPage" value="">
+<input type="hidden" name="analyseMask" value="2097152"/>
+<input type="hidden" name="filterMask" value="0"/>
+<input type="hidden" name="deviceType" value="2"/>
+<input type="hidden" name="deviceId" value=" 0"/>
+<input type="hidden" name="devGrpId" value=" 161"/>
+<input type="hidden" name="svcId" value="0"/>
+<input type="hidden" name="subServiceId" value="0"/>
+<input type="hidden" id="id" name="id" value="0"/>
+</form>
+<table style="margin:0;padding:0px;width:100%">
+
+
+<tr>
+  <td class="body">
+    <div class="table3DImg" style="width:1010;height:100%">
+    <table width="100%"  cellpadding=0 cellspacing=0>
+    <thead>
+    <tr>
+      <th>序号</th>
+      <th></th>
+      <th style="display: none;">运营商</th>
+      <th>所属区域</th>
+      <th>双向流量(Mbps)</th>
+      <th>入境流量(Mbps)</th>
+      <th>出境流量(Mbps)</th>
+    </tr>
+    </thead>
+    <tbody>
+
+    </tbody>
+    </table>
+    </div>
+  </td>
+</tr>
+
+</table>
+
+
+
+<div id="div_alert" style="display:none;position:absolute;padding:8px 10px;color:#514721;border:1px solid #FFD324;background:#FFF6BF;width:170px;z-index:10000;"><table width="100%" height="30"><tr><td><img src="./images/ok_32x32.gif"></td><td valign="middle" style="font-size:14px;">&nbsp;For input string: &quot; 161&quot;</td></tr></table></div>
+<script>
+function alertInfo()
+{
+    o = document.getElementById("div_alert");
+    o.style.display = "";
+    o.style.left = (document.body.clientWidth-o.offsetWidth)/2 + "px";
+    o.style.top = (document.body.clientHeight-o.offsetHeight-100)/2 + "px";
+}
+setTimeout(function(){document.getElementById("div_alert").style.display="none";},2000);
+</script>
+
+
+</body>
+</html>
