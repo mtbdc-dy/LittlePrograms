@@ -77,6 +77,29 @@ def get_web_page_ssl(*url):
     return f
 
 
+def get_web_page_ssl_ie(*url):
+    context = ssl._create_unverified_context()
+    header = {
+        'User-Agent': 'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; WOW64; Trident/6.0) Core/1.63.'
+                      '6756.400 QQBrowser/10.3.2473.400',
+        'Cookie': url[1]
+    }
+    proxy = {
+        'http':'http://cmnet:cmnet@211.136.113.69:808'
+    }
+    # 挂代理Handler
+    proxy_support = urllib.request.ProxyHandler(proxy)
+    opener = urllib.request.build_opener(proxy_support)
+    urllib.request.install_opener(opener)
+    # 伪装浏览器申请
+    request = urllib.request.Request(url[0], headers=header)
+    # 读取页面
+    response = urllib.request.urlopen(request, context=context)
+    f = response.read().decode("utf8")
+    time.sleep(random.randint(0, 1))
+    return f
+
+
 def get_img_ssl(*url):
     context = ssl._create_unverified_context()
     header = {
@@ -209,6 +232,35 @@ def post_web_page_ssl(url, my_form, cookie):
     header = {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) '
                       'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36',
+        'Cookie': cookie
+    }
+
+    proxy = {
+        'http': 'http://cmnet:cmnet@211.136.113.69:808'
+    }
+    # 挂代理Handler
+    proxy_support = urllib.request.ProxyHandler(proxy)
+    opener = urllib.request.build_opener(proxy_support)
+    urllib.request.install_opener(opener)
+    # 伪装浏览器申请
+
+    request = urllib.request.Request(url, headers=header)
+    # 编码
+    form_data = urllib.parse.urlencode(my_form).encode('utf8')
+    # 读取页面
+    response = urllib.request.urlopen(request, data=form_data)  # context=context
+
+    f = response.read().decode("utf8")
+    time.sleep(random.randint(0, 1))
+    return f
+
+
+def post_web_page_ssl_ie(url, my_form, cookie):
+    ssl._create_default_https_context = ssl._create_unverified_context
+    # context = ssl._create_unverified_context()
+    header = {
+        'User-Agent': 'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; WOW64; Tride'
+                      'nt/6.0) Core/1.63.6756.400 QQBrowser/10.3.2473.400',
         'Cookie': cookie
     }
 
