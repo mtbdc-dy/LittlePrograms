@@ -1,6 +1,7 @@
 import datetime
 import web.webCrawler.login
 import web.webCrawler.webcrawler as ww
+import myPackages.mailtools as mt
 from lxml import etree
 
 """这个系统提交的表单数据居然有顺序要求？？？"""
@@ -58,8 +59,8 @@ tb = now - delta_begin
 te = now
 my_form['beginDate'] = tb.strftime('%Y-%m-%d')  # 调整时间格式
 my_form['endDate'] = te.strftime('%Y-%m-%d')    # 调整时间格式
-url = 'https://117.136.129.122/cmnet/mgrAnaIPTopNInnerIP.htm'
-ww.get_web_page_ssl_ie(url, cookie)
+# url = 'https://117.136.129.122/cmnet/mgrAnaIPTopNInnerIP.htm'
+# ww.get_web_page_ssl_ie(url, cookie)
 url = 'https://117.136.129.122/cmnet/mgrAnaIPTopN.htm?analyseMask=2097152'
 ww.get_web_page_ssl_ie(url, cookie)
 url = 'https://117.136.129.122/cmnet/viewAnaIPTopNList.htm'
@@ -78,5 +79,19 @@ filename = 'inter_network_flow.xls'
 g = open(filename, 'wb')
 g.write(f)
 g.close()
+
+if input('y or n').lower() == 'y':
+    title = tb.strftime('%Y-%m-%d') + '网间流量'
+    email_content = '附件是' + tb.strftime('%Y-%m-%d') + '网间流量，请查收。'
+    # user = ['xuyuan2@sh.chinamobile.com']
+    user = [
+        'xuyuan2@sh.chinamobile.com', 'dingy@sh.chinamobile.com', 'neilchen@eastcom-sw.com',
+        'zhengsy@eastcom-sw.com', 'sunhong@eastcom-sw.com']
+
+    ret = mt.mail139_customise_with_attachment(title, email_content, filename, user)
+    if ret:
+        print("ok")  # 如果发送成功则会返回ok，稍等20秒左右就可以收到邮件
+    else:
+        print("filed")  # 如果发送失败则会返回filed
 
 

@@ -1,4 +1,5 @@
 # coding:utf-8   #强制使用utf-8编码格式
+import os
 import smtplib  # 加载smtplib模块
 from email.mime.text import MIMEText
 from email.utils import formataddr
@@ -26,31 +27,6 @@ def mail_customise(title, content, my_user):
     return flag
 
 
-def mail_customise_attachment(title, content, my_user, path):
-    flag = True
-    try:
-        msg = MIMEMultipart()
-        msg['From'] = Header("菜鸟教程", 'utf-8')
-        msg['To'] = Header("测试", 'utf-8')
-        subject = 'Python SMTP 邮件测试'
-        msg['Subject'] = Header(subject, 'utf-8')
-        msg.attach(MIMEText('这是菜鸟教程Python 邮件发送测试……', 'plain', 'utf-8'))
-
-        att1 = MIMEText(open(path, 'rb').read(), 'base64', 'utf-8')
-        att1["Content-Type"] = 'application/octet-stream'
-        # 这里的filename可以任意写，写什么名字，邮件中显示什么名字
-        att1["Content-Disposition"] = 'attachment; filename="test.txt"'
-        msg.attach(att1)
-
-        server = smtplib.SMTP("smtp.163.com", 25)  # 发件人邮箱中的SMTP服务器，端口是25
-        server.login(my_sender, "Sqm940208")    # 括号中对应的是发件人邮箱账号、邮箱密码
-        server.sendmail(my_sender, my_user, msg.as_string())   # 括号中对应的是发件人邮箱账号、收件人邮箱账号、发送邮件
-        server.quit()   # 这句是关闭连接的意思
-    except Exception:   # 如果try中的语句没有执行，则会执行下面的ret=False
-        flag = False
-    return flag
-
-
 def mail139_customise(title, content, my_user):
     flag = True
     try:
@@ -63,6 +39,33 @@ def mail139_customise(title, content, my_user):
         server.login('shmcip@139.com', "021SH@cmcc")    # 括号中对应的是发件人邮箱账号、邮箱密码
         server.sendmail('shmcip@139.com', my_user, msg.as_string())   # 括号中对应的是发件人邮箱账号、收件人邮箱账号、发送邮件
         server.quit()   # 这句是关闭连接的意思
+    except Exception:   # 如果try中的语句没有执行，则会执行下面的ret=False
+        flag = False
+    return flag
+
+
+def mail139_customise_with_attachment(title, content, path, my_user):
+    # ../web/webCrawler/inter_network_flow.xls  (path)
+    (filepath, tempfilename) = os.path.split(path)
+    flag = True
+    try:
+        msg = MIMEMultipart()
+        msg['From'] = Header("DoNotReply 徐缘", 'utf-8')
+        msg['To'] = Header("收件人", 'utf-8')
+        subject = title
+        msg['Subject'] = Header(subject, 'utf-8')
+        msg.attach(MIMEText(content, 'plain', 'utf-8'))
+
+        att1 = MIMEText(open(path, 'rb').read(), 'base64', 'utf-8')
+        att1["Content-Type"] = 'application/octet-stream'
+        # 这里的filename可以任意写，写什么名字，邮件中显示什么名字
+        att1["Content-Disposition"] = 'attachment; filename="' + tempfilename + '"'
+        msg.attach(att1)
+
+        server = smtplib.SMTP("smtp.139.com", 25)  # 发件人邮箱中的SMTP服务器，端口是25
+        server.login('shmcip@139.com', "021SH@cmcc")  # 括号中对应的是发件人邮箱账号、邮箱密码
+        server.sendmail('shmcip@139.com', my_user, msg.as_string())  # 括号中对应的是发件人邮箱账号、收件人邮箱账号、发送邮件
+        server.quit()  # 这句是关闭连接的意思
     except Exception:   # 如果try中的语句没有执行，则会执行下面的ret=False
         flag = False
     return flag
@@ -103,16 +106,12 @@ def mail_oa(content, my_user):
 
 
 if __name__ == '__main__':
-    # my_user = 'xuyuan2@sh.chinamobile.com'
-    # ret = mail_oa('test_title', my_user)
-    # if ret:
-    #     print("ok")  # 如果发送成功则会返回ok，稍等20秒左右就可以收到邮件
-    # else:
-    #     print("failed")  # 如果发送失败则会返回filed
-    f = open(r'../web/webCrawler/inter_network_flow.xls', 'r')
-    print(f)
-    if mail_customise_attachment('1', '2', ['xuyuan2@sh.chinamobile.com'], r'../web/webCrawler/inter_network_flow.xls'):
-        print('ok')
+    my_receiver = 'xuyuan2@sh.chinamobile.com'
+    ret = mail_oa('test_title', my_receiver)
+    if ret:
+        print("ok")  # 如果发送成功则会返回ok，稍等20秒左右就可以收到邮件
+    else:
+        print("failed")  # 如果发送失败则会返回filed
 
 
 
