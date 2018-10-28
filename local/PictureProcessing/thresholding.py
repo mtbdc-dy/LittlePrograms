@@ -14,7 +14,6 @@ def nine_squares(g):
     for x in range(w):
         for y in range(h):
             rgb.clear()
-
             for i in range(-1, 2):
                 for j in range(-1, 2):
                     a = x + i
@@ -39,7 +38,7 @@ def nine_squares(g):
                     li2.append((x, y))
                     # g.putpixel((x, y), 255)
 
-                # 边上的点
+            # 边上的点
             if len(rgb) == 6:
                 mean = sum(rgb) / len(rgb)
                 if mean < 100:  # 去除白点 255/6 = 42.5 6格里只有一个白点 50 100
@@ -59,6 +58,30 @@ def nine_squares(g):
     return g
 
 
+def fill_hole(g):
+    rgb = []  # 存一个位置 边缘一块地区的 灰度值
+    li = []  # 侦测到的存噪点位置
+    (w, h) = g.size  # 图形大小
+    for x in range(w):
+        for y in range(h):
+            rgb.clear()
+            for (i, j) in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
+                a = x + i
+                b = y + j
+                pos = (a, b)
+                if a < 0 or a > w - 1:
+                    continue
+                if b < 0 or b > h - 1:
+                    continue
+                rgb.append(g.getpixel(pos))
+
+            if sum(rgb) == 0:
+                li.append((x, y))
+    for item in li:
+        g.putpixel(item, 0)
+    return g
+
+
 def show_zero_image(g):
     (w, h) = g.size
     for j in range(h):
@@ -75,9 +98,8 @@ if __name__ == '__main__':
     # 图像二值化，去椒盐噪点
     for n in range(1, 10):
         # 打开图片
-        n = 0
-        im = Image.open("GGDXLT_Examples/validateCode" + str(n) + ".jpeg")
-
+        # im = Image.open("GGDXLT_Examples/validateCode" + str(n) + ".jpeg")
+        im = Image.open("GGDXLT_Examples/validateCode_created.jpeg")
         # 切割边框
         (w, h) = im.size    # 获得图片长和宽
         zone = (2, 1, w-2, h-1)     # 左下角和右下角的坐标
@@ -92,7 +114,10 @@ if __name__ == '__main__':
         gn = nine_squares(g)
         # show_zero_image(gn)
         gnn = nine_squares(gn)
-        show_zero_image(gnn)
+        # 把上下左右都有点的空值填了
+        gnnn = fill_hole(gnn)
+
+        show_zero_image(gnnn)
         break
 
 
