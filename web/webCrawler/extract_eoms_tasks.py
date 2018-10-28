@@ -14,6 +14,12 @@ import csv
 from lxml import etree  # 爬取页面元素
 
 
+'''下面表单里和后面url里的时间可能需要手动修改'''
+now = datetime.datetime.now()
+start_time = '2018-09-01'
+# end_time = '2018-10-28'
+end_time = now.strftime('%Y-%m-%d+%H:%M:%S')
+end_time_url = now.strftime('%Y-%m-%d+%H%%3A%M%%3A%S')  # 2018-09-24+04%3A27%3A45
 workbook_write = xlwt.Workbook('tmp_emos.xlsx')
 ws = workbook_write.add_sheet('sheet01')
 row = 1
@@ -51,7 +57,8 @@ row = 1
 # # print(f)
 
 # 任务单查询
-cookie = 'JSESSIONID=0000DUlWKdFqa7ob9tuvNPqBMId:1ag9kvec7'
+# cookie = 'JSESSIONID=0000DUlWKdFqa7ob9tuvNPqBMId:1ag9kvec7'   是不是因为密码改了
+cookie = 'JSESSIONID=0000gBH9cE2ohZHkb2E2ohf3Ia0:1ag9kvapt'
 url = 'http://10.221.246.108/eoms35/sheet/commontask/commontask.do?method=performQuery'
 form = {
     'link.operateDeptId': '',
@@ -75,10 +82,10 @@ form = {
     'queryType': 'record',
     'sendDeptIdStringExpression': 'in',
     'sendRoleIdStringExpression': 'in',
-    'sendTimeEndDate': myPackages.getime.today(),
+    'sendTimeEndDate': end_time,
     'sendTimeEndDateExpression': '<=',
     'sendTimeLogicExpression': 'and',
-    'sendTimeStartDate': '2016-06-01+00:00:00',
+    'sendTimeStartDate': start_time + '+00:00:00',     # 'sendTimeStartDate': '2016-06-01+00:00:00',
     'sendTimeStartDateExpression': '>=',
     'sendUserIdStringExpression': 'in',
     'sheetIdStringExpression': 'like',
@@ -87,7 +94,7 @@ form = {
     'titleStringExpression': 'like',
 }
 f = ww.post_web_page(url, form, cookie)
-# print(f)
+print(f)
 
 selector = etree.HTML(f)
 # 获取 共有多少条记录
@@ -100,11 +107,17 @@ print('总页数:', page)
 
 for p in range(page):
     print('第{}页:'.format(p+1))
+    '''各分页url'''
     url = 'http://10.221.246.108/eoms35/sheet/commontask/commontask.do?titleStringExpression=like&sendRoleIdStringExp' \
           'ression=in&sheetIdStringExpression=like&main.sendTime=&operateDeptIdStringExpression=in&sendDeptIdStringEx' \
           'pression=in&operateUserIdStringExpression=in&sendUserIdStringExpression=in&queryType=record&main.mainNetSo' \
           'rt1=&main.mainNetSort2=&main.sheetId=&main.mainNetSort3=&statusChoiceExpression=&sendTimeEndDateExpression' \
-          '=%3C%3D&main.sendRoleId=&d-4025513-p=' + str(p+1) + '&sendTimeStartDateExpression=%3E%3D&sendTimeStartDate=2016-06-26+00%3A00%3A00&main.sendDeptId=&main.sendUserId=&main.status=&mainNetSort1ChoiceExpression=&sendTimeLogicExpression=and&method=performQuery&link.operateRoleId=&main.title=%E5%85%B3%E4%BA%8E%E9%85%8D%E5%90%88%E5%B8%82%E5%9C%BA%E9%83%A8%E5%88%B6&method.save=%E6%8F%90%E4%BA%A4&link.operateDeptId=&sendTimeEndDate=2018-09-24+04%3A27%3A45&link.operateUserId=&task.taskName=&operateRoleIdStringExpression=in'
+          '=%3C%3D&main.sendRoleId=&d-4025513-p=' + str(p+1) \
+          + '&sendTimeStartDateExpression=%3E%3D&sendTimeStartDate=' + start_time + '+00%3A00%3A00&main.sendDeptId=&main.send' \
+            'UserId=&main.status=&mainNetSort1ChoiceExpression=&sendTimeLogicExpression=and&method=performQuery&link.' \
+            'operateRoleId=&main.title=%E5%85%B3%E4%BA%8E%E9%85%8D%E5%90%88%E5%B8%82%E5%9C%BA%E9%83%A8%E5%88%B6&metho' \
+            'd.save=%E6%8F%90%E4%BA%A4&link.operateDeptId=&sendTimeEndDate=' + end_time_url + '&link.operateUserId' \
+            '=&task.taskName=&operateRoleIdStringExpression=in'
     f = ww.get_web_page(url, cookie)
     selector = etree.HTML(f)
     # 获取 当前页全部工单号
@@ -164,4 +177,6 @@ for p in range(page):
 
 
 workbook_write.save('eoms_tasks.xls')
+
+
 

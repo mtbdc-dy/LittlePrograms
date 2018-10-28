@@ -30,7 +30,7 @@ def today():
 
 
 if __name__ == '__main__':
-    print(today())
-    print(datetime.datetime.now())
+    now = datetime.datetime.now()
+    print(now.strftime('+%H%%3A%M%%3A%S')+now.strftime('+%H%%3A%M%%3A%S'))
     print()
 
