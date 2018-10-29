@@ -2,7 +2,7 @@ import datetime
 import web.webCrawler.login
 import web.webCrawler.webcrawler as ww
 import myPackages.mailtools as mt
-from lxml import etree
+# from lxml import etree
 
 """这个系统提交的表单数据居然有顺序要求？？？"""
 # 爬取 网络全景可视化管控系统 ——业务分析
