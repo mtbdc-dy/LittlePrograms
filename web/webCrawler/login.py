@@ -110,6 +110,33 @@ def sqm():
     return cookie
 
 
+def sqm_117():
+    cookie = 'ERROR'
+    # 获取cookie
+    url = 'http://117.144.107.165:8088/evqmaster/CheckCode'
+    cj = ww.get_cookie_without_form(url)
+    for item in cj:
+        cookie = item.name + '=' + item.value
+    print(cookie)
+
+    # 获取验证码 加random 是为了改一下请求 那样就不会去缓存中获取这张图片了
+    url = 'http://117.144.107.165:8088/evqmaster/CheckCode?' + str(random.random())
+    ww.get_validate_code(url, cookie)
+    pwd = input('输入验证码，谢谢')
+
+    # 提交登入表单
+    url = 'http://117.144.107.165:8088/evqmaster/configaction!login.action'
+    form = {
+        'username': 'xuyuan',
+        'password': '2EF60361839CBA359266E62F16E21A7A',
+        'checkcode': pwd
+    }
+
+    f = ww.post_web_page(url, form, cookie)
+    print(f)
+    return cookie
+
+
 def eoms():
     cookie = 'JSESSIONID=0000YNYvzX_gIZNkQSGA5sGoxIq:1ag7gpqb9'
     # 获取rsa公钥对账户和密码进行加密
