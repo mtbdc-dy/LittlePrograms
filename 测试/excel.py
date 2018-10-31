@@ -1,21 +1,27 @@
-import xlrd
+import xlrd  # 读excel
+import xlwt  # 写excel
 
-# excel 文件都
-filename_output = '附件五、物联网HLR-ID（截至2018年2月）.xlsx'
+'''写 excel start'''
+filename = 'excel_name.xlsx'
+f = xlwt.Workbook(filename)  # 打开excel
+ws = f.add_sheet('sheet_name')  # 新建一个sheet
+for i in range(10):
+    ws.write(i, i, i)
+f.save(filename)
+'''写 excel end'''
 
-f3 = xlrd.open_workbook(filename_output)
-table = f3.sheet_by_name("Sheet1")
-nrows = table.nrows
+
+'''读excel start'''
+filename = 'excel_name.xlsx'    # 文件名
+
+f = xlrd.open_workbook(filename)    # 打开excel
+table = f.sheet_by_name("sheet_name")   # 打开sheet
+nrows = table.nrows     # sheet的行数
+print(nrows)
+
 for i in range(nrows):
-    rows  = table.row_values(i)
-    # print(rows[0:1])
+    rows = table.row_values(i)  # 读第i行
+    print(rows)
+'''读excel end'''
 
-str = '123435'
-print(str[0:2])
 
-matrix = [[] for i in range(10)]
-
-matrix[1].append('1')
-matrix[1].append('1')
-matrix[2].append('1')
-print(matrix)

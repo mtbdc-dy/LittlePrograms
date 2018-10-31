@@ -24,10 +24,15 @@ OTT、IPTV 流量统计四部部分组成：
 # 4、发送邮件
 """
 
-# 输出文件
-file_output = 'cdn_rate.csv'
+'''Constants'''
+IPTV_total_capacity = 675+72+72
+OTT_total_capacity = 850-95-72-72
+file_output = 'cdn_rate.csv'  # 输出文件
+
+# 打开输出文件
 g = open(file_output, 'a', newline='')
 writer = csv.writer(g)
+
 # 查询时间
 now = datetime.datetime.now()
 delta = datetime.timedelta(days=1)
@@ -149,8 +154,8 @@ for item in zte_dict:
 max_rate = max(bandwidth)/1024/1024/1024
 max_user = max(online_user)
 
-########
-# part2 SQM
+
+'''part2 SQM'''
 cookie = web.webCrawler.login.sqm_117()
 # SQM峰值流用户数
 # 系统特性 取某一日的值时需要始末日期一致
@@ -232,7 +237,8 @@ Responses = fc[fc.find(':') + 1:fc.find(',')]
 Responses = float(Responses)
 epg_success_ratio = Responses / Requests * 100
 
-# part3 CMNET出口数据统计报表
+
+'''part3 CMNET出口数据统计报表'''
 date = myPackages.getime.yesterday(1)
 filename = 'CMNET出口数据统计报表(' + date + ').xlsx'
 f = xlrd.open_workbook(filename)
@@ -246,7 +252,8 @@ for i in range(nrows):
         ott_max_rate = row[4]
         ott_mean_rate = row[3]
 
-# part4 发送邮件
+
+'''part4 发送邮件'''
 ott_max_rate = float(ott_max_rate)
 ott_mean_rate = float(ott_mean_rate)
 max_rate = float(max_rate) * 0.95
@@ -254,9 +261,9 @@ maxStreamSTBs = float(maxStreamSTBs)
 max_user = float(max_user)
 print(maxStreamSTBs, max_rate, max_user, ott_max_rate)
 title = date + '互联网电视指标'
-email_content = 'OTT峰值流用户数: {:.2f}万人; OTT峰值流速: {:.2f}Gbps; OTT利用率: {:.2f}%; IPTV峰值流用户数: {:.2f}万人; IPTV峰值流速: {:.2f}Gbps; IPTV利用率: {:.2f}%。'.format(maxStreamSTBs/10000, ott_max_rate/1024, ott_max_rate/1024/(850-95-72)*100, max_user/10000, max_rate, max_rate/(675+72)*100)
+email_content = 'OTT峰值流用户数: {:.2f}万人; OTT峰值流速: {:.2f}Gbps; OTT利用率: {:.2f}%; IPTV峰值流用户数: {:.2f}万人; IPTV峰值流速: {:.2f}Gbps; IPTV利用率: {:.2f}%。'.format(maxStreamSTBs/10000, ott_max_rate/1024, ott_max_rate/1024/OTT_total_capacity*100, max_user/10000, max_rate, max_rate/IPTV_total_capacity*100)
 email_content = startTime + ': ' + email_content
-csv_content = [startTime] + ['{:.2f}'.format(maxStreamSTBs/10000)] + ['{:.2f}'.format(ott_max_rate/1024)] + ['%.2f' % (ott_mean_rate/1024)] + ['{:.2f}'.format(ott_max_rate/1024/(850-98-72)*100)] + ['{:.2f}'.format(max_user/10000)] + ['{:.2f}'.format(max_rate)] + ['{:.2f}'.format(max_rate/(675+72)*100)] + ['{:.2f}'.format(laggy_device_ratio)] + [sum_box] + ['%.2f' % epg_success_ratio] + ['%.2f' % epg_latency]
+csv_content = [startTime] + ['{:.2f}'.format(maxStreamSTBs/10000)] + ['{:.2f}'.format(ott_max_rate/1024)] + ['%.2f' % (ott_mean_rate/1024)] + ['{:.2f}'.format(ott_max_rate/1024/OTT_total_capacity*100)] + ['{:.2f}'.format(max_user/10000)] + ['{:.2f}'.format(max_rate)] + ['{:.2f}'.format(max_rate/IPTV_total_capacity*100)] + ['{:.2f}'.format(laggy_device_ratio)] + [sum_box] + ['%.2f' % epg_success_ratio] + ['%.2f' % epg_latency]
 print('email_content: ', email_content)
 print('csv_content:', csv_content)
 user = [
