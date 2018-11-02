@@ -176,7 +176,7 @@ def eoms():
 
 
 if __name__ == '__main__':
-    # eoms()
+    sqm_117()
 
     print()
 
