@@ -255,6 +255,7 @@ def post_web_page_ssl(url, my_form, cookie):
     return f
 
 
+# 有用？
 def post_web_page_ssl_ie(url, my_form, cookie):
     ssl._create_default_https_context = ssl._create_unverified_context
     # context = ssl._create_unverified_context()

@@ -175,8 +175,21 @@ def eoms():
     return cookie
 
 
+def utm():
+    url = 'https://39.134.87.216:31943/itpaas/login.action'
+    cj = ww.get_cookie_without_form(url)
+    # 4371b396e727fd23f4ddcaa2c16a90ea5b3f78df09d3997e
+    # cookie = 'itpaasjsessionid=19E308B9A6AE374F4DD7E0F82711694D; session_cookie=ee3fe217-ce48-4b45-9d76-6b77e9fe40a1;' \
+    #          ' bme_locale_session=zh_CN'
+    cookie = ''
+    for item in cj:
+        cookie = cookie + item.name + '=' + item.value + ';'
+
+    return cookie[:-1]
+
+
 if __name__ == '__main__':
-    sqm_117()
+    print(utm())
 
     print()
 
