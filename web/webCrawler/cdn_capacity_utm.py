@@ -13,13 +13,16 @@ import csv
 import json
 
 
+'''
+关键点只有两个值 cookie 和 roarand
+'''
 def post_ssl(url, my_form, cookie):
     ssl._create_default_https_context = ssl._create_unverified_context
     # context = ssl._create_unverified_context()
     header = {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) '
                       'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36',
-        'roarand': 'c2dfb2df-817d-49fd-bdfe-51da71fac94c',
+        'roarand': 'f602a03e-b7fa-4ae5-9f6a-9eb3aa496f85',
         'Cookie': cookie
     }
 
@@ -45,7 +48,7 @@ def post_ssl(url, my_form, cookie):
 
 if __name__ == '__main__':
     url = 'https://39.134.87.216:31943/rest/pm/history'
-    cookie = 'JSESSIONID=d97ecdb5a6d3797f54ad2f2ec8eed0faf4402021b9f545f7'
+    cookie = 'JSESSIONID=8cfba3b8379f32cb961fcb94f5678e72725c544ed7649266'
     form = {
         'param': r'{"pageIndex":1,"historyTimeRange":0,"beginTime":1541174400000,"endTime":1541260800000,"isGetGraphicGroupData":true,"mo2Index":"[{\"dn\":\"com.huawei.hvs.pop=2101534\",\"indexId\":\"11735\",\"displayValue\":\"\",\"aggrType\":2}]","pmViewPage":"historyPm","isQueryOriginal":false}'
     }

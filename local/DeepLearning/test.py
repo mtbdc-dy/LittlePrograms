@@ -2,11 +2,6 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-try:
-    print
-except NameError:
-    print()
-
 
 def loadDataSet():
     dataMat  = []
@@ -93,7 +88,7 @@ a = -w[0] / w[1]
 b = -b / w[1]
 
 Z = np.dot(X, w.T) + b
-print Z
+print(Z)
 
 # plot line
 plt.scatter(X[:,0], X[:,1], c=y, edgecolor='k')
@@ -101,6 +96,6 @@ plt.plot(X[:,0], a*X[:,0]+b, c='r')
 plt.show()
 
 
-print len(cost_list)
+print(len(cost_list))
 axis = np.arange(1,len(cost_list)+1)
 showCost(axis,cost_list)

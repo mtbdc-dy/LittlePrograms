@@ -263,7 +263,7 @@ for i in range(nrows):
 
 
 '''part4 发送邮件'''
-ott_max_rate = float(ott_max_rate)
+ott_max_rate = float(ott_max_rate) * 0.95
 ott_mean_rate = float(ott_mean_rate)
 max_rate = float(max_rate) * 0.95
 maxStreamSTBs = float(maxStreamSTBs)
