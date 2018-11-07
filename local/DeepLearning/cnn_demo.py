@@ -75,7 +75,7 @@ cross_entropy = tf.reduce_mean(-tf.reduce_sum(ys * tf.log(prediction),
                                               reduction_indices=[1]))       # loss
 train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
 
-sess = tf.Session()
+sess = tf.Session()     # config=tf.ConfigProto(log_device_placement=True)
 # important step
 # tf.initialize_all_variables() no long valid from
 # 2017-03-02 if using tensorflow >= 0.12
