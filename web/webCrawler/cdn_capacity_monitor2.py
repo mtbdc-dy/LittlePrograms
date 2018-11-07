@@ -14,7 +14,6 @@ import json
 
 """
 今天开始iptv峰值*0.95哦 max_rate
-ott 也乘0.95哦
 先复制CMNET出口报表至目录，重要的事情说三遍
 先复制CMNET出口报表至目录，重要的事情说三遍
 先复制CMNET出口报表至目录，重要的事情说三遍
@@ -263,7 +262,7 @@ for i in range(nrows):
 
 
 '''part4 发送邮件'''
-ott_max_rate = float(ott_max_rate) * 0.95
+ott_max_rate = float(ott_max_rate)
 ott_mean_rate = float(ott_mean_rate)
 max_rate = float(max_rate) * 0.95
 maxStreamSTBs = float(maxStreamSTBs)
