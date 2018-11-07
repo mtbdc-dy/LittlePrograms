@@ -32,10 +32,10 @@ IPTV_total_capacity = 675+72+72     # 819G
 FX_FengHuo_OTT = 242
 YP_FengHuo_OTT = 90
 
-FX_HuaWei_OTT = 108
+FX_HuaWei_OTT = 108 + 68  # 18年新增68G
 PDandJS_HuaWei_OTT = 170
 
-OTT_total_capacity = FX_FengHuo_OTT + YP_FengHuo_OTT + FX_HuaWei_OTT + PDandJS_HuaWei_OTT  # 610G
+OTT_total_capacity = FX_FengHuo_OTT + YP_FengHuo_OTT + FX_HuaWei_OTT + PDandJS_HuaWei_OTT  # 678G
 file_output = 'cdn_rate.csv'  # 输出文件
 
 # 打开输出文件
