@@ -295,10 +295,14 @@ if epg_latency > 0.02:
     print('\033[32;0mepg_latency过高\033[0m')
 
 
-if input('y or n').lower() == 'y':
+# if input('y or n').lower() == 'y':
+check_code = input('y or n or s(save)').lower()
+if check_code == 'y':
     writer.writerow(csv_content)
     ret = myPackages.mailtools.mail139_customise(title, email_content, user)
     if ret:
         print("ok")  # 如果发送成功则会返回ok，稍等20秒左右就可以收到邮件
     else:
-        print("filed")  # 如果发送失败则会返回filed
+        print("failed")  # 如果发送失败则会返回filed
+elif check_code == 's':
+    writer.writerow(csv_content)

@@ -180,7 +180,8 @@ def get_cookie_without_form(url):
     header = {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) '
                       'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36',
-        'Cookie': 'JSESSIONID=3276F5B76C95383468C71976890DF58C'     # 还不知是不是需要一个过期的cookie
+        # 'Cookie': 'JSESSIONID=3276F5B76C95383468C71976890DF58C'     # 还不知是不是需要一个过期的cookie
+        # 加了Cookie sqm第二次登录会有问题，暂不知是何原因
     }
 
     proxy = {
