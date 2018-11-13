@@ -20,8 +20,10 @@ start_time = '2018-09-01'
 # end_time = '2018-10-28'
 end_time = now.strftime('%Y-%m-%d+%H:%M:%S')
 end_time_url = now.strftime('%Y-%m-%d+%H%%3A%M%%3A%S')  # 2018-09-24+04%3A27%3A45
-workbook_write = xlwt.Workbook('tmp_emos.xlsx')
-ws = workbook_write.add_sheet('sheet01')
+filename = 'eoms_complaints.txt'
+g = open(filename, 'w')
+
+
 row = 1
 # """
 # 爬eoms
@@ -57,126 +59,100 @@ row = 1
 # # print(f)
 
 # 任务单查询
-# cookie = 'JSESSIONID=0000DUlWKdFqa7ob9tuvNPqBMId:1ag9kvec7'   是不是因为密码改了
-cookie = 'JSESSIONID=0000gBH9cE2ohZHkb2E2ohf3Ia0:1ag9kvapt'
-url = 'http://10.221.246.108/eoms35/sheet/commontask/commontask.do?method=performQuery'
+# cookie = 'JSESSIONID=0000UtivNKgIKyywfLHVuIypbDj:1ag9bqcd9'
+cookie = 'JSESSIONID=0000EXUdVeYqqO8BowhyzBRj1up:1ag9bq1lq'
+# url = 'http://10.221.246.108/eoms35/sheet/commontask/commontask.do?method=performQuery'
+url = 'http://10.221.246.104/eoms35/sheet/complaint/complaint.do?method=performQuery'
 form = {
+    'complaintType1ChoiceExpression': '',
+    'customPhoneStringExpression': 'like',
     'link.operateDeptId': '',
     'link.operateRoleId': '',
     'link.operateUserId': '',
-    'main.mainNetSort1': '',
-    'main.mainNetSort2': '',
-    'main.mainNetSort3': '',
+    'main.complaintType': '',
+    'main.complaintType1': '',
+    'main.complaintType2': '',
+    'main.complaintType4': '',
+    'main.complaintType5': '',
+    'main.complaintType6': '',
+    'main.complaintType7': '',
+    'main.customPhone': '',
+    'main.parentCorrelation': '',
     'main.sendDeptId': '',
     'main.sendRoleId': '',
     'main.sendTime': '',
     'main.sendUserId': '',
     'main.sheetId': '',
     'main.status': '',
-    'main.title': '关于配合市场部制',
-    'mainNetSort1ChoiceExpression': '',
+    'main.title': '',
+    'main.toDeptId': '',
     'method.save': '提交',
     'operateDeptIdStringExpression': 'in',
     'operateRoleIdStringExpression': 'in',
     'operateUserIdStringExpression': 'in',
+    'parentCorrelationStringExpression': 'like',
     'queryType': 'record',
     'sendDeptIdStringExpression': 'in',
     'sendRoleIdStringExpression': 'in',
-    'sendTimeEndDate': end_time,
+    'sendTimeEndDate': '2018-11-14+00:00:00',
     'sendTimeEndDateExpression': '<=',
     'sendTimeLogicExpression': 'and',
-    'sendTimeStartDate': start_time + '+00:00:00',     # 'sendTimeStartDate': '2016-06-01+00:00:00',
+    'sendTimeStartDate': '2018-11-13+00:00:00',
     'sendTimeStartDateExpression': '>=',
     'sendUserIdStringExpression': 'in',
     'sheetIdStringExpression': 'like',
+    'showArea': '',
     'statusChoiceExpression': '',
     'task.taskName': '',
     'titleStringExpression': 'like',
+    'toDeptIdStringExpression': 'in',
 }
 f = ww.post_web_page(url, form, cookie)
-print(f)
+# print(f)
 
-selector = etree.HTML(f)
-# 获取 共有多少条记录
-content = selector.xpath('/html/body/div[1]/div/div/span[3]/text()')
-num_re = re.search('\d+', content[0])
-num = num_re.group(0)
-page = int(num) // 15 + 1
-print('总条数:', num)
-print('总页数:', page)
+page = 85   # 多少页 一个月 整个省公司的投诉单
 
 for p in range(page):
     print('第{}页:'.format(p+1))
     '''各分页url'''
-    url = 'http://10.221.246.108/eoms35/sheet/commontask/commontask.do?titleStringExpression=like&sendRoleIdStringExp' \
-          'ression=in&sheetIdStringExpression=like&main.sendTime=&operateDeptIdStringExpression=in&sendDeptIdStringEx' \
-          'pression=in&operateUserIdStringExpression=in&sendUserIdStringExpression=in&queryType=record&main.mainNetSo' \
-          'rt1=&main.mainNetSort2=&main.sheetId=&main.mainNetSort3=&statusChoiceExpression=&sendTimeEndDateExpression' \
-          '=%3C%3D&main.sendRoleId=&d-4025513-p=' + str(p+1) \
-          + '&sendTimeStartDateExpression=%3E%3D&sendTimeStartDate=' + start_time + '+00%3A00%3A00&main.sendDeptId=&main.send' \
-            'UserId=&main.status=&mainNetSort1ChoiceExpression=&sendTimeLogicExpression=and&method=performQuery&link.' \
-            'operateRoleId=&main.title=%E5%85%B3%E4%BA%8E%E9%85%8D%E5%90%88%E5%B8%82%E5%9C%BA%E9%83%A8%E5%88%B6&metho' \
-            'd.save=%E6%8F%90%E4%BA%A4&link.operateDeptId=&sendTimeEndDate=' + end_time_url + '&link.operateUserId' \
-            '=&task.taskName=&operateRoleIdStringExpression=in'
+    url = 'http://10.221.246.104/eoms35/sheet/complaint/complaint.do?titleStringExpression=like&sendRoleIdStringExpre' \
+          'ssion=in&main.parentCorrelation=&sheetIdStringExpression=like&complaintType1ChoiceExpression=&main.sendTim' \
+          'e=&operateDeptIdStringExpression=in&main.complaintType=&sendDeptIdStringExpression=in&operateUserIdStringE' \
+          'xpression=in&sendUserIdStringExpression=in&parentCorrelationStringExpression=like&main.complaintType1=&que' \
+          'ryType=record&main.complaintType2=&main.complaintType4=&main.sheetId=&main.complaintType5=&customPhoneStri' \
+          'ngExpression=like&main.complaintType6=&main.complaintType7=&showArea=&statusChoiceExpression=&sendTimeEndD' \
+          'ateExpression=%3C%3D&main.sendRoleId=&main.toDeptId=&d-4025513-p=' + str(p+1) + '&sendTimeStartDateExpress' \
+          'ion=%3E%3D&sendTimeStartDate=2018-10-01+00%3A00%3A00&main.sendDeptId=&main.sendUserId=&toDeptIdStringExpre' \
+          'ssion=in&main.s' \
+          'tatus=&main.customPhone=&sendTimeLogicExpression=and&link.operateRoleId=&method=performQuery&main.title=&m' \
+          'ethod.save=%E6%8F%90%E4%BA%A4&link.operateDeptId=&sendTimeEndDate=2018-11-13+23%3A32%3A22&link.operateUser' \
+          'Id=&task.taskName=&operateRoleIdStringExpression=in'
     f = ww.get_web_page(url, cookie)
+    # print(f)
+
     selector = etree.HTML(f)
     # 获取 当前页全部工单号
-    content_tasks = selector.xpath('/html/body/div[1]/div/div/table/tbody/tr/td[2]/a/text()')
+    content_tasks = selector.xpath('/html/body/div/div/div/table/tbody/tr/td[1]/a/text()')
     print(content_tasks)
+
     for t, item in enumerate(content_tasks):
         task_sequence = item
         # 获取 a标签
-        content = selector.xpath('/html/body/div[1]/div/div/table/tbody/tr[' + str(t+1) + ']/td[2]/a/@href')
+        content = selector.xpath('/html/body/div/div/div/table/tbody/tr[' + str(t+1) + ']/td[1]/a/@href')
         address = content[0]
         # print(address)
-        # 访问详情页 只是去取excel的名字
-        url = 'http://10.221.246.108/eoms35/sheet/commontask/' + address
+        url = 'http://10.221.246.104/eoms35/sheet/complaint/' + address
         f_detail = ww.get_web_page(url, cookie)
-        tmp_index = f_detail.find('var sheetAccessories = \"')
-        if f_detail[tmp_index + 24] == '\"':
-            continue
-        else:
-            f_detail = f_detail[tmp_index+25:]
-            name_excel = f_detail[:f_detail.find('\'')]
-            print('第{}条记录:'.format(t + 1), name_excel)
-
-            # 获取excel的js
-            url = 'http://10.221.246.108/eoms35/accessories/pages/view.jsp?appId=commontask&filelist=\'' + name_excel + '\'&idField=sheetAccessories&startsWith=0'
-            f_excel_js = ww.get_web_page(url, cookie)
-            tmp_index = f_excel_js.find('a href=\\\"')
-            f_excel_js = f_excel_js[tmp_index+9:]
-            address = f_excel_js[:f_excel_js.find('\\')]
-            # print(address)
-
-        # 下载excel
-        url = 'http://10.221.246.108' + address
-        f_excel = ww.download_web_page(url, cookie)
-        # print(f_excel)
-        # print(type(f_excel))
-        flag = name_excel[-4:]
-        # 判断附件是否为excel
-        if not name_excel[-4:] == 'xlsx':
-            tmp_zip = open(r'zip/' + item + '.zip', 'wb')
-            tmp_zip.write(f_excel)
-            tmp_zip.close()
-        else:
-            g = open('tmp_emos.xlsx', 'wb')
-            g.write(f_excel)
-            g.close()
-
-            workbook = xlrd.open_workbook('tmp_emos.xlsx')
-            booksheet = workbook.sheet_by_index(0)
-
-            n_rows = booksheet.nrows  # 获得行数
-            for i in range(1, n_rows):  #
-                rows = booksheet.row_values(i)  # 行的数据放在数组里
-                rows[0] = task_sequence
-                for j in range(len(rows)):
-                    ws.write(row, j, rows[j])
-                row += 1
+        # print(f_detail.find(r'>投诉内容</td>'))
+        # exit()
+        f_detail = f_detail[f_detail.find(r'>投诉内容</td>')+58:]
+        f_detail = f_detail[:f_detail.find('<')]
+        print(f_detail)
+        g.write(f_detail + '\n')
 
 
-workbook_write.save('eoms_tasks.xls')
+
+
 
 
 

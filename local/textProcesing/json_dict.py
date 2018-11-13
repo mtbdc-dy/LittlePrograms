@@ -25,7 +25,9 @@ else:
         # print(item.split('\t'))
         a = item.split('\t')
         print('\'' + a[0] + '\': ', end='')
-        if a[1] == '':
+        if len(a) == 1:
+            print('\'\',')
+        elif a[1] == '':
             print('\'\',')
         else:
             print('\'' + a[1] + '\',')
