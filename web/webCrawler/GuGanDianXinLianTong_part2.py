@@ -147,7 +147,7 @@ for i in range(7):
         for item in list_users:
             if users == item:
                 usrs_dict[item] = float(tds[4].text.strip().replace(',', ''))
-    average_idc = average_idc + usrs_dict['IDC-上海（骨干）']
+    average_idc = average_idc + usrs_dict['IDC-上海（骨干）'] + usrs_dict["IDC-上海（骨干）-策略地址1"] + usrs_dict["IDC-上海（骨干）-策略地址2"]
     average_fc = average_fc + usrs_dict['家客-上海（骨干）']
     average_gc = average_gc + usrs_dict['集客-上海（骨干）']
     average_2g3g4g = average_2g3g4g + usrs_dict['2/3/4G-上海（骨干）']
