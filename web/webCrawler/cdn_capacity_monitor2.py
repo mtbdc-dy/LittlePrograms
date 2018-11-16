@@ -295,6 +295,7 @@ if epg_latency > 0.02:
 
 
 # if input('y or n').lower() == 'y':
+print('After this operation, 25 e-mails will be sent.')
 check_code = input('y or n or s(save)').lower()
 if check_code == 'y':
     writer.writerow(csv_content)
