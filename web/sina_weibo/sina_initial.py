@@ -1,5 +1,5 @@
 import webbrowser
-import 测试.sinaweibopy3 as sinaweibopy3
+import web.sina_weibo.sinaweibopy3 as sinaweibopy3
 
 
 def main():

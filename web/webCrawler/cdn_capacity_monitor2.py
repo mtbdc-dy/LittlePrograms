@@ -294,7 +294,7 @@ if epg_latency > 0.02:
     print('\033[32;0mepg_latency过高\033[0m')
 
 
-# if input('y or n').lower() == 'y':
+print()
 print('After this operation, 25 e-mails will be sent.')
 check_code = input('y or n or s(save)').lower()
 if check_code == 'y':
