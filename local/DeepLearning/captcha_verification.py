@@ -13,6 +13,7 @@ import tensorflow as tf
 import math
 import argparse
 """
+这应该还不能用
 就是验证码识别拉 in Tensorflow
 """
 
