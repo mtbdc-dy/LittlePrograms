@@ -1,259 +1,98 @@
-# -*- coding: utf-8 -*-
-import numpy as np      # 矩阵运算
-import cv2  # Open Source Computer Vision Library 计算机视觉
-import os   # operation system
-import random
-import time
-from PIL import Image
-import random
-from os.path import join, exists
-import pickle
-from sklearn.model_selection import train_test_split
+from __future__ import print_function
 import tensorflow as tf
-import math
-import argparse
+from tensorflow.examples.tutorials.mnist import input_data
 """
-这应该还不能用
-就是验证码识别拉 in Tensorflow
+基于CNN实现纯数字识别。
 """
-
-# Constants
-VOCAB = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
-         'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
-CAPTCHA_LENGTH = 4
-VOCAB_LENGTH = len(VOCAB)
-DATA_PATH = 'data'
-FLAGS = None
-
-# Functions
-def text2vec(text):
-    """
-   text to one-hot vector
-   :param text: source text
-   :return: np array
-   """
-    if len(text) > CAPTCHA_LENGTH:
-        return False
-    vector = np.zeros(CAPTCHA_LENGTH * VOCAB_LENGTH)
-    for i, c in enumerate(text):
-        index = i * VOCAB_LENGTH + VOCAB.index(c)
-        vector[index] = 1
-    return vector
+# number 1 to 10 data
+mnist = input_data.read_data_sets('MNIST_data', one_hot=True)
 
 
-def vec2text(vector):
-    """
-   vector to captcha text
-   :param vector: np array
-   :return: text
-   """
-    if not isinstance(vector, np.ndarray):  # 判断对象是否是一个已知的类型
-        vector = np.asarray(vector)         # 如果不是的话转换成 ndarray 注意numpy里有两种数据类型，ndarray和matrix，一
-        # 般用ndarray，要用到矩阵的乘除法时再用matrix
-    vector = np.reshape(vector, [CAPTCHA_LENGTH, -1])   # 改变数组形状 -1： 自动适配
-    text = ''
-    for item in vector:
-        text += VOCAB[int(np.argmax(item))]    # Returns the indices of the maximum values along an axis.
-    return text
+def compute_accuracy(v_xs, v_ys):
+    global prediction
+    y_pre = sess.run(prediction, feed_dict={xs: v_xs, keep_prob: 1})
+    correct_prediction = tf.equal(tf.argmax(y_pre, 1), tf.argmax(v_ys, 1))
+    accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+    result = sess.run(accuracy, feed_dict={xs: v_xs, ys: v_ys, keep_prob: 1})
+    return result
 
 
-def convert_img_into_array():
-    """
-        convert .img file into numpy arrays
-    """
-
-    '''Constant'''
-    dir_path = 'trainImage/'
-
-    for path in os.listdir(dir_path):   # listdir 展示目录下的所有文件名
-        im = Image.open(dir_path + path)
-        im.show()
-        captcha_array = np.array(im)
-        print(captcha_array)
-        print(captcha_array.shape)
-        return captcha_array
+def weight_variable(shape):
+    initial = tf.truncated_normal(shape, stddev=0.1)
+    return tf.Variable(initial)
 
 
-def generate_data():
-    print('Generating Data...')
-    data_x, data_y = [], []
-    # generate data x and y
-
-    dir_path = 'trainImage/'
-
-    for path in os.listdir(dir_path):   # listdir 展示目录下的所有文件名
-        im = Image.open(dir_path + path)
-        captcha_array = np.array(im)
-        text = path.split('.')[0]
-        vector = text2vec(text)
-        data_x.append(captcha_array)
-        data_y.append(vector)
-        # write data to pickle
-        if not exists(DATA_PATH):
-            os.makedirs(DATA_PATH)
-        x = np.asarray(data_x, np.float32)
-        y = np.asarray(data_y, np.float32)
-        with open(join(DATA_PATH, 'data.pkl'), 'wb') as f:
-            pickle.dump(x, f)
-            pickle.dump(y, f)
+def bias_variable(shape):
+    initial = tf.constant(0.1, shape=shape)
+    return tf.Variable(initial)
 
 
-# 归一化
-def standardize(x):
-    return (x - x.mean()) / x.std()
+def conv2d(x, W):
+    # stride [1, x_movement, y_movement, 1]
+    # Must have strides[0] = strides[3] = 1
+    return tf.nn.conv2d(x, W, strides=[1, 1, 1, 1], padding='SAME')
 
 
-def generate_dataset():
-    with open('data/data.pkl', 'rb') as f:
-        data_x = standardize(pickle.load(f))
-        data_y = pickle.load(f)
-    train_x, test_x, train_y, test_y = train_test_split(data_x, data_y, test_size=0.4, random_state=40)
-    dev_x, test_x, dev_y, test_y, = train_test_split(test_x, test_y, test_size=0.5, random_state=40)
-
-    # train and dev dataset
-    train_dataset = tf.data.Dataset.from_tensor_slices((train_x, train_y)).shuffle(10000)
-    train_dataset = train_dataset.batch(FLAGS.train_batch_size)
-    dev_dataset = tf.data.Dataset.from_tensor_slices((dev_x, dev_y))
-    dev_dataset = dev_dataset.batch(FLAGS.dev_batch_size)
-    test_dataset = tf.data.Dataset.from_tensor_slices((test_x, test_y))
-    test_dataset = test_dataset.batch(FLAGS.test_batch_size)
-
-    return train_x, train_y, dev_x, dev_y, test_x, test_y
+def max_pool_2x2(x):
+    # stride [1, x_movement, y_movement, 1]
+    return tf.nn.max_pool(x, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
 
 
-def main():
-    train_x, train_y, dev_x, dev_y, test_x, test_y = generate_dataset()
-    train_steps = math.ceil(train_x.shape[0] / FLAGS.train_batch_size)
-    dev_steps = math.ceil(dev_x.shape[0] / FLAGS.dev_batch_size)
-    test_steps = math.ceil(test_x.shape[0] / FLAGS.test_batch_size)
+# define placeholder for inputs to network
+# 给输入占好位子(其实就是设个变量,好在后面使用) 并归一化
+# 输出为0 ~ 9的图向量
+xs = tf.placeholder(tf.float32, [None, 256])/255.   # 28 x 28 = 784 16 x 16 = 256
+ys = tf.placeholder(tf.float32, [None, 10])
+keep_prob = tf.placeholder(tf.float32)  # 大概是用来存probability
+x_image = tf.reshape(xs, [-1, 16, 16, 1])   # -1 是自动匹配的意思
+# 一行行理。 有n个samples -> n 个 [28, 28, 1]。 有28个[28, 1]。每个里再有一个[1列]
+# 也就是图 和 对应的标签
 
-    global_step = tf.Variable(-1, trainable=False, name='global_step')
 
-    # train and dev dataset
-    train_dataset = tf.data.Dataset.from_tensor_slices((train_x, train_y)).shuffle(10000)
-    train_dataset = train_dataset.batch(FLAGS.train_batch_size)
+# conv1 layer
+# 第一层卷积层
+W_conv1 = weight_variable([5, 5, 1, 32])  # patch 5x5, in size 1, out size 32
+b_conv1 = bias_variable([32])
+h_conv1 = tf.nn.relu(conv2d(x_image, W_conv1) + b_conv1)  # output size 28x28x32 256 x 32 = 8192    卷积加激活
+h_pool1 = max_pool_2x2(h_conv1)                           # output size 14x14x32  8 x 8 x 32 = 1920 池化
 
-    dev_dataset = tf.data.Dataset.from_tensor_slices((dev_x, dev_y))
-    dev_dataset = dev_dataset.batch(FLAGS.dev_batch_size)
+# conv2 layer ##
+W_conv2 = weight_variable([5, 5, 32, 64])  # patch 5x5, in size 32, out size 64
+b_conv2 = bias_variable([64])
+h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2) + b_conv2)  # output size 14x14x64
+h_pool2 = max_pool_2x2(h_conv2)                           # output size 7x7x64
 
-    test_dataset = tf.data.Dataset.from_tensor_slices((test_x, test_y))
-    test_dataset = test_dataset.batch(FLAGS.test_batch_size)
+# fc1 layer ##
+W_fc1 = weight_variable([7*7*64, 1024])
+b_fc1 = bias_variable([1024])
+# [n_samples, 7, 7, 64] ->> [n_samples, 7*7*64]
+h_pool2_flat = tf.reshape(h_pool2, [-1, 7*7*64])
+h_fc1 = tf.nn.relu(tf.matmul(h_pool2_flat, W_fc1) + b_fc1)
+h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
 
-    # a reinitializable iterator
-    iterator = tf.data.Iterator.from_structure(train_dataset.output_types, train_dataset.output_shapes)
+# fc2 layer
+W_fc2 = weight_variable([1024, 10])
+b_fc2 = bias_variable([10])
+prediction = tf.nn.softmax(tf.matmul(h_fc1_drop, W_fc2) + b_fc2)
 
-    train_initializer = iterator.make_initializer(train_dataset)
-    dev_initializer = iterator.make_initializer(dev_dataset)
-    test_initializer = iterator.make_initializer(test_dataset)
 
-    # input Layer
-    with tf.variable_scope('inputs'):
-        # x.shape = [-1, 60, 160, 3]
-        x, y_label = iterator.get_next()
+# the error between prediction and real data
+cross_entropy = tf.reduce_mean(-tf.reduce_sum(ys * tf.log(prediction),
+                                              reduction_indices=[1]))       # loss
+train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
 
-    keep_prob = tf.placeholder(tf.float32, [])
+sess = tf.Session()     # config=tf.ConfigProto(log_device_placement=True)
+# important step
+# tf.initialize_all_variables() no long valid from
+# 2017-03-02 if using tensorflow >= 0.12
 
-    y = tf.cast(x, tf.float32)
+init = tf.global_variables_initializer()
+sess.run(init)
 
-    # 3 CNN layers
-    for _ in range(3):
-        y = tf.layers.conv2d(y, filters=32, kernel_size=3, padding='same', activation=tf.nn.relu)
-        y = tf.layers.max_pooling2d(y, pool_size=2, strides=2, padding='same')
-        # y = tf.layers.dropout(y, rate=keep_prob)
+for i in range(1000):
+    batch_xs, batch_ys = mnist.train.next_batch(100)
+    sess.run(train_step, feed_dict={xs: batch_xs, ys: batch_ys, keep_prob: 0.5})
+    if i % 50 == 0:
+        print(compute_accuracy(mnist.test.images[:1000], mnist.test.labels[:1000]))
 
-    # 2 dense layers
-    y = tf.layers.flatten(y)
-    y = tf.layers.dense(y, 1024, activation=tf.nn.relu)
-    y = tf.layers.dropout(y, rate=keep_prob)
-    y = tf.layers.dense(y, VOCAB_LENGTH)
-
-    y_reshape = tf.reshape(y, [-1, VOCAB_LENGTH])
-    y_label_reshape = tf.reshape(y_label, [-1, VOCAB_LENGTH])
-
-    # loss
-    cross_entropy = tf.reduce_sum(tf.nn.softmax_cross_entropy_with_logits(logits=y_reshape, labels=y_label_reshape))
-
-    # accuracy
-    max_index_predict = tf.argmax(y_reshape, axis=-1)
-    max_index_label = tf.argmax(y_label_reshape, axis=-1)
-    correct_predict = tf.equal(max_index_predict, max_index_label)
-    accuracy = tf.reduce_mean(tf.cast(correct_predict, tf.float32))
-
-    # train
-    train_op = tf.train.RMSPropOptimizer(FLAGS.learning_rate).minimize(cross_entropy, global_step=global_step)
-
-    # saver
     saver = tf.train.Saver()
-
-    # iterator
-    sess = tf.Session()
-    sess.run(tf.global_variables_initializer())
-
-    # global step
-    gstep = 0
-
-    # checkpoint dir
-    if not exists(FLAGS.checkpoint_dir):
-        os.makedirs(FLAGS.checkpoint_dir)
-
-    if FLAGS.train:
-        for epoch in range(FLAGS.epoch_num):
-            tf.train.global_step(sess, global_step_tensor=global_step)
-            # train
-            sess.run(train_initializer)
-            for step in range(int(train_steps)):
-                loss, acc, gstep, _ = sess.run([cross_entropy, accuracy, global_step, train_op],
-                                               feed_dict={keep_prob: FLAGS.keep_prob})
-                # print log
-                if step % FLAGS.steps_per_print == 0:
-                    print('Global Step', gstep, 'Step', step, 'Train Loss', loss, 'Accuracy', acc)
-
-            if epoch % FLAGS.epochs_per_dev == 0:
-                # dev
-                sess.run(dev_initializer)
-                for step in range(int(dev_steps)):
-                    if step % FLAGS.steps_per_print == 0:
-                        print('Dev Accuracy', sess.run(accuracy, feed_dict={keep_prob: 1}), 'Step', step)
-
-            # save model
-            if epoch % FLAGS.epochs_per_save == 0:
-                saver.save(sess, FLAGS.checkpoint_dir, global_step=gstep)
-
-    else:
-        # load model
-        ckpt = tf.train.get_checkpoint_state('ckpt')
-        if ckpt:
-            saver.restore(sess, ckpt.model_checkpoint_path)
-            print('Restore from', ckpt.model_checkpoint_path)
-            sess.run(test_initializer)
-            for step in range(int(test_steps)):
-                if step % FLAGS.steps_per_print == 0:
-                    print('Test Accuracy', sess.run(accuracy, feed_dict={keep_prob: 1}), 'Step', step)
-        else:
-            print('No Model Found')
-
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Captcha')
-    parser.add_argument('--train_batch_size', help='train batch size', default=128)
-    parser.add_argument('--dev_batch_size', help='dev batch size', default=256)
-    parser.add_argument('--test_batch_size', help='test batch size', default=256)
-    parser.add_argument('--source_data', help='source size', default='./data/data.pkl')
-    parser.add_argument('--num_layer', help='num of layer', default=2, type=int)
-    parser.add_argument('--num_units', help='num of units', default=64, type=int)
-    parser.add_argument('--time_step', help='time steps', default=32, type=int)
-    parser.add_argument('--embedding_size', help='time steps', default=64, type=int)
-    parser.add_argument('--category_num', help='category num', default=5, type=int)
-    parser.add_argument('--learning_rate', help='learning rate', default=0.001, type=float)
-    parser.add_argument('--epoch_num', help='num of epoch', default=10000, type=int)
-    parser.add_argument('--epochs_per_test', help='epochs per test', default=100, type=int)
-    parser.add_argument('--epochs_per_dev', help='epochs per dev', default=2, type=int)
-    parser.add_argument('--epochs_per_save', help='epochs per save', default=10, type=int)
-    parser.add_argument('--steps_per_print', help='steps per print', default=2, type=int)
-    parser.add_argument('--steps_per_summary', help='steps per summary', default=100, type=int)
-    parser.add_argument('--keep_prob', help='train keep prob dropout', default=0.5, type=float)
-    parser.add_argument('--checkpoint_dir', help='checkpoint dir', default='ckpt/model.ckpt', type=str)
-    parser.add_argument('--summaries_dir', help='summaries dir', default='summaries/', type=str)
-    parser.add_argument('--train', help='train', default=1, type=int)
-    FLAGS, args = parser.parse_known_args()
-    main()

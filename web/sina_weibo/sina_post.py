@@ -15,7 +15,7 @@ def post():
     playload = {
         "access_token": "2.00ixOpPDIg6znDa273b69da7ZFtzqB",
         # www.doutula.com 找些傻逼表情包配上
-        "status": "测试下图片 https://ws4.sinaimg.cn/large/9150e4e5gy1fx6wne5jn4g205k06daty.gif",
+        "status": "为什么手机屏锁试四五次都打不开，付钱要认证的时候轻轻放一下就可以了？？ https://ws4.sinaimg.cn/large/9150e4e5gy1fxa7xmrdfhj208c05aglh.jpg",
     }
     files = {
         "pic": open("sina_pic.png", "rb")
