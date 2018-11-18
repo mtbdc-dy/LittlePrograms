@@ -99,15 +99,15 @@ if __name__ == '__main__':
     for n in range(1, 10):
         # 打开图片
         # im = Image.open("GGDXLT_Examples/validateCode" + str(n) + ".jpeg")
-        im = Image.open("GGDXLT_Examples/validateCode_created.jpeg")
+        im = Image.open("GGDXLT_Examples/validateCode.jpg")
         # 切割边框
         (w, h) = im.size    # 获得图片长和宽
-        zone = (2, 1, w-2, h-1)     # 左下角和右下角的坐标
-        cropIm = im.crop(zone)
+        # zone = (2, 1, w-2, h-1)     # 左下角和右下角的坐标
+        # cropIm = im.crop(zone)
 
         # 转化图片
         # g = cropIm.convert('L')   # 转化为灰度图
-        g = cropIm.convert('1')   # 转化为二值化图 0为黑色 or 255为白色
+        g = im.convert('1')   # 转化为二值化图 0为黑色 or 255为白色
         g.show()
 
         # 检测噪点
