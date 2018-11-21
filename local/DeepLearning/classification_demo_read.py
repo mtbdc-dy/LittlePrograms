@@ -3,6 +3,7 @@ import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
 
 """
+    保存权重的读取
     MNIST手写数字0~9分类
 """
 

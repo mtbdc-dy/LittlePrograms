@@ -1,7 +1,8 @@
-from __future__ import print_function
 import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
+
 """
+SQM 验证码识别 （0~8）
 基于CNN实现纯数字识别。
 """
 # number 1 to 10 data

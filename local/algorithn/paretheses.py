@@ -1,3 +1,6 @@
+"""成对括号识别"""
+
+
 class Solution:
     def scoreOfParentheses(self, S):
         """
