@@ -4,6 +4,7 @@ from tensorflow.examples.tutorials.mnist import input_data
 """
 SQM 验证码识别 （0~8）
 基于CNN实现纯数字识别。
+好烦啊，怎么一直看不完
 """
 # number 1 to 10 data
 mnist = input_data.read_data_sets('MNIST_data', one_hot=True)
@@ -42,9 +43,9 @@ def max_pool_2x2(x):
 # define placeholder for inputs to network
 # 给输入占好位子(其实就是设个变量,好在后面使用) 并归一化
 # 输出为0 ~ 9的图向量
-xs = tf.placeholder(tf.float32, [None, 256])/255.   # 28 x 28 = 784 16 x 16 = 256
+xs = tf.placeholder(tf.float32, [None, 256])/255.   # 16 x 16 = 256
 ys = tf.placeholder(tf.float32, [None, 10])
-keep_prob = tf.placeholder(tf.float32)  # 大概是用来存probability
+keep_prob = tf.placeholder(tf.float32)  # 大概是用来存正确率的
 x_image = tf.reshape(xs, [-1, 16, 16, 1])   # -1 是自动匹配的意思
 # 一行行理。 有n个samples -> n 个 [28, 28, 1]。 有28个[28, 1]。每个里再有一个[1列]
 # 也就是图 和 对应的标签
@@ -63,7 +64,7 @@ b_conv2 = bias_variable([64])
 h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2) + b_conv2)  # output size 14x14x64
 h_pool2 = max_pool_2x2(h_conv2)                           # output size 7x7x64
 
-# fc1 layer ##
+# fc1 layer # 全连接层
 W_fc1 = weight_variable([7*7*64, 1024])
 b_fc1 = bias_variable([1024])
 # [n_samples, 7, 7, 64] ->> [n_samples, 7*7*64]

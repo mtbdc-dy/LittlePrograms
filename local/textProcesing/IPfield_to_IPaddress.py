@@ -24,6 +24,8 @@ def convert(s):
 def check_continuity(e, s):
     if not e or not s:
         return False
+    if e[0] != s[0] or e[1] != s[1]:
+        return False
 
     if int(e.split('.')[2]) + 1 == int(s.split('.')[2]):
         return True

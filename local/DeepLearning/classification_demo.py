@@ -5,6 +5,7 @@ from tensorflow.examples.tutorials.mnist import input_data
 """
     Tensorflow 案例
     MNIST手写数字0~9分类
+    nn
 """
 
 # number 1 to 10 data
@@ -49,10 +50,11 @@ if __name__ == '__main__':
 
     train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
 
+    saver = tf.train.Saver()
     sess = tf.Session()
 
     init = tf.global_variables_initializer()
-    saver = tf.train.Saver()
+
     sess.run(init)
 
     for i in range(1000):
@@ -60,5 +62,5 @@ if __name__ == '__main__':
         sess.run(train_step, feed_dict={xs: batch_xs, ys: batch_ys})
         if i % 50 == 0:
             print(compute_accuracy(mnist.test.images, mnist.test.labels))
-
+            saver.save(sess, 'my-model', global_step=i)
     # 我训练好了，那然后呢
