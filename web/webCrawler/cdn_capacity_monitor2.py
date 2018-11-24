@@ -283,7 +283,7 @@ user = [
     'zhouqihui@sh.chinamobile.com', 'chenhuanmin@sh.chinamobile.com', 'wuqian@sh.chinamobile.com',
     'yangjie@sh.chinamobile.com', 'xiongyt@sh.chinamobile.com', 'tanmiaomiao@sh.chinamobile.com',
     'wucaili@sh.chinamobile.com', 'dingy@sh.chinamobile.com', 'fenghongyu@sh.chinamobile.com',
-    'xuzicheng@sh.chinamobile.com'
+    'xuzicheng@sh.chinamobile.com', 'zhanghe@sh.chinamobile.com'
 ]
 
 
