@@ -1,5 +1,6 @@
 import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
+import numpy as np
 
 """
 SQM 验证码识别 （0~8）
@@ -33,48 +34,56 @@ def conv2d(x, W):
     # stride [1, x_movement, y_movement, 1]
     # Must have strides[0] = strides[3] = 1
     return tf.nn.conv2d(x, W, strides=[1, 1, 1, 1], padding='SAME')
+    # strides 步长 第一、第四位都是一。1 2 位表示向x,y方向移动的距离（在移动到最右边的时候要向下移动吧）
+    # same 用0填充; valid 是比原图片小的
 
 
 def max_pool_2x2(x):
     # stride [1, x_movement, y_movement, 1]
     return tf.nn.max_pool(x, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
+    # ksize 池的大小咯
+    # strides 一样
 
 
 # define placeholder for inputs to network
 # 给输入占好位子(其实就是设个变量,好在后面使用) 并归一化
 # 输出为0 ~ 9的图向量
-xs = tf.placeholder(tf.float32, [None, 256])/255.   # 16 x 16 = 256
-ys = tf.placeholder(tf.float32, [None, 10])
-keep_prob = tf.placeholder(tf.float32)  # 大概是用来存正确率的
+xs = tf.placeholder(tf.float32, [None, 256])/255.   # 不定义行数 列数：16 x 16 = 256
+ys = tf.placeholder(tf.float32, [None, 9])         # 神经网络的输出值 0~8
+keep_prob = tf.placeholder(tf.float32)  # 防过拟合
 x_image = tf.reshape(xs, [-1, 16, 16, 1])   # -1 是自动匹配的意思
-# 一行行理。 有n个samples -> n 个 [28, 28, 1]。 有28个[28, 1]。每个里再有一个[1列]
-# 也就是图 和 对应的标签
+# 一行行理。 有n个samples -> n 个 [28, 28, 1]。 有28个[28, 1]。每个里再有一个[1列] 也即n x 28 x 28 x 1
+# 也就是图 和 对应的像素值
 
 
 # conv1 layer
 # 第一层卷积层
-W_conv1 = weight_variable([5, 5, 1, 32])  # patch 5x5, in size 1, out size 32
+# patch 5x5, in size 1, out size 32   卷积核 厚度1 -> 厚度32
+# patch的每个像素上有32个值也就是有32个patch生成32张卷积后的图
+W_conv1 = weight_variable([5, 5, 1, 32])
 b_conv1 = bias_variable([32])
 h_conv1 = tf.nn.relu(conv2d(x_image, W_conv1) + b_conv1)  # output size 28x28x32 256 x 32 = 8192    卷积加激活
-h_pool1 = max_pool_2x2(h_conv1)                           # output size 14x14x32  8 x 8 x 32 = 1920 池化
+h_pool1 = max_pool_2x2(h_conv1)                           # output size 14x14x32 池化
+# output size 8 x 8 x 32 = 1920
 
 # conv2 layer ##
 W_conv2 = weight_variable([5, 5, 32, 64])  # patch 5x5, in size 32, out size 64
 b_conv2 = bias_variable([64])
 h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2) + b_conv2)  # output size 14x14x64
 h_pool2 = max_pool_2x2(h_conv2)                           # output size 7x7x64
+# output size 4 x 4 x 64 = 1024
 
 # fc1 layer # 全连接层
-W_fc1 = weight_variable([7*7*64, 1024])
+W_fc1 = weight_variable([4*4*64, 1024])
 b_fc1 = bias_variable([1024])
 # [n_samples, 7, 7, 64] ->> [n_samples, 7*7*64]
-h_pool2_flat = tf.reshape(h_pool2, [-1, 7*7*64])
+h_pool2_flat = tf.reshape(h_pool2, [-1, 4*4*64])
 h_fc1 = tf.nn.relu(tf.matmul(h_pool2_flat, W_fc1) + b_fc1)
-h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
+h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)    # 防过拟合
 
 # fc2 layer
-W_fc2 = weight_variable([1024, 10])
-b_fc2 = bias_variable([10])
+W_fc2 = weight_variable([1024, 9])
+b_fc2 = bias_variable([9])
 prediction = tf.nn.softmax(tf.matmul(h_fc1_drop, W_fc2) + b_fc2)
 
 
@@ -92,6 +101,7 @@ init = tf.global_variables_initializer()
 sess.run(init)
 
 for i in range(1000):
+    # <class 'numpy.ndarray'>
     batch_xs, batch_ys = mnist.train.next_batch(100)
     sess.run(train_step, feed_dict={xs: batch_xs, ys: batch_ys, keep_prob: 0.5})
     if i % 50 == 0:
