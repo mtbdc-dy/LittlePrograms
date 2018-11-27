@@ -8,7 +8,7 @@ SQM 验证码识别 （0~8）
 好烦啊，怎么一直看不完
 """
 # number 1 to 10 data
-mnist = input_data.read_data_sets('MNIST_data', one_hot=True)
+# mnist = input_data.read_data_sets('MNIST_data', one_hot=True)
 
 
 def compute_accuracy(v_xs, v_ys):
@@ -45,12 +45,22 @@ def max_pool_2x2(x):
     # strides 一样
 
 
-# define placeholder for inputs to network
-# 给输入占好位子(其实就是设个变量,好在后面使用) 并归一化
-# 输出为0 ~ 9的图向量
-xs = tf.placeholder(tf.float32, [None, 256])/255.   # 不定义行数 列数：16 x 16 = 256
-ys = tf.placeholder(tf.float32, [None, 9])         # 神经网络的输出值 0~8
-keep_prob = tf.placeholder(tf.float32)  # 防过拟合
+def convert_to_vector(numbers):
+    tmp_vecs = list()
+    for number in numbers:
+        tmp_vec = [0, 0, 0, 0, 0,
+                   0, 0, 0, 0]
+        tmp_vec[int(number)] = 1
+        tmp_vecs.append(tmp_vec)
+    return np.array(tmp_vecs, dtype=np.float32)
+
+'''
+define placeholder for inputs to network
+给输入占好位子(其实就是设个变量,好在后面使用)并归一化输出为0-9的文本向量
+'''
+xs = tf.placeholder(tf.float32, [None, 256], name='xs')   # 不定义行数 列数：16 x 16 = 256
+ys = tf.placeholder(tf.float32, [None, 9], name='ys')         # 神经网络的输出值 0~8
+keep_prob = tf.placeholder(tf.float32, name='kp')  # 防过拟合
 x_image = tf.reshape(xs, [-1, 16, 16, 1])   # -1 是自动匹配的意思
 # 一行行理。 有n个samples -> n 个 [28, 28, 1]。 有28个[28, 1]。每个里再有一个[1列] 也即n x 28 x 28 x 1
 # 也就是图 和 对应的像素值
@@ -99,12 +109,20 @@ sess = tf.Session()     # config=tf.ConfigProto(log_device_placement=True)
 
 init = tf.global_variables_initializer()
 sess.run(init)
-
+train_samples = np.load("train_group.npy")
+test_samples = np.load("test_group.npy")
+tf.add_to_collection('network-output', prediction)
 for i in range(1000):
     # <class 'numpy.ndarray'>
-    batch_xs, batch_ys = mnist.train.next_batch(100)
+    batch_xs = train_samples[i*100:(i+1)*100, :-1]
+    batch_ys = convert_to_vector(train_samples[i*100:(i+1)*100, -1])
     sess.run(train_step, feed_dict={xs: batch_xs, ys: batch_ys, keep_prob: 0.5})
-    if i % 50 == 0:
-        print(compute_accuracy(mnist.test.images[:1000], mnist.test.labels[:1000]))
 
-    saver = tf.train.Saver()
+    if i % 50 == 0:
+        print(compute_accuracy(test_samples[:, :-1], convert_to_vector(test_samples[:, -1])))
+        if compute_accuracy(test_samples[:, :-1], convert_to_vector(test_samples[:, -1])) > 0.99:
+            break
+
+saver = tf.train.Saver()
+file_name = 'ckpt/sqm.ckpt'
+saver.save(sess, file_name)

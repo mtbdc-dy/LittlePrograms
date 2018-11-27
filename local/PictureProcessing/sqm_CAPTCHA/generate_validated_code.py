@@ -11,10 +11,13 @@ import numpy as np
 """
 font1 = ImageFont.truetype("Lucida_Sans_Typewriter_Regular.ttf", 20)     # 字体 大小
 
-arr = np.empty((1, 256), dtype=np.float32)
-print(arr)
+# arr = np.empty((1, 256), dtype=np.float32)
+# print(arr)
+arr = None
 for n in range(100000):
-    img1 = Image.new(mode="RGB", size=(16, 16), color='white')
+    if n % 1000 == 0:
+        print(n)
+    img1 = Image.new(mode="1", size=(16, 16), color='white')
     draw1 = ImageDraw.Draw(img1)
 
     # 每循环一次,从a到z中随机生成一个字母或数字
@@ -26,17 +29,31 @@ for n in range(100000):
 
     # 把生成的字母或数字添加到图片上
     # 图片长度为120px,要生成5个数字或字母则每添加一个,其位置就要向后移动24px
-    draw1.text([2, -5], char1, 'black', font=font1)
     tmp = char1
-
-    img1 = img1.rotate(random.randint(-45, 45), fillcolor='white').convert('1')
+    x = random.randrange(-1, 1)
+    y = random.randrange(-1, 1)
+    draw1.text([2 + x, -5 + y], char1, 'black', font=font1)
+    # img1.show()
+    img1 = img1.rotate(random.randint(-45, 45), resample=Image.BICUBIC, fillcolor='white')
     # print(img1.getpixel((1, 1)))
-    arr_tmp = np.array(img1)
-    arr_tmp.shape = (1, 256)
-    # arr = np.concatenate((arr, arr_tmp))
+    # 16 x 16 = 256
+
+    # img1.show()
+
+    if arr is None:
+        arr = np.array(img1, dtype=np.float32).reshape(1, 256).tolist()
+        arr[-1].append(float(char1))
+    else:
+        arr.append(np.array(img1, dtype=np.float32).reshape(1, 256).tolist()[0])
+        arr[-1].append(float(char1))
+
+
+    # if n == 2:
+    #     print(arr)
+    #     exit()
+
     # print(type(arr))
-    print(arr)
-    exit()
+
     # print("trainImage/" + str(n) + '_' + tmp + ".jpeg")
     # with open("trainImage/" + str(n) + '_' + tmp + ".jpeg", "wb") as f:
     #     img1 = img1.rotate(random.randint(-45, 45), fillcolor='white')
@@ -47,5 +64,6 @@ for n in range(100000):
     #     print(type(arr))
     #     print(arr)
     #     exit()
-
+# np.save("test_group.npy", arr)
+np.save("train_group.npy", np.array(arr, dtype=np.float32))
 

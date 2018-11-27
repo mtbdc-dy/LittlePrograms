@@ -3,7 +3,7 @@ import myPackages.pic_processing as mp
 import copy
 import random
 
-im = Image.open("examples_for_pre-process/6181.jpg")
+im = Image.open("examples_for_pre-process/0145.jpg")
 (w, h) = im.size
 
 # 获取每个像素点的RGB，如果三个都为0，即为白点
