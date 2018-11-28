@@ -1,6 +1,10 @@
 from PIL import Image
+
 import numpy as np
-import tensorflow as tf
+try:
+    import tensorflow as tf
+except:
+    print('No tf Found')
 import copy
 import random
 import os
