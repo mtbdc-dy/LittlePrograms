@@ -15,10 +15,10 @@ def post():
     playload = {
         "access_token": "2.00ixOpPDIg6znDa273b69da7ZFtzqB",
         # www.doutula.com 找些傻逼表情包配上
-        "status": "为什么手机屏锁试四五次都打不开，付钱要认证的时候轻轻放一下就可以了？？ https://ws4.sinaimg.cn/large/9150e4e5gy1fxa7xmrdfhj208c05aglh.jpg",
+        "status": "softpedia https://www.softpedia.com",
     }
     files = {
-        "pic": open("sina_pic.png", "rb")
+        "pic": open("20181128360682_mSGega.gif", "rb")
     }
     r = requests.post(url_post_pic, data=playload, files=files)
     # r = requests.post(url_post_pic, data=playload)
