@@ -22,11 +22,18 @@ n = 0
 
 f = open(file_name, 'r')
 reader = csv.reader(f)
-for item in reader:
-    cookie = item[0]
-    n = int(item[1])
-    break
-print(cookie)
+direct = 0
+for i, item in enumerate(reader):
+    print(item)
+    if i == 0:
+        cookie = item[0]
+        n = int(item[1])
+    if i > 0:
+        direct += float(item[1])
+    if i == 7:
+        break
+exit()
+# print(cookie)
 f.close()
 # cookie = webCrawler.login.login_wangluoquanjingkeshihua()
 header = {
@@ -158,7 +165,7 @@ for i in range(7):
     writer.writerow(row)
     time.sleep(random.randint(0, 2))
 
-row = [average_idc/7] + [' '] + [average_fc/7] + [average_gc/7] + [average_2g3g4g/7]
+row = [average_idc/7] + [average_fc/7] + [(average_gc+direct)/7] + [average_2g3g4g/7]
 writer.writerow(row)
 fo.close()
 print('run part 3')
