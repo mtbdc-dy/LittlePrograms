@@ -32,7 +32,7 @@ for i, item in enumerate(reader):
         direct += float(item[1])
     if i == 7:
         break
-exit()
+
 # print(cookie)
 f.close()
 # cookie = webCrawler.login.login_wangluoquanjingkeshihua()
