@@ -213,38 +213,44 @@ for i in f:
         continue
 laggy_device_ratio = 100 - (float(tmp_normal_device)/(float(tmp_normal_device)+float(tmp_blue_device)+float(tmp_ylw_device)+float(tmp_red_device)) * 100)
 
+
 # SQM取NEI相关
-url = 'http://117.144.107.165:8088/evqmaster/report/reportaction!returnMiguData.action'
-form = {
-    'paramData': '{\"secFrom\": \"' + startTime + ' 00:00:00\", \"secTo\": \"' + startTime + ' 00:00:00\", \"location\"'
-                 ': 4, \"dimension\": \"platform\", \"platform\": \"\", \"tType\": 2, \"isMigu\": false, \"isMiguShanxi'
-                 '\": false, \"bIncludeShanxi\": false}'
-}
+def sqm_nei(cookie):
+    url = 'http://117.144.107.165:8088/evqmaster/report/reportaction!returnMiguData.action'
+    form = {
+        'paramData': '{\"secFrom\": \"' + startTime + ' 00:00:00\", \"secTo\": \"' + startTime + ' 00:00:00\", \"location\"'
+                     ': 4, \"dimension\": \"platform\", \"platform\": \"\", \"tType\": 2, \"isMigu\": false, \"isMiguShanxi'
+                     '\": false, \"bIncludeShanxi\": false}'
+    }
 
-f = web.webCrawler.webcrawler.post_web_page(url, form, cookie)
-fc = f
-# EPG响应时长
-tmp_index = f.find('CntEpgRspTime')
-f = f[tmp_index:]
-CntEpgRspTime = f[f.find(':') + 1:f.find(',')]
-CntEpgRspTime = float(CntEpgRspTime)
-tmp_index = f.find('TotEpgRspTime')
-f = f[tmp_index:]
-TotEpgRspTime = f[f.find(':') + 1:f.find(',')]
-TotEpgRspTime = float(TotEpgRspTime)
-epg_latency = TotEpgRspTime/CntEpgRspTime / 1000000
+    f = web.webCrawler.webcrawler.post_web_page(url, form, cookie)
+    fc = f
+    # EPG响应时长
+    tmp_index = f.find('CntEpgRspTime')
+    f = f[tmp_index:]
+    CntEpgRspTime = f[f.find(':') + 1:f.find(',')]
+    CntEpgRspTime = float(CntEpgRspTime)
+    tmp_index = f.find('TotEpgRspTime')
+    f = f[tmp_index:]
+    TotEpgRspTime = f[f.find(':') + 1:f.find(',')]
+    TotEpgRspTime = float(TotEpgRspTime)
+    epg_latency = TotEpgRspTime/CntEpgRspTime / 1000000
 
-# EPG响应成功率
-tmp_index = fc.find('Requests')
-fc = fc[tmp_index:]
-Requests = fc[fc.find(':') + 1:fc.find(',')]
-Requests = float(Requests)
-tmp_index = fc.find('Responses')
-fc = fc[tmp_index:]
-Responses = fc[fc.find(':') + 1:fc.find(',')]
-Responses = float(Responses)
-epg_success_ratio = Responses / Requests * 100
+    # EPG响应成功率
+    tmp_index = fc.find('Requests')
+    fc = fc[tmp_index:]
+    Requests = fc[fc.find(':') + 1:fc.find(',')]
+    Requests = float(Requests)
+    tmp_index = fc.find('Responses')
+    fc = fc[tmp_index:]
+    Responses = fc[fc.find(':') + 1:fc.find(',')]
+    Responses = float(Responses)
+    epg_success_ratio = Responses / Requests * 100
+    return epg_success_ratio
 
+epg_latency = 0
+epg_success_ratio = 0
+# epg_success_ratio = sqm_nei(cookie)
 
 '''part3 CMNET出口数据统计报表'''
 date = myPackages.getime.yesterday(1)
