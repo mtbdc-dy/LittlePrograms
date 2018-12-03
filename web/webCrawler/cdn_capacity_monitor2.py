@@ -26,7 +26,8 @@ OTT、IPTV 流量统计四部部分组成：
 
 '''Constants'''
 # IPTV
-IPTV_total_capacity = 675+72+72     # 819G
+IPTV_total_capacity = 675 + 72 + 72 + 102     # 819G
+print('中兴总容量： {:d}G'.format(IPTV_total_capacity))
 # OTT
 FX_FengHuo_OTT = 242
 YP_FengHuo_OTT = 90
@@ -246,11 +247,12 @@ def sqm_nei(cookie):
     Responses = fc[fc.find(':') + 1:fc.find(',')]
     Responses = float(Responses)
     epg_success_ratio = Responses / Requests * 100
-    return epg_success_ratio
+    return epg_latency, epg_success_ratio
 
-epg_latency = 0
-epg_success_ratio = 0
-# epg_success_ratio = sqm_nei(cookie)
+
+# epg_latency = 0
+# epg_success_ratio = 0
+epg_latency, epg_success_ratio = sqm_nei(cookie)
 
 '''part3 CMNET出口数据统计报表'''
 date = myPackages.getime.yesterday(1)
