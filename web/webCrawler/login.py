@@ -73,7 +73,7 @@ def zte_anyservice_uniportal_v2():
     cj = ww.get_cookie_without_form(url)
     for item in cj:
         cookie = item.name + '=' + item.value
-    print(cookie)
+    # print(cookie)
     url = 'https://117.135.56.61:8443/frame/login.action'
     form = {
         'authCodeable': 'false',

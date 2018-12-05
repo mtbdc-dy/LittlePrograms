@@ -223,7 +223,7 @@ def get_cookie_without_form(url):
     opener_cookie = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
     opener_cookie.open(request)
     # print(r.read().decode('utf-8'))
-    print(cj)
+    # print(cj)
     return cj
 
 

@@ -5,7 +5,7 @@ import urllib.error
 import urllib.request
 import ssl
 import datetime
-import myPackages.getime
+import myPackages.getime as md
 import web.webCrawler.login
 import web.webCrawler.webcrawler
 import myPackages.mailtools
@@ -52,101 +52,6 @@ sjc = str(int(time.time() * 1000))
 startTime = ts.strftime('%Y-%m-%d')  # 调整时间格式
 endTime = now.strftime('%Y-%m-%d')  # 调整时间格式
 
-
-# part1 烽火（不需要了）
-# 时间获取
-# flag_fenghuo = False
-# if flag_fenghuo:
-#     te = int(time.mktime((time.localtime()[0], time.localtime()[1], time.localtime()[2], 0, 0, 0, 0, 0, 0)))
-#     ts = te - (1533484800-1533398400)
-#     te = str(te)
-#     ts = str(ts)
-#
-#     url = 'http://39.134.89.13:3000/api/datasources/proxy/1/api/v1/query_range?query=sum(irate(node_network_transmit_bytes%7Bgroup%3D%22%E5%A5%89%E8%B4%A4%E4%B8%AD%E5%BF%83%E8%8A%82%E7%82%B9%22%2Cdevice%3D~%22%5Elo%7Cbond0%7Cbond1%22%7D%5B5m%5D))%20%20*%208&start=' + ts + '&end=' + te + '&step=240'
-#     f = web.webCrawler.webcrawler.get_web_page(url)
-#     f = f[83:-5]
-#     maximum = 0
-#     for item in f.split("\""):
-#         if item <= ':':
-#             if float(item) > maximum:
-#                 maximum = float(item)
-#
-#     # print(maximum)
-#     print("%.2f" % (maximum/1024/1024/1024))
-#
-#     url = 'http://39.134.89.13:3000/api/datasources/proxy/1/api/v1/query_range?query=sum(irate(node_network_transmit_bytes%7Bgroup%3D%22%E6%9D%A8%E6%B5%A6%E8%BE%B9%E7%BC%98%E8%8A%82%E7%82%B9%22%2Cdevice%3D~%22%5Elo%7Cbond0%7Cbond1%22%7D%5B5m%5D))%20%20*%208&start=' + ts + '&end=' + te + '&step=240'
-#     f = web.webCrawler.webcrawler.get_web_page(url)
-#     f = f[83:-5]
-#     maximum = 0
-#     for item in f.split("\""):
-#         if item <= ':':
-#             if float(item) > maximum:
-#                 maximum = float(item)
-#
-#     # print(maximum)
-#     print("%.2f" % (maximum/1024/1024/1024))
-
-
-# part1 iptv(系统更新了，用v2)
-# 表头多了一个csrf_token 不规则了~
-# zhongxin = False
-# if zhongxin:
-#     cookie = web.webCrawler.login.zte_anyservice_uniportal()
-#     # 先去取 anti_csrf_token
-#     url = 'https://117.135.56.61:8443/frame/frame.action'
-#     web.webCrawler.webcrawler.get_web_page_ssl(url, cookie)
-#     url = 'https://117.135.56.61:8443/iam/iampage.action'
-#     web.webCrawler.webcrawler.get_web_page_ssl(url, cookie)
-#     url = 'https://117.135.56.61:8443/iam/realtimeReport_init.action'
-#     f = web.webCrawler.webcrawler.get_web_page_ssl(url, cookie)
-#     a = f.find('sec_csrf_token')
-#     csrf_token = f[a+18: a + 18 + 32]
-#     # 144c9de7e22745b1b82660050c0eaa7e
-#     # print(csrf_token)
-#
-#     url = 'https://117.135.56.61:8443/iam/realtimeReport_list.action?t=' + sjc + '&startTime=' + startTime + '+00%3A00%3A00&endTime=' + endTime + '+13%3A44%3A36&queryType=all&queryparam=%7B%22areaids%22%3A%22%22%7D'
-#     context = ssl._create_unverified_context()
-#     header = {
-#         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) '
-#                       'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36',
-#         'Cookie': cookie,
-#         'Anti-CSRF-Token': csrf_token,
-#         # 'Referer': 'https://117.135.56.61:8443/iam/realtimeReport_init.action'
-#     }
-#     proxy = {
-#         'http': 'http://cmnet:cmnet@211.136.113.69:808'
-#     }
-#     # 挂代理Handler
-#     proxy_support = urllib.request.ProxyHandler(proxy)
-#     opener = urllib.request.build_opener(proxy_support)
-#     urllib.request.install_opener(opener)
-#     # 伪装浏览器申请
-#     request = urllib.request.Request(url, headers=header)
-#     # 读取页面
-#     response = urllib.request.urlopen(request, context=context)
-#     f = response.read().decode("utf8")
-#     time.sleep(random.randint(0, 1))
-#     f = f[f.find('服务带宽(Gbps)'):]
-#     f1 = f[:f.find('回源带宽')]
-#     f1 = f1[f1.find('[')+1:f1.find(']')]
-#     max_rate = 0
-#     for item in f1.split(","):
-#         if float(item) > max_rate:
-#             max_rate = float(item)
-#
-#     max_rate = max_rate
-#     print(max_rate)
-#     f2 = f[f.find('在线用户会话数'):]
-#     f2 = f2[f2.find('[')+1:f2.find(']')]
-#
-#     max_user = 0
-#     for item in f2.split(","):
-#         if float(item) > max_user:
-#             max_user = float(item)
-#     max_user = max_user
-#     print(max_user/10000)
-
-
 '''part1 zte'''
 cookie = web.webCrawler.login.zte_anyservice_uniportal_v2()
 url = 'https://117.135.56.61:8443/dashboard_queryChartData.action'
@@ -155,7 +60,7 @@ form = {
 f = web.webCrawler.webcrawler.post_web_page_ssl(url, form, cookie)
 # print(f)
 zte_dict = json.loads(f)
-print(zte_dict)
+# print(zte_dict)
 online_user = list()
 bandwidth = list()
 for item in zte_dict:
@@ -164,6 +69,7 @@ for item in zte_dict:
 
 max_rate = max(bandwidth)/1024/1024/1024
 max_user = max(online_user)
+
 '''
 分组信息
 区域节点 8 x 12 = 96G
@@ -171,8 +77,50 @@ max_user = max(online_user)
 视频节点 4 10 x 12 = 120G
 '''
 
-# csv_content
-# writer_zte.writerow(csv_content)
+
+def query_ottnode_zte(n, cookie):
+    url = 'https://117.135.56.61:8443/monitor/ottnode_query.action'
+    form = {
+        'areaid': '# all#',
+        'nodeid': 'SHFX_NODE3',
+        'starttime': startTime + ' 00:00:00',
+        'endtime': endTime + ' 00:00:00'
+    }
+    if n == 1:
+        form['nodeid'] = 'SHFX_NODE1'
+    if n == 2:
+        form['nodeid'] = 'SHFX_NODE2'
+    if n == 3:
+        form['nodeid'] = 'OTT_3'
+    if n == 4:
+        form['nodeid'] = 'servicenode2'
+    f = web.webCrawler.webcrawler.post_web_page_ssl(url, form, cookie)
+    encodedjson = json.loads(f)
+
+    # unit单位 upstreamband回源带宽
+    upstreamband = max(encodedjson['upstreamband'])
+    concurrent = max(encodedjson['concurrent'])
+    bandwidth = max(encodedjson['bandwidth'])
+    return concurrent, bandwidth, upstreamband
+
+
+concurrent_0, bandwidth_0, upstreamband_0 = query_ottnode_zte(0, cookie)
+concurrent_1, bandwidth_1, upstreamband_1 = query_ottnode_zte(1, cookie)
+concurrent_2, bandwidth_2, upstreamband_2 = query_ottnode_zte(2, cookie)
+concurrent_3, bandwidth_3, upstreamband_3 = query_ottnode_zte(3, cookie)
+concurrent_4, bandwidth_4, upstreamband_4 = query_ottnode_zte(4, cookie)
+
+
+csv_content_zte = [concurrent_0, bandwidth_0, '{:.2f}'.format(bandwidth_0/96*100), upstreamband_0,
+                   concurrent_1, bandwidth_1, '{:.2f}'.format(bandwidth_1/240*100), upstreamband_1,
+                   concurrent_2, bandwidth_2, '{:.2f}'.format(bandwidth_2/240*100), upstreamband_2,
+                   concurrent_3, bandwidth_3, '{:.2f}'.format(bandwidth_3/240*100), upstreamband_3,
+                   concurrent_4, bandwidth_4, '{:.2f}'.format(bandwidth_4/120*100), upstreamband_4]
+
+print('{:.2f}'.format(bandwidth_0/96*100), '{:.2f}'.format(bandwidth_1/240*100),
+      '{:.2f}'.format(bandwidth_2 / 240 * 100), '{:.2f}'.format(bandwidth_3/240*100),
+      '{:.2f}'.format(bandwidth_4 / 240 * 100))
+
 '''part2 SQM'''
 cookie = web.webCrawler.login.sqm_117()
 # SQM峰值流用户数
@@ -316,6 +264,7 @@ print('After this operation, 25 e-mails will be sent.')
 check_code = input('y or n or s(save)').lower()
 if check_code == 'y':
     writer.writerow(csv_content)
+    writer_zte.writerow(csv_content_zte)
     ret = myPackages.mailtools.mail139_customise(title, email_content, user)
     if ret:
         print("ok")  # 如果发送成功则会返回ok，稍等20秒左右就可以收到邮件
@@ -323,3 +272,4 @@ if check_code == 'y':
         print("failed")  # 如果发送失败则会返回filed
 elif check_code == 's':
     writer.writerow(csv_content)
+    writer_zte.writerow(csv_content_zte)
