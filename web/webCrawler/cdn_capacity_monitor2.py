@@ -41,6 +41,8 @@ file_output = 'cdn_rate.csv'  # 输出文件
 # 打开输出文件
 g = open(file_output, 'a', newline='')
 writer = csv.writer(g)
+g_zte = open('cdn_rate_zte.csv', 'a', newline='')
+writer_zte = csv.writer(g_zte)
 
 # 查询时间
 now = datetime.datetime.now()
@@ -162,8 +164,15 @@ for item in zte_dict:
 
 max_rate = max(bandwidth)/1024/1024/1024
 max_user = max(online_user)
+'''
+分组信息
+区域节点 8 x 12 = 96G
+视频节点 1~3 20 x 12 = 240G
+视频节点 4 10 x 12 = 120G
+'''
 
-
+# csv_content
+# writer_zte.writerow(csv_content)
 '''part2 SQM'''
 cookie = web.webCrawler.login.sqm_117()
 # SQM峰值流用户数
