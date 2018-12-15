@@ -52,6 +52,27 @@ sjc = str(int(time.time() * 1000))
 startTime = ts.strftime('%Y-%m-%d')  # 调整时间格式
 endTime = now.strftime('%Y-%m-%d')  # 调整时间格式
 
+
+'''烽火'''
+def fenghuo():
+    now_tiem = time.time()
+    url = 'https://39.134.89.13:3000/api/datasources/proxy/1/api/v1/query_range?query=sum(irate(node_network_transmit' \
+          '_bytes_total%7Bdevice%3D~%22%5Elo%7Cbond0%7Cbond1%22%7D%5B5m%5D))%20%20*%208&start='\
+          + ('%d' % (now_tiem - (now_tiem + 8 * 3600) % 86400 - 86400)) + '&end='\
+          + ('%d' % (now_tiem - (now_tiem + 8 * 3600) % 86400)) + '&step=120'
+    f = web.webCrawler.webcrawler.get_web_page_ssl(url, 'grafana_user=fonsview; grafana_remember=c3b58bb8cedb745aec3cc76133b253f2ef3811425f9e86a89a308bf16692ae82bc26b431; csk_sess=827941d628a2d37d')
+    fenghuo_dict = json.loads(f)
+    fenghuo_list = fenghuo_dict['data']['result'][0]['values']
+    ans = list()
+    for item in fenghuo_list:
+        ans.append(float(item[1]))
+    print(max(ans))
+    return max(ans)/1024/1024
+
+
+fenghuo_ott = fenghuo()
+
+
 '''part1 zte'''
 cookie = web.webCrawler.login.zte_anyservice_uniportal_v2()
 url = 'https://117.135.56.61:8443/dashboard_queryChartData.action'
@@ -228,7 +249,7 @@ for i in range(nrows):
 
 
 '''part4 发送邮件'''
-ott_max_rate = float(ott_max_rate)
+ott_max_rate = float(ott_max_rate) + fenghuo_ott
 ott_mean_rate = float(ott_mean_rate)
 max_rate = float(max_rate) * 0.95
 maxStreamSTBs = float(maxStreamSTBs)

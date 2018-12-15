@@ -1,5 +1,5 @@
 import datetime
-
+import time
 
 # 无输入，格式为20180913
 # 有输入，格式为2018-09-13
@@ -30,7 +30,7 @@ def today():
 
 
 if __name__ == '__main__':
-    now = datetime.datetime.now()
-    print(now.strftime('+%H%%3A%M%%3A%S')+now.strftime('+%H%%3A%M%%3A%S'))
-    print()
+    now = time.time()
+    print('%d' % (now - (now + 8 * 3600) % 86400))     # time.time() 零时区时间戳
+    print(type('%d' % (now - (now + 8 * 3600) % 86400 - 86400)))
 
