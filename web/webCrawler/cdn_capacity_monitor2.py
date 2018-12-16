@@ -26,7 +26,7 @@ OTT、IPTV 流量统计四部部分组成：
 
 '''Constants'''
 # IPTV
-IPTV_total_capacity = 675 + 72 + 72 + 102     # 819G
+IPTV_total_capacity = 981
 print('中兴总容量： {:d}G'.format(IPTV_total_capacity))
 # OTT
 FX_FengHuo_OTT = 242
