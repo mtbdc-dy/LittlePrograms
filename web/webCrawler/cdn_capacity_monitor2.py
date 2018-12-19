@@ -25,18 +25,18 @@ OTT、IPTV 流量统计四部部分组成：
 """
 
 '''Constants'''
+# 输出文件名
+file_output = 'cdn_rate.csv'
 # IPTV
 IPTV_total_capacity = 981
 print('中兴总容量： {:d}G'.format(IPTV_total_capacity))
 # OTT
-FX_FengHuo_OTT = 242
+FX_FengHuo_OTT = 240
 YP_FengHuo_OTT = 90
-
-FX_HuaWei_OTT = 108 + 68  # 18年新增68G
-PDandJS_HuaWei_OTT = 170
-
-OTT_total_capacity = FX_FengHuo_OTT + YP_FengHuo_OTT + FX_HuaWei_OTT + PDandJS_HuaWei_OTT  # 678G
-file_output = 'cdn_rate.csv'  # 输出文件
+FX_HuaWei_OTT = 108
+PD_HuaWei_OTT = 150
+OTT_total_capacity = FX_FengHuo_OTT + YP_FengHuo_OTT + FX_HuaWei_OTT + PD_HuaWei_OTT
+print('OTT总容量： {:d}G'.format(OTT_total_capacity))
 
 # 打开输出文件
 g = open(file_output, 'a', newline='')
@@ -53,7 +53,7 @@ startTime = ts.strftime('%Y-%m-%d')  # 调整时间格式
 endTime = now.strftime('%Y-%m-%d')  # 调整时间格式
 
 
-'''烽火'''
+# 烽火
 def fenghuo():
     now_tiem = time.time()
     url = 'https://39.134.89.13:3000/api/datasources/proxy/1/api/v1/query_range?query=sum(irate(node_network_transmit' \
@@ -66,7 +66,7 @@ def fenghuo():
     ans = list()
     for item in fenghuo_list:
         ans.append(float(item[1]))
-    print(max(ans))
+    # print(max(ans))
     return max(ans)/1024/1024
 
 
@@ -249,16 +249,17 @@ for i in range(nrows):
 
 
 '''part4 发送邮件'''
-ott_max_rate = float(ott_max_rate) + fenghuo_ott
+# ott_max_rate = float(ott_max_rate) + fenghuo_ott
+ott_max_rate = (73.67 + 30.18) * 1000 + fenghuo_ott
 ott_mean_rate = float(ott_mean_rate)
 max_rate = float(max_rate) * 0.95
 maxStreamSTBs = float(maxStreamSTBs)
 max_user = float(max_user)
 print(maxStreamSTBs, max_rate, max_user, ott_max_rate)
 title = date + '互联网电视指标'
-email_content = 'OTT峰值流用户数: {:.2f}万人; OTT峰值流速: {:.2f}Gbps; OTT利用率: {:.2f}%; IPTV峰值流用户数: {:.2f}万人; IPTV峰值流速: {:.2f}Gbps; IPTV利用率: {:.2f}%。'.format(maxStreamSTBs/10000, ott_max_rate/1024, ott_max_rate/1024/OTT_total_capacity*100, max_user/10000, max_rate, max_rate/IPTV_total_capacity*100)
+email_content = 'OTT峰值流用户数: {:.2f}万人; OTT峰值流速: {:.2f}Gbps; OTT利用率: {:.2f}%; IPTV峰值流用户数: {:.2f}万人; IPTV峰值流速: {:.2f}Gbps; IPTV利用率: {:.2f}%。'.format(maxStreamSTBs/10000, ott_max_rate/1000, ott_max_rate/1000/OTT_total_capacity*100, max_user/10000, max_rate, max_rate/IPTV_total_capacity*100)
 email_content = startTime + ': ' + email_content
-csv_content = [startTime] + ['{:.2f}'.format(maxStreamSTBs/10000)] + ['{:.2f}'.format(ott_max_rate/1024)] + ['%.2f' % (ott_mean_rate/1024)] + ['{:.2f}'.format(ott_max_rate/1024/OTT_total_capacity*100)] + ['{:.2f}'.format(max_user/10000)] + ['{:.2f}'.format(max_rate)] + ['{:.2f}'.format(max_rate/IPTV_total_capacity*100)] + ['{:.2f}'.format(laggy_device_ratio)] + [sum_box] + ['%.2f' % epg_success_ratio] + ['%.2f' % epg_latency]
+csv_content = [startTime] + ['{:.2f}'.format(maxStreamSTBs/10000)] + ['{:.2f}'.format(ott_max_rate/1000)] + ['%.2f' % (ott_mean_rate/1000)] + ['{:.2f}'.format(ott_max_rate/1000/OTT_total_capacity*100)] + ['{:.2f}'.format(max_user/10000)] + ['{:.2f}'.format(max_rate)] + ['{:.2f}'.format(max_rate/IPTV_total_capacity*100)] + ['{:.2f}'.format(laggy_device_ratio)] + [sum_box] + ['%.2f' % epg_success_ratio] + ['%.2f' % epg_latency]
 print('email_content: ', email_content)
 print('csv_content:', csv_content)
 user = [

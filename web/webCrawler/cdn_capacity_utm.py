@@ -13,9 +13,40 @@ import csv
 import json
 
 
-'''
-关键点只有两个值 cookie 和 roarand
-'''
+# # 一、login
+# # 1. default cookie
+# url = 'https://39.134.87.216:31943/itpaas/login.action'
+# cj = ww.get_cookie_without_form(url)
+# cookie = ''
+# for item in cj:
+#     cookie = cookie + item.name + '=' + item.value + ';'
+# # print(cookie)
+#
+# # 2. get CAPTCHA
+# url = 'https://39.134.87.216:31943/itpaas/verifycode?'
+# ww.get_validate_code(url, cookie)
+#
+# # 3. post
+# url = 'https://39.134.87.216:31943/itpaas/authenticate.action'
+# CAPTCHA = input('CAPTCHA: ')
+# form = {
+#     'username': 'admin',
+#     'password': 'HuaWei12#$',
+#     'vcode': CAPTCHA,
+#     'dstInfo': '480:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0',
+#     'name': 'default',
+#     'service': ''
+# }
+# cj = ww.get_cookie(form, url, cookie)
+# cookie = ''
+# for item in cj:
+#     cookie = cookie + item.name + '=' + item.value + ';'
+#
+# # 二、query
+# url = 'https://39.134.87.216:31943/pm/themes/default/pm/app/i2000_portlet_page.html?tag=pm.portlet.group_152734715982719&protalId=group_152734715982719'
+# f = ww.get_web_page_ssl(url, cookie)
+# print(f)
+
 def post_ssl(url, my_form, cookie):
     ssl._create_default_https_context = ssl._create_unverified_context
     # context = ssl._create_unverified_context()
@@ -46,13 +77,20 @@ def post_ssl(url, my_form, cookie):
     return f
 
 
-if __name__ == '__main__':
-    url = 'https://39.134.87.216:31943/rest/pm/history'
-    cookie = 'JSESSIONID=8cfba3b8379f32cb961fcb94f5678e72725c544ed7649266'
-    form = {
-        'param': r'{"pageIndex":1,"historyTimeRange":0,"beginTime":1541174400000,"endTime":1541260800000,"isGetGraphicGroupData":true,"mo2Index":"[{\"dn\":\"com.huawei.hvs.pop=2101534\",\"indexId\":\"11735\",\"displayValue\":\"\",\"aggrType\":2}]","pmViewPage":"historyPm","isQueryOriginal":false}'
-    }
-
-    f = post_ssl(url, form, cookie)
-    print(f)
-
+# 需要什么
+url = 'https://39.134.87.216:31943/rest/pm/history'
+form = {
+    'param': r'{"pageIndex":1,"historyTimeRange":24,"beginTime":1545188873595,"endTime":1545188873595,"isGetGraphicGroupData":true,"isMonitorView":true,"mo2Index":"[{\"dn\":\"278657d6163e3c7e3b02fe\",\"indexId\":\"10409\",\"displayValue\":\"\",\"aggrType\":2}]"}'
+}
+cookie = 'CLIENTID=f813e2e3-58f0-4b0a-8dbd-0225fab62e48;' \
+         'JSESSIONID=07f4e7733a18c3d5b4e2819c74591fa965da0488be5103d6;' \
+         'SLB_SID=;' \
+         'access_time_cookie=1545188846247;' \
+         'bme_locale_session=zh_CN;' \
+         'clientTimezoneId=;' \
+         'locale_cookie=zh_CN;' \
+         'session_cookie=cbeeb9cc-557e-4cba-b4ce-80b205832847;' \
+         'sna_cookie=cbeeb9cc-557e-4cba-b4ce-80b205832847;'
+print(cookie)
+f = ww.post_web_page_ssl(url, form, cookie)
+print(f)
