@@ -3,7 +3,7 @@ from PIL import Image
 import numpy as np
 try:
     import tensorflow as tf
-except:
+except ImportError:
     print('No tf Found')
 import copy
 import random
