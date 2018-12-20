@@ -250,7 +250,7 @@ for i in range(nrows):
 
 '''part4 发送邮件'''
 # ott_max_rate = float(ott_max_rate) + fenghuo_ott
-ott_max_rate = (73.67 + 30.18) * 1000 + fenghuo_ott
+ott_max_rate = (39.47 + 86.23) * 1000 + fenghuo_ott
 ott_mean_rate = float(ott_mean_rate)
 max_rate = float(max_rate) * 0.95
 maxStreamSTBs = float(maxStreamSTBs)
