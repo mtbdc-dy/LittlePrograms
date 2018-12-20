@@ -6,7 +6,32 @@ import datetime
 import web.webCrawler.login
 import urllib.request
 import urllib.parse
-
+from bs4 import BeautifulSoup
+try:
+  from lxml import etree
+  print("running with lxml.etree")
+except ImportError:
+  try:
+    # Python 2.5
+    import xml.etree.cElementTree as etree
+    print("running with cElementTree on Python 2.5+")
+  except ImportError:
+    try:
+      # Python 2.5
+      import xml.etree.ElementTree as etree
+      print("running with ElementTree on Python 2.5+")
+    except ImportError:
+      try:
+        # normal cElementTree install
+        import cElementTree as etree
+        print("running with cElementTree")
+      except ImportError:
+        try:
+          # normal ElementTree install
+          import elementtree.ElementTree as etree
+          print("running with ElementTree")
+        except ImportError:
+          print("Failed to import ElementTree from any known place")
 
 """
 Note!!!
@@ -137,11 +162,12 @@ for i in range(7):
     response = urllib.request.urlopen(request, context=context)
     # print(response.getcode())
     f = response.read().decode('UTF8')
-    f = f[f.find("平均值") + 62:f.find("平均值") + 200]
-    ans = f[f.find('>') + 1: f.find('>') + 8]
+    soup = BeautifulSoup(f, 'html.parser')
+    links = soup.find_all('td', align='right')
+    ans = links[8].get_text()
     ans = float(ans.replace(',', ''))
-    list_direct.append(ans)
     print(ans)
+    list_direct.append(ans)
 
     # 存入CSV文件
     row = [list[i]] + [list_direct[i]]
