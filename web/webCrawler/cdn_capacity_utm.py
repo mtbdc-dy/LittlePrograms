@@ -1,16 +1,10 @@
 import time
-import xlrd
 import random
 import urllib.error
 import urllib.request
+import urllib.parse
 import ssl
-import datetime
-import myPackages.getime
-import web.webCrawler.login as wl
 import web.webCrawler.webcrawler as ww
-import myPackages.mailtools
-import csv
-import json
 
 
 # # 一、login
@@ -53,7 +47,7 @@ def post_ssl(url, my_form, cookie):
     header = {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) '
                       'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36',
-        'roarand': 'f602a03e-b7fa-4ae5-9f6a-9eb3aa496f85',
+        'roarand': 'ac907011-f1c0-4c7a-b7f2-9aa1c71d1aaa',
         'Cookie': cookie
     }
 
@@ -78,19 +72,24 @@ def post_ssl(url, my_form, cookie):
 
 
 # 需要什么
+'''
+1、roarand
+2、JSESSIONID
+'''
 url = 'https://39.134.87.216:31943/rest/pm/history'
 form = {
-    'param': r'{"pageIndex":1,"historyTimeRange":24,"beginTime":1545188873595,"endTime":1545188873595,"isGetGraphicGroupData":true,"isMonitorView":true,"mo2Index":"[{\"dn\":\"278657d6163e3c7e3b02fe\",\"indexId\":\"10409\",\"displayValue\":\"\",\"aggrType\":2}]"}'
+    'param': r'{"pageIndex":1,"historyTimeRange":24,"beginTime":1545835431687,"endTime":1545835431687,"isGetGraphicGroupData":true,"isMonitorView":true,"mo2Index":"[{\"dn\":\"com.huawei.hvs.pop=2101531\",\"indexId\":\"11735\",\"displayValue\":\"\",\"aggrType\":2}]"}'
 }
-cookie = 'CLIENTID=f813e2e3-58f0-4b0a-8dbd-0225fab62e48;' \
-         'JSESSIONID=07f4e7733a18c3d5b4e2819c74591fa965da0488be5103d6;' \
+cookie = 'CLIENTID=	8a142fe2-3267-4298-bf24-97bd9c5120a0;' \
+         'JSESSIONID=8f4de920ac8d727f331d18f9d3d46924fa74591b1586bd61;' \
          'SLB_SID=;' \
-         'access_time_cookie=1545188846247;' \
+         'access_time_cookie=1545835411502;' \
          'bme_locale_session=zh_CN;' \
          'clientTimezoneId=;' \
          'locale_cookie=zh_CN;' \
-         'session_cookie=cbeeb9cc-557e-4cba-b4ce-80b205832847;' \
-         'sna_cookie=cbeeb9cc-557e-4cba-b4ce-80b205832847;'
-print(cookie)
+         'session_cookie=15ba827e-3ce0-43c9-872b-990cad7e50dd;' \
+         'sna_cookie=15ba827e-3ce0-43c9-872b-990cad7e50dd;'
+# cookie = 'JSESSIONID=8f4de920ac8d727f331d18f9d3d46924fa74591b1586bd61'
+print(form)
 f = ww.post_web_page_ssl(url, form, cookie)
 print(f)
