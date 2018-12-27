@@ -1,0 +1,32 @@
+Generated File. Do not edit.
+
+[HEADER]
+Version|0.19t|$
+Arch|x86_64-msvc|$
+
+[PLUGINS]
+NPSWF64_32_0_0_101.dll|$
+C:\Windows\system32\Macromed\Flash\NPSWF64_32_0_0_101.dll|$
+32.0.0.101|$
+1544525750611|0|0|0|0|$
+Shockwave Flash 32.0 r0*|$
+Shockwave Flash|$
+2
+0|application/x-shockwave-flash|Adobe Flash movie|swf|$
+1|application/futuresplash|FutureSplash movie|spl|$
+
+[INVALID]
+C:\Program Files (x86)\Thunder Network\Thunder\Data\npxunlei1.0.0.2.dll|$
+1538225268409|$
+C:\Program Files (x86)\Common Files\Thunder Network\UserAgent\npxluser2.0.2.3.dll|$
+1538225268408|$
+C:\Program Files (x86)\Common Files\duowan\yy\YYSSO\1.0.0.8\npChecker.dll|$
+1526734060917|$
+C:\Users\Administrator\AppData\Roaming\Tencent\WebGamePlugin\1.0.4.3\npqqwebgame.dll|$
+1445322560000|$
+C:\Program Files\VideoLAN\VLC\npvlc.dll|$
+1533891882000|$
+D:\Program Files\QQBrowser\gamesp\npjlgplayer3.dll|$
+1542719383801|$
+C:\Users\Administrator\AppData\LocalLow\Unity\WebPlayer\loader\npUnity3D32.dll|$
+1440783140000|$

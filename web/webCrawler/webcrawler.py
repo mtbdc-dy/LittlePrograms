@@ -50,7 +50,7 @@ def get_web_page_proxy(url, cookie=''):
     # 读取页面
     response = urllib.request.urlopen(request)
     f = response.read().decode("utf8")
-    time.sleep(random.randint(2,3))
+    time.sleep(random.randint(2, 3))
     return f
 
 
@@ -420,16 +420,13 @@ def get_res_headers_ssl(url, cookie):
                       'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36',
         'Cookie': cookie
     }
-    proxy = {
-        'http': 'http://cmnet:cmnet@211.136.113.69:808'
-    }
-    # 挂代理Handler
-    proxy_support = urllib.request.ProxyHandler(proxy)
-    opener = urllib.request.build_opener(proxy_support)
+    redirect_support = urllib.request.HTTPRedirectHandler()
+    opener = urllib.request.build_opener(redirect_support)
     urllib.request.install_opener(opener)
     # 伪装浏览器申请
-    request = urllib.request.Request(url, headers=header)
+    request = urllib.request.Request(url)
     # 读取页面
     response = urllib.request.urlopen(request, context=context)
-
-    return response
+    print(response.url)
+    f = response.read().decode("utf8")
+    return f

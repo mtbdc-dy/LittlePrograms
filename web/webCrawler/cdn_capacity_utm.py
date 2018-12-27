@@ -14,7 +14,6 @@ cj = ww.get_cookie_without_form(url)
 cookie = ''
 for item in cj:
     cookie = cookie + item.name + '=' + item.value + ';'
-# print(cookie)
 
 # 2. get CAPTCHA
 url = 'https://39.134.87.216:31943/itpaas/verifycode?'
@@ -37,7 +36,7 @@ for item in cj:
     cookie = cookie + item.name + '=' + item.value + ';'
 print(cookie)
 
-# 4.exchange jsid
+# 4.exchange js id
 url = 'https://39.134.87.216:31943/login/login.action?'
 cj = ww.get_cookie_without_form_cookie(url, cookie)
 cookie = ''
@@ -65,7 +64,7 @@ print(roarand)
 
 
 def post_ssl(url, my_form):
-    ssl._create_default_https_context = ssl._create_unverified_context
+    ssl._create_default_https_context = ssl.create_unverified_context
     # context = ssl._create_unverified_context()
     header = {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) '
