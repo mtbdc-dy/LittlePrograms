@@ -1,326 +1,35 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html>
- 
-
-
-
+<!DOCTYPE html>
+<html xmlns:eview="ignored">
 <head>
-  <title>上海移动电子运行维护系统</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-     <script type="text/javascript">
- 
-	function keyLogin(){  
-      if (event.keyCode==13)   //回车键的键值为13   
-            document.getElementById("login").click(); //调用登录按钮的登录事件   
-    }  
+<title></title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<!-- 使用最高版本IE的标准模式 或者chrome Frame-->
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-  </script>
-  
-  <script type="text/javascript" charset="utf-8" src="/eoms35/scripts/local/zh_CN.js"></script>  
-  <script type="text/javascript" charset="utf-8" src="/eoms35/scripts/base/eoms.js"></script>
-  <script type="text/javascript">eoms.appPath = "/eoms35";</script>
-  <link rel="stylesheet" type="text/css" media="all" href="/eoms35/styles/default/theme.css" />
-  <script type="text/javascript" src="/eoms35/scripts/util/Cookie.js"></script> 
-  <script type="text/javascript" src="/eoms35/scripts/rsa/RSA.js"></script>
-  <script type="text/javascript" src="/eoms35/scripts/rsa/BigInt.js"></script>
-  <script type="text/javascript" src="/eoms35/scripts/rsa/Barrett.js"></script>
-  <script type="text/javascript" src="/eoms35/scripts/rsa/Base64.js"></script>
+<link type="image/x-icon" href="/favicon.ico" rel="shortcut icon" />
+
+<link rel="stylesheet" type="text/css" href="/portal/themes/default/3rd_plugin/jquery_ui/css/jquery-ui.min.css?"/>
+<link rel="stylesheet" type="text/css" href="/portal/themes/default/framework/css/style.css?&themes=@{USER_THEMES}"/>
+<link rel="stylesheet" type="text/css" href="/portal/themes/default/components/eview/css/eview/widgets/charttip.css?&themes=@{USER_THEMES}" />
+<link type="image/x-icon" href="/portal/themes/default/framework/images/logo_huawei.ico" rel="shortcut icon" />
+
+
 </head>
+<body id="topWindow" class="i_comm_bg_color">
 
-<body id="login" onkeydown="keyLogin();">
-<div id="page">
-  <div id="content" class="clearfix">
-    <div id="main"><br/><br/>
-  
-  
-  
-	  
-	  
-	  <form method="post" id="loginForm" action="/eoms35/index.do?method=saveSession&app=app" onSubmit="saveUsername(this);">
-	  
-	  
-  
-    
-  <div class="login-box">
-	<div class="login-content">
-		<dl>
-		<dt>产品信息:</dt>
-		<dd>EOMS版本3.5</dd>
-		<dt>跨浏览器:</dt>
-		<dd>支持IE6、IE7、Firefox等主流浏览器</dd>
-		<dt>友好的用户体验:</dt>
-		<dd>模块中使用AJAX等技术，提供更友好的用户体验</dd>
-		<dt>注意:</dt>
-		<font color="#FF0000"><b>
-		<dd>账号自动解锁功能已上线，请应用人员于8月27日前，</dd>
-		<dd>在用户管理中填写唯一的账号责任人移动手机号码，</dd>
-		<dd>用于接收系统下发的随机密码。</dd>
-		</b>
-        </font>
-		</dl>
-	</div>
-	
-	<div class="login-form">
-	  <div class="login-form-content">
-        <ul>
-        
-	  		
-        	
-	  			
-		          <li class="error">
-		            <img src="/eoms35/images/icons/warning.gif" alt="警告" class="icon" />
-		            
-		            		Code Error
-		            
-		       
-		          <!---->
-		          </li>
-        		
-	 		
-        
-          <li>
-            <label for="j_username" class="desc">
-            <!--用户树-->用户名 <span class="req">*</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<!-- <a href="#" Onclick="javascript:openUnlockUserWindow();">用户解锁</a> --> 
-            </label>
-            <input type="text" class="text medium" id="j_username" tabindex="1" autocomplete="off" />
-          </li>
+    <div class="iemp_content">
 
-          <li>
-            <label for="j_password" class="desc">
-            密码 <span class="req">*</span>
-            </label>
-            <input type="password" class="text medium" id="j_password" tabindex="2" autocomplete="off"  />
-          </li>
- <li>
-            <label for="j_code" class="desc">
-          <!-- ???label.code???-->验证码 <span class="req">*</span>
-            </label>
-            <input type="text" class="text medium" id="j_code" name="j_code" tabindex="2" size="3" autocomplete="off" />
-            <span><a onclick="changeCode()" ><img id="img"  src="/eoms35/imageCode.jsp" /></a></span><br/>
-          </li>
-          <li><br/>
-            <input type="submit" class="btn" name="login" id="login" value="登录" tabindex="3" />
-            <!--<input type="button" class="btn" name="login" value="忘记密码" tabindex="4" Onclick="javascript:openOnlineUserWindow();" /> -->
-           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="button" class="btn" name="unlock" id="unlock" value="解锁" tabindex="3" onclick="unlockAction()"/><font color="red"></font>
-	<br/><br/>
-          </li>
-          
-         
-        </ul>
-      </div>
-	</div>
-  </div>
-  <input type="hidden" name="j_username" id="j_username1"/>
-	<input type="hidden" name="j_password" id="j_password1" />
-  </form>
-<script type="text/javascript">  
-	function changeCode(){
-  		var img = document.getElementById("img");
-		img.src="";
-  	    var req = createXMLHTTPRequest();  
-        req.open("GET", "/eoms35/imageCode.jsp", false);  
-        req.onreadystatechange = function(){  
-            if(req.readyState == 4){  
-                if(req.status == 200){  
-                	var img = document.getElementById("img");
-  					img.src="/eoms35/imageCode.jsp";
-                }  
-            }else{
-            	
-            }  
-    }
-	 req.send(null); 
-  	}
-	
-         function createXMLHTTPRequest() {     
-                 //1.创建XMLHttpRequest对象     
-                 //这是XMLHttpReuquest对象无部使用中最复杂的一步     
-                 //需要针对IE和其他类型的浏览器建立这个对象的不同方式写不同的代码     
-                 var xmlHttpRequest;  
-                 if (window.XMLHttpRequest) {     
-                     //针对FireFox，Mozillar，Opera，Safari，IE7，IE8     
-                    xmlHttpRequest = new XMLHttpRequest();     
-                     //针对某些特定版本的mozillar浏览器的BUG进行修正     
-                     if (xmlHttpRequest.overrideMimeType) {     
-                         xmlHttpRequest.overrideMimeType("text/xml");     
-                     }     
-                 } else if (window.ActiveXObject) {     
-                     //针对IE6，IE5.5，IE5     
-                     //两个可以用于创建XMLHTTPRequest对象的控件名称，保存在一个js的数组中     
-                     //排在前面的版本较新     
-                     var activexName = [ "MSXML2.XMLHTTP", "Microsoft.XMLHTTP" ];     
-                     for ( var i = 0; i < activexName.length; i++) {     
-                         try {     
-                             //取出一个控件名进行创建，如果创建成功就终止循环     
-                             //如果创建失败，回抛出异常，然后可以继续循环，继续尝试创建     
-                            xmlHttpRequest = new ActiveXObject(activexName[i]);   
-                            if(xmlHttpRequest){  
-                                break;  
-                            }  
-                         } catch (e) {     
-                         }     
-                     }     
-                 }     
-                 return xmlHttpRequest;  
-             } 
+    </div>
+</body>
 
-         
-        /*  function run1(){	 
-        		var b =1;
-        	  	 var req = createXMLHTTPRequest();  
-        	  //   var r =  Math.random(); 
-        	        req.open("GET", "/eoms35/code.jsp", false);  
-        	        req.onreadystatechange = function(){  
-        	            if(req.readyState == 4){  
-        	                if(req.status == 200){  
-        	              var cookie_name = "code";
-        	               var allcookies = document.cookie;
-        					//console.log(allcookies);
-        					  var cookie_pos = allcookies.indexOf(cookie_name);  
-        					  if (cookie_pos != -1){
-        	      			  // 把cookie_pos放在值的开始，只要给值加1即可。
-        	     			   cookie_pos += cookie_name.length + 1;      //这里容易出问题，所以请大家参考的时候自己好好研究一下
-        	   				     var cookie_end = allcookies.indexOf(";", cookie_pos);
-        	 					}
-        	      			  if (cookie_end == -1){
-        	     			       cookie_end = allcookies.length;
-        	    			    }
-        					   var va = unescape(allcookies.substring(cookie_pos, cookie_end)); 
-        					//   console.log(va);
-        					   var code = document.getElementById("j_code");
-        	   				  var a = code.value;
-        	   				  if(a==va){
-        	   				  	b=0;
-        	   				  }else{
-        	   				  	b=1;
-        						alert("验证码输入错误");
-        	   				  }
-        	                }  
-        	            }else{
-        	            //	alert("error");
-        	            }  
-        	    }
-        		 req.send(null); 
-//        		 console.log(b);
-        		 if(b==0){
-        	     	return true;
-        	     }else{
-        			 var code1 = document.getElementById("j_code");
-        			code1.value="";
-        			changeCode();
-        	     	return false;
-        	     }
-        	    
-        	   return false;
+<!--[if lte IE 8]>
+<script type="text/javascript" src="/portal/themes/default/components/eview/3rd_tools/excanvas/excanvas.original.js"></script>
+<![endif]-->
+<script type="text/javascript" src="/rest/i18n?"></script>
+<script type="text/javascript" src="/portal/themes/default/3rd_lib/3rdlib.min.js?"></script>
+<script type="text/javascript" src="/portal/themes/default/3rd_plugin/jquery_ui/js/jquery-ui.min.js?"></script>
+<script type="text/javascript" src="/portal/themes/default/framework/js/framework.min.js?"></script>
+<script type="text/javascript" src="/portal/themes/default/components/eview/js/eview.basic.min.js?"></script>
+<script type="text/javascript" src="/portal/themes/default/components/eview/js/eview.charts.min.js?"></script>
 
-        	} 
-          */
-	var c = eoms.util.Cookie;
-	if (c.get("username") != null&&c.get("username")!=undefined&&c.get("username")!="undefined") {		
-		$("j_username").value = c.get("username");
-		$("j_password").focus();
-    } else {
-        $("j_username").focus();
-    }
-    
-    function saveUsername(frm) {
-		c.set("username",frm.j_username.value,30);
-		return submitForm();
-    }
-    
-      function submitForm(){
-    	var form = document.forms[0];
-		var url="/eoms35/RSAKey";	
-		var userId =document.getElementById("j_username").value;
-		var pwd = document.getElementById("j_password").value;
-		var code = document.getElementById("j_code").value;
-	
-    	if(userId==""){
-    		alert("请输入用户名");
-		//	Ext.Msg.alert("提示","请输入用户名");
-			return false;
-		}
-		if(pwd==""){
-			alert("请输入密码");
-		//	Ext.Msg.alert("提示","请输入密码");
-			return false;
-		}
-		if(code==""){
-			alert("请输入验证码");
-		//	Ext.Msg.alert("提示","请输入验证码");
-			return false;
-		}
-    	var useridtext="";
-		var pwdtext="";
-		var pars="?rflags=1536999895772";
-		var b= new Ajax.Request(url,{method: 'post',
-				 asynchronous:false,//必选,以保证在后台程序未完全返回前,前面的线程不先向前执行(即前台js线程要与后台java线程同步,
-				 //保证前面调用另一函数去取数据库数据时,当前的线程已经完成事务务提交完成)
-				 parameters:pars,
-				 onComplete:function(res){
-					var obj=eval('('+res.responseText+')');
-					setMaxDigits(262);
-					key=new RSAKeyPair(obj.e,"",obj.m,1024);
-					useridtext=base64_encode(encryptedString(key,userId,RSAAPP.PKCS1Padding,RSAAPP.RawEncoding));
-					pwdtext=base64_encode(encryptedString(key,pwd,RSAAPP.PKCS1Padding,RSAAPP.RawEncoding));
-				 },
-				 onError:function(x){     //提交失败回调
-					Ext.Msg.alert("提示","网络问题："+x.statusText);
-				}
-			});	
-		if(useridtext!="" && pwdtext!=""){
-			document.getElementById("j_username1").value = useridtext;
-			document.getElementById("j_password1").value = pwdtext;
-			return true;
-		}else{
-			return false;
-		}
-    }
-   
-      function unlockAction(){
-  		var userId =document.getElementById("j_username").value;
-  		var code = document.getElementById("j_code").value;
-     	if(userId==""){
-    		alert("请输入用户名");
-  			//Ext.Msg.alert("提示","请输入用户名");
-  			return;
-  		}
-     
-  		if(code==""){
-  		//	Ext.Msg.alert("提示","请输入验证码");
-  			alert("请输入验证码");
-  			return;
-  		}
-		var url="/eoms35/Unlock";	
-		var pars ='&j_username=' + userId + '&j_code='+code;
-		var b= new Ajax.Request(url,{method: 'post',
-				 asynchronous:false,//必选,以保证在后台程序未完全返回前,前面的线程不先向前执行(即前台js线程要与后台java线程同步,
-				 //保证前面调用另一函数去取数据库数据时,当前的线程已经完成事务务提交完成)
-				 parameters:pars,
-				 onComplete:function(res){
-					 var result = res.responseText;
-					 alert(result);
-				 },
-				 onError:function(x){     //提交失败回调
-					Ext.Msg.alert("提示","网络问题："+x.statusText);
-				 
-				}
-			});	
-      }
-      
-  function openOnlineUserWindow() {
-  	var url = '/eoms35/loginUserid.jsp?app=app';
-  	window.open(url, '', 'channelMode, menubar=no, toolbar=no, location=no, directories=no, status=yes, resizable=yes, scrollbars=yes, width=600, height=400, fullscreen=no');
-  }
-  //用户解锁
-  function openUnlockUserWindow() {
-  	var url = '/eoms35/unlock.jsp?app=app';
-  	window.open(url, '', 'channelMode, menubar=no, toolbar=no, location=no, directories=no, status=yes, resizable=yes, scrollbars=yes, width=600, height=400, fullscreen=no');
-  } 
-</script>
-				</div>
-			</div>
-		</div>
-	</body>
 </html>

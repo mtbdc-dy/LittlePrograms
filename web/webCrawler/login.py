@@ -28,8 +28,8 @@ def login_wangluoquanjingkeshihua():
 
     pwd = input('输入验证码，谢谢')
     form = {
-        'username': 'Xw1OfZDqN27WleNrhSAYAQ==',
-        'password': 'gS4MY8BMAeRRfMVQswEVWA==',
+        'username': r'Xw1OfZDqN27WleNrhSAYAQ==',
+        'password': r'gS4MY8BMAeRRfMVQswEVWA==',
         'exPassword': pwd
     }
     ww.post_web_page_ssl(url, form, cookie)
