@@ -28,7 +28,7 @@ OTT、IPTV 流量统计四部部分组成：
 # 输出文件名
 file_output = 'cdn_rate.csv'
 # IPTV
-IPTV_total_capacity = 1121
+IPTV_total_capacity = 1241
 print('中兴总容量： {:d}G'.format(IPTV_total_capacity))
 # OTT
 FX_FengHuo_OTT = 240
@@ -250,9 +250,9 @@ for i in range(nrows):
 
 '''part4 发送邮件'''
 # ott_max_rate = float(ott_max_rate) + fenghuo_ott
-ott_max_rate = (26.06 + 97.67) * 1000 + fenghuo_ott
+ott_max_rate = (25.97 + 93.74) * 1000 + fenghuo_ott
 ott_mean_rate = float(ott_mean_rate)
-max_rate = float(max_rate) * 0.95
+max_rate = float(max_rate) * 0.96
 maxStreamSTBs = float(maxStreamSTBs)
 max_user = float(max_user)
 print(maxStreamSTBs, max_rate, max_user, ott_max_rate)
