@@ -220,11 +220,14 @@ def utm():
     usr.send_keys("admin")
     pw = driver.find_element_by_xpath("//*[@id=\"password\"]")
     pw.send_keys("HuaWei12#$")
-    captcha = driver.find_element_by_xpath("//*[@id=\"validate\"]")
-    vc = input('输入网页上的验证码')
-    captcha.send_keys(vc)
-    captcha.send_keys(Keys.RETURN)
-    time.sleep(1)
+
+    input()
+    print('1')
+    # captcha = driver.find_element_by_xpath("//*[@id=\"validate\"]")
+    # vc = input('输入网页上的验证码')
+    # captcha.send_keys(vc)
+    # captcha.send_keys(Keys.RETURN)
+    # time.sleep(1)
 
     # action = ActionChains(driver)
     # action.send_keys(Keys.ESCAPE)
@@ -236,8 +239,9 @@ def utm():
     # # action.perform()
     # print(3)
 
-    button = driver.find_element_by_css_selector('#treeDiv_1_switch')
-    button.click()
+    # button = driver.find_element_by_css_selector('#treeDiv_1_switch')
+    # button.click()
+    # print(driver.get_cookies())
     cookie = ''
     for item in driver.get_cookies():
         # print(item)
