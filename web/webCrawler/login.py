@@ -10,6 +10,9 @@ import rsa
 import base64
 from selenium.webdriver import Chrome
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver import ActionChains
+from selenium.common.exceptions import TimeoutException
+
 
 # 认证过程一般是 先去网站获取一个cookie 然后用账号密码认证这个cookie
 def login_wangluoquanjingkeshihua():
@@ -209,9 +212,9 @@ def eoms():
 
 def utm():
     driver = Chrome()
-    driver.implicitly_wait(10)
-    driver.get(
-        "https://39.134.87.216:31943/pm/themes/default/pm/app/i2000_monitorView_pm.html?curMenuId=com.iemp.app.pm.monitorView&_=1545967221368#group_152734715982719")
+    driver.implicitly_wait(5)
+    driver.set_page_load_timeout(5)
+    driver.get("https://39.134.87.216:31943/pm/themes/default/pm/app/i2000_monitorView_pm.html?curMenuId=com.iemp.app.pm.monitorView&_=1545967221368#group_152734715982719")
     # print(driver.page_source)
     usr = driver.find_element_by_xpath("//*[@id=\"username\"]")
     usr.send_keys("admin")
@@ -222,6 +225,17 @@ def utm():
     captcha.send_keys(vc)
     captcha.send_keys(Keys.RETURN)
     time.sleep(1)
+
+    # action = ActionChains(driver)
+    # action.send_keys(Keys.ESCAPE)
+    # print(2)
+    # try:
+    #     action.perform()
+    # except TimeoutException:
+    #     print('time out')
+    # # action.perform()
+    # print(3)
+
     button = driver.find_element_by_css_selector('#treeDiv_1_switch')
     button.click()
     cookie = ''
