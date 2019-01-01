@@ -3,25 +3,29 @@ import xlrd
 import random
 import urllib.error
 import urllib.request
+import urllib.parse
 import ssl
 import datetime
 import myPackages.getime as md
-import web.webCrawler.login
-import web.webCrawler.webcrawler
+import web.webCrawler.login as wl
+import web.webCrawler.webcrawler as ww
 import myPackages.mailtools
 import csv
 import json
 
+
 """
-先复制CMNET出口报表至目录，重要的事情说三遍
-先复制CMNET出口报表至目录，重要的事情说三遍
-先复制CMNET出口报表至目录，重要的事情说三遍
-OTT、IPTV 流量统计四部部分组成：
-# 1、iptv
-# 2、SQM
-# 3、CMNET出口数据统计报表
-# 4、发送邮件
+四部部分组成：
+# 1、华为 => 峰值流量
+# 2、 烽火 => 峰值流量、热点时段
+# 3、iptv => 峰值流量、峰值用户数、热点时段
+# 4、SQM =>  OTT峰值用户数
+# 5、CMNET出口数据统计报表（Deprecated）
+# 6、发送邮件
+
+维护成本 超大 涉及的系统太多了。
 """
+
 
 '''Constants'''
 # 输出文件名
@@ -52,6 +56,95 @@ startTime = ts.strftime('%Y-%m-%d')  # 调整时间格式
 endTime = now.strftime('%Y-%m-%d')  # 调整时间格式
 
 
+'''Queries'''
+
+
+# 华为
+def huawei():
+    cookie = wl.utm()
+    # cookie = 'JSESSIONID=608d6bf3654d0e1a2406d2c1099270078e295634e76211a7'
+    url = 'https://39.134.87.216:31943/rest/framework/random?_=1546344328109'
+
+    roarand = ww.get_web_page_ssl(url, cookie)
+
+    def post_ssl(url, my_form):
+        # ssl._create_default_https_context = ssl.create_unverified_context
+        context = ssl._create_unverified_context()
+        header = {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) '
+                          'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36',
+            'roarand': roarand,
+            'Cookie': cookie
+        }
+
+        proxy = {
+            'http': 'http://cmnet:cmnet@211.136.113.69:808'
+        }
+        # 挂代理Handler
+        proxy_support = urllib.request.ProxyHandler(proxy)
+        opener = urllib.request.build_opener(proxy_support)
+        urllib.request.install_opener(opener)
+        # 伪装浏览器申请
+
+        request = urllib.request.Request(url, headers=header)
+        # 编码
+        # form_data = urllib.parse.urlencode(my_form).encode('utf8')
+        form_data = my_form
+        # 读取页面
+        response = urllib.request.urlopen(request, data=form_data, context=context)  # context=context
+
+        f = response.read().decode("utf8")
+        time.sleep(random.randint(0, 1))
+        return f
+
+    time_end = str(md.get_today_zero_stamp())
+    time_start = str(int(time_end) - 24 * 3600)
+    print(time_start, time_end)
+
+    url = 'https://39.134.87.216:31943/rest/pm/history'
+    form = {
+        'param': r'{"pageIndex":1,"historyTimeRange":0,"beginTime":' + time_start +r'000,"endTime":' + time_end + r'000,"isGetGraphicGroupData":true,"mo2Index":"[{\"dn\":\"com.huawei.hvs.pop=2101535\",\"indexId\":\"11735\",\"displayValue\":\"\",\"aggrType\":2}]","pmViewPage":"historyPm","isQueryOriginal":false}'
+    }
+    print(form)
+    form_data = urllib.parse.urlencode(form).encode('utf8')
+    f = post_ssl(url, form_data)
+    print(f)
+    huawei_dict = json.loads(f)
+    huawei_list = huawei_dict['result']['groupQueryData'][0][0]['indexValues']
+    # print(huawei_list)
+    HW_FX_ott_rate = list()
+
+    for item in huawei_list:
+        HW_FX_ott_rate.append(float(item['indexValue']))
+    HW_ott_rate = max(HW_FX_ott_rate)
+    print(max(HW_FX_ott_rate))
+    url = 'https://39.134.87.216:31943/rest/pm/history'
+    form = b'param=%7B%22pageIndex%22%3A1%2C%22historyTimeRange%22%3A0%2C%22beginTime%22%3A' +\
+           bytes(str(time_start), encoding='utf-8') + b'000%2C%22endTime%22%3A' +\
+           bytes(str(time_end), encoding='utf-8') +\
+           b'000%2C%22isGetGraphicGroupData%22%3Atrue%2C%22isMonitorView%22%3Atrue%2C%22mo2Index%22%3A%22%5B%7B%5C%22' \
+           b'dn%5C%22%3A%5C%22com.huawei.hvs.pop%3D2101531%5C%22%2C%5C%22indexId%5C%22%3A%5C%2211735%5C%22%2C%5C%22di' \
+           b'splayValue%5C%22%3A%5C%22%5C%22%2C%5C%22aggrType%5C%22%3A2%7D%5D%22%7D'
+    # form = b'param=%7B%22pageIndex%22%3A1%2C%22historyTimeRange%22%3A0%2C%22beginTime%22%3A1546185600000%2C%22endTime%22%3A1546272000000%2C%22isGetGraphicGroupData%22%3Atrue%2C%22mo2Index%22%3A%22%5B%7B%5C%22dn%5C%22%3A%5C%22com.huawei.hvs.pop%3D2101535%5C%22%2C%5C%22indexId%5C%22%3A%5C%2211735%5C%22%2C%5C%22displayValue%5C%22%3A%5C%22%5C%22%2C%5C%22aggrType%5C%22%3A2%7D%5D%22%2C%22pmViewPage%22%3A%22historyPm%22%2C%22isQueryOriginal%22%3Afalse%7D'
+    f = post_ssl(url, form)
+    # print(f)
+    huawei_dict = json.loads(f)
+    huawei_list = huawei_dict['result']['groupQueryData'][0][0]['indexValues']
+    # print(huawei_list)
+    HW_FX_ott_rate = list()
+
+    for item in huawei_list:
+        HW_FX_ott_rate.append(float(item['indexValue']))
+    # print(max(HW_FX_ott_rate))
+    HW_ott_rate += max(HW_FX_ott_rate)
+    # print(max(HW_FX_ott_rate))
+    return HW_ott_rate
+
+
+huawei_ott = huawei()
+
+
+# 时间戳格式转换
 def timestamp_to_date(time_stamp, format_string="%H:%M"):
     time_array = time.localtime(time_stamp)
     str_date = time.strftime(format_string, time_array)
@@ -65,7 +158,9 @@ def fenghuo():
           '_bytes_total%7Bdevice%3D~%22%5Elo%7Cbond0%7Cbond1%22%7D%5B5m%5D))%20%20*%208&start='\
           + ('%d' % (now_tiem - (now_tiem + 8 * 3600) % 86400 - 86400)) + '&end='\
           + ('%d' % (now_tiem - (now_tiem + 8 * 3600) % 86400)) + '&step=120'
-    f = web.webCrawler.webcrawler.get_web_page_ssl(url, 'grafana_user=fonsview; grafana_remember=c3b58bb8cedb745aec3cc76133b253f2ef3811425f9e86a89a308bf16692ae82bc26b431; csk_sess=827941d628a2d37d')
+    url = 'https://sh.csk.rhel.cc:3000/api/datasources/proxy/1/api/v1/query_range?query=sum(irate(node_network_transmit_bytes_total%7Bgroup%3D%22%E5%A5%89%E8%B4%A4%E4%B8%AD%E5%BF%83%E8%8A%82%E7%82%B9%22%2Cdevice%3D~%22e.*%22%7D%5B5m%5D))%20%20*%208&start='+ ('%d' % (now_tiem - (now_tiem + 8 * 3600) % 86400 - 86400)) + '&end='\
+          + ('%d' % (now_tiem - (now_tiem + 8 * 3600) % 86400)) + '&step=240'
+    f = ww.get_web_page_ssl(url, 'grafana_user=fonsview; grafana_remember=c3b58bb8cedb745aec3cc76133b253f2ef3811425f9e86a89a308bf16692ae82bc26b431; csk_sess=827941d628a2d37d')
     fenghuo_dict = json.loads(f)
     fenghuo_list = fenghuo_dict['data']['result'][0]['values']
     ans = list()
@@ -82,28 +177,53 @@ def fenghuo():
     now_tiem += 3600
     # print(timestamp_to_date(now_tiem))
     str_ott = str_ott + '-' + timestamp_to_date(now_tiem)
-    return max(ans)/1024/1024, str_ott
+    return max(ans)/1000/1000, str_ott
+
+
+def fenghuo_yp():
+    now_tiem = time.time()
+    url = 'https://sh.csk.rhel.cc:3000/api/datasources/proxy/1/api/v1/query_range?query=sum(irate(node_network_transmit_bytes_total%7Bgroup%3D%22%E6%9D%A8%E6%B5%A6%E8%BE%B9%E7%BC%98%E8%8A%82%E7%82%B9%22%2Cdevice%3D~%22e.*%22%7D%5B5m%5D))%20%20*%208&start='+ ('%d' % (now_tiem - (now_tiem + 8 * 3600) % 86400 - 86400)) + '&end='\
+          + ('%d' % (now_tiem - (now_tiem + 8 * 3600) % 86400)) + '&step=240'
+    f = ww.get_web_page_ssl(url, 'grafana_user=fonsview; grafana_remember=c3b58bb8cedb745aec3cc76133b253f2ef3811425f9e86a89a308bf16692ae82bc26b431; csk_sess=827941d628a2d37d')
+    fenghuo_dict = json.loads(f)
+    fenghuo_list = fenghuo_dict['data']['result'][0]['values']
+    ans = list()
+    for item in fenghuo_list:
+        ans.append(float(item[1]))
+    m = max(ans)
+    for item in fenghuo_list:
+        if m == float(item[1]):
+            now_tiem = float(item[0])
+            # print(item[1])
+    now_tiem -= 1800
+    # print(timestamp_to_date(now_tiem))
+    str_ott = '' + timestamp_to_date(now_tiem)
+    now_tiem += 3600
+    # print(timestamp_to_date(now_tiem))
+    str_ott = str_ott + '-' + timestamp_to_date(now_tiem)
+    return max(ans)/1000/1000, str_ott
 
 
 fenghuo_ott, ott_peak_period = fenghuo()
+print(fenghuo_ott, ott_peak_period)
+fenghuo_ott_yp, ott_peak_period = fenghuo_yp()
+fenghuo_ott += fenghuo_ott_yp
+print(fenghuo_ott_yp, ott_peak_period)
 
 
 '''part1 zte'''
-cookie = web.webCrawler.login.zte_anyservice_uniportal_v2()
+cookie = wl.zte_anyservice_uniportal_v2()
 url = 'https://117.135.56.61:8443/dashboard_queryChartData.action'
-form = {
-}
-f = web.webCrawler.webcrawler.post_web_page_ssl(url, form, cookie)
+form = {}   # 仅仅是应为我写的方法，需要填form。也表明这个页面的请求方法有问题。
+f = ww.post_web_page_ssl(url, form, cookie)
 # print(f)
 zte_dict = json.loads(f)
 # print(zte_dict)
 online_user = list()
 bandwidth = list()
-
 for item in zte_dict:
     bandwidth.append(item['bandwidth'])
     online_user.append(item['onlineuser'])
-
 max_rate_tmp = max(bandwidth)
 max_rate = max(bandwidth)/1024/1024/1024
 max_user = max(online_user)
@@ -135,7 +255,7 @@ def query_ottnode_zte(n, cookie):
         form['nodeid'] = 'OTT_3'
     if n == 4:
         form['nodeid'] = 'servicenode2'
-    f = web.webCrawler.webcrawler.post_web_page_ssl(url, form, cookie)
+    f = ww.post_web_page_ssl(url, form, cookie)
     encodedjson = json.loads(f)
 
     # unit单位 upstreamband回源带宽
@@ -164,14 +284,14 @@ print('{:.2f}'.format(bandwidth_0/96*100), '{:.2f}'.format(bandwidth_1/240*100),
       '{:.2f}'.format(bandwidth_4 / 240 * 100))
 
 '''part2 SQM'''
-cookie = web.webCrawler.login.sqm_117()
+cookie = wl.sqm_117()
 # SQM峰值流用户数
 # 系统特性 取某一日的值时需要始末日期一致
 form = {
     'paramData': '{\"location\": 4, \"secFrom\": \"' + startTime + ' 00:00:00\", \"secTo\": \"' + startTime + ' 00:00:00\", \"dimension\": \"1\",\"idfilter\": \"4\", \"type\": \"activeuser\", \"dataType\": \"1\"}'
 }
 url = 'http://117.144.107.165:8088/evqmaster/report/reportaction!returnKpiData.action'
-f = web.webCrawler.webcrawler.post_web_page(url, form, cookie)
+f = ww.post_web_page(url, form, cookie)
 print(f)
 tmp = f[f.find('maxStreamSTBs') + 18:]
 maxStreamSTBs = f[f.find('maxStreamSTBs') + 18: f.find('maxStreamSTBs') + 18 + tmp.index('\\')]
@@ -182,7 +302,7 @@ form = {
     'paramData': '{\"id\":4,\"KPIUTCSec\":\"2000-01-01 00:00:00\",\"SampleInterval\":86400,\"ty'
                  'pe\":\"2\",\"realtime\":\"realtime\"}'
 }
-f = web.webCrawler.webcrawler.post_web_page(url, form, cookie)
+f = ww.post_web_page(url, form, cookie)
 tmp_index = f.find('上海市(')
 tmp_index_ed = f[tmp_index:].find(')')
 sum_box = f[tmp_index+4:tmp_index + tmp_index_ed]
@@ -192,7 +312,7 @@ url = 'http://117.144.107.165:8088/evqmaster/report/reportaction!returnKpiData.a
 form = {
     'paramData': '{\"location\": 4, \"secFrom\": \"' + startTime + ' 00:00:00\", \"secTo\": \"' + startTime + ' 00:00:00\", \"dimension\": \"1\", \"idfilter\": \"4\", \"type\": \"usercard\", \"dataType\": \"1\"}'
 }
-f = web.webCrawler.webcrawler.post_web_page(url, form, cookie)
+f = ww.post_web_page(url, form, cookie)
 tmp_index = f.find('GrnDevices')
 f = f[tmp_index:]
 tmp_normal_device = f[f.find(':')+1:f.find(',')]
@@ -223,7 +343,7 @@ def sqm_nei(cookie):
                      '\": false, \"bIncludeShanxi\": false}'
     }
 
-    f = web.webCrawler.webcrawler.post_web_page(url, form, cookie)
+    f = ww.post_web_page(url, form, cookie)
     fc = f
     # EPG响应时长
     tmp_index = f.find('CntEpgRspTime')
@@ -255,23 +375,24 @@ epg_latency, epg_success_ratio = sqm_nei(cookie)
 
 '''part3 CMNET出口数据统计报表'''
 date = myPackages.getime.yesterday(1)
-filename = 'CMNET出口数据统计报表(' + date + ').xlsx'
-f = xlrd.open_workbook(filename)
-table = f.sheet_by_name("CMNET出口数据统计报表")
-nrows = table.nrows
-ott_max_rate = '0'
-ott_mean_rate = '0'
-for i in range(nrows):
-    row = table.row_values(i)
-    if row[1] == 'OTT/IPTV（总）':
-        ott_max_rate = row[4]
-        ott_mean_rate = row[3]
+# filename = 'CMNET出口数据统计报表(' + date + ').xlsx'
+# f = xlrd.open_workbook(filename)
+# table = f.sheet_by_name("CMNET出口数据统计报表")
+# nrows = table.nrows
+# ott_max_rate = '0'
+# ott_mean_rate = '0'
+# for i in range(nrows):
+#     row = table.row_values(i)
+#     if row[1] == 'OTT/IPTV（总）':
+#         ott_max_rate = row[4]
+#         ott_mean_rate = row[3]
 
 
 '''part4 发送邮件'''
 # ott_max_rate = float(ott_max_rate) + fenghuo_ott
-ott_max_rate = (26.99 + 100.06) * 1000 + fenghuo_ott
-ott_mean_rate = float(ott_mean_rate)
+ott_max_rate = huawei_ott * 1000 + fenghuo_ott
+# ott_mean_rate = float(ott_mean_rate)
+ott_mean_rate = 0
 max_rate = float(max_rate)
 maxStreamSTBs = float(maxStreamSTBs)
 max_user = float(max_user)
@@ -284,7 +405,11 @@ email_content = 'OTT峰值时间段: ' + ott_peak_period + \
                 '; IPTV峰值流用户数: {:.2f}万人; IPTV峰值流速: {:.2f}Gbps; IPTV利用率: {:.2f}%。'\
                     .format(max_user/10000, max_rate, max_rate/IPTV_total_capacity*100)
 email_content = '(' + startTime + ')' + email_content
-csv_content = [startTime] + ['{:.2f}'.format(maxStreamSTBs/10000)] + ['{:.2f}'.format(ott_max_rate/1000)] + ['%.2f' % (ott_mean_rate/1000)] + ['{:.2f}'.format(ott_max_rate/1000/OTT_total_capacity*100)] + ['{:.2f}'.format(max_user/10000)] + ['{:.2f}'.format(max_rate)] + ['{:.2f}'.format(max_rate/IPTV_total_capacity*100)] + ['{:.2f}'.format(laggy_device_ratio)] + [sum_box] + ['%.2f' % epg_success_ratio] + ['%.2f' % epg_latency]
+csv_content = [startTime] + ['{:.2f}'.format(maxStreamSTBs/10000)] + ['{:.2f}'.format(ott_max_rate/1000)] +\
+              ['%.2f' % (ott_mean_rate/1000)] + ['{:.2f}'.format(ott_max_rate/1000/OTT_total_capacity*100)] +\
+              ['{:.2f}'.format(max_user/10000)] + ['{:.2f}'.format(max_rate)] +\
+              ['{:.2f}'.format(max_rate/IPTV_total_capacity*100)] + ['{:.2f}'.format(laggy_device_ratio)] +\
+              [sum_box] + ['%.2f' % epg_success_ratio] + ['%.2f' % epg_latency]
 print('email_content: ', email_content)
 print('csv_content:', csv_content)
 user = [

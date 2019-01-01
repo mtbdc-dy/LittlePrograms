@@ -29,8 +29,16 @@ def today():
     return now.strftime('%Y-%m-%d+%H:%M:%S')
 
 
+def get_today_zero_stamp():
+    now = time.time()  # time.time() 零时区时间戳
+    return '%d' % (now - (now + 8 * 3600) % 86400)  # 当天凌晨
+
+
 if __name__ == '__main__':
-    now = time.time()
-    print('%d' % (now - (now + 8 * 3600) % 86400))     # time.time() 零时区时间戳
+    now = time.time() # time.time() 零时区时间戳
+    print('%d' % (now - (now + 8 * 3600) % 86400))  # 当天凌晨
     print(type('%d' % (now - (now + 8 * 3600) % 86400 - 86400)))
 
+    a = '1'
+    b = b'2' + bytes(a, encoding='utf')
+    print(b)

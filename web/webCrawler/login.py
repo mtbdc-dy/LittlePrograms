@@ -8,7 +8,8 @@ import time
 import json  # eoms用json传了RSA公钥
 import rsa
 import base64
-
+from selenium.webdriver import Chrome
+from selenium.webdriver.common.keys import Keys
 
 # 认证过程一般是 先去网站获取一个cookie 然后用账号密码认证这个cookie
 def login_wangluoquanjingkeshihua():
@@ -207,20 +208,35 @@ def eoms():
 
 
 def utm():
-    url = 'https://39.134.87.216:31943/itpaas/login.action'
-    cj = ww.get_cookie_without_form(url)
-    # 4371b396e727fd23f4ddcaa2c16a90ea5b3f78df09d3997e
-    # cookie = 'itpaasjsessionid=19E308B9A6AE374F4DD7E0F82711694D; session_cookie=ee3fe217-ce48-4b45-9d76-6b77e9fe40a1;' \
-    #          ' bme_locale_session=zh_CN'
+    driver = Chrome()
+    driver.implicitly_wait(10)
+    driver.get(
+        "https://39.134.87.216:31943/pm/themes/default/pm/app/i2000_monitorView_pm.html?curMenuId=com.iemp.app.pm.monitorView&_=1545967221368#group_152734715982719")
+    # print(driver.page_source)
+    usr = driver.find_element_by_xpath("//*[@id=\"username\"]")
+    usr.send_keys("admin")
+    pw = driver.find_element_by_xpath("//*[@id=\"password\"]")
+    pw.send_keys("HuaWei12#$")
+    captcha = driver.find_element_by_xpath("//*[@id=\"validate\"]")
+    vc = input('输入网页上的验证码')
+    captcha.send_keys(vc)
+    captcha.send_keys(Keys.RETURN)
+    time.sleep(1)
+    button = driver.find_element_by_css_selector('#treeDiv_1_switch')
+    button.click()
     cookie = ''
-    for item in cj:
-        cookie = cookie + item.name + '=' + item.value + ';'
+    for item in driver.get_cookies():
+        # print(item)
+        if item['name'] == 'JSESSIONID':
+            cookie = 'JSESSIONID=' + item['value']
+    print(cookie)
 
-    return cookie[:-1]
+    driver.close()
+    return cookie
 
 
 if __name__ == '__main__':
-    sqm_117_auto_recognize_captcha()
+    cookie = utm()
 
     print()
 
