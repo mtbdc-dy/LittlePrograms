@@ -1,20 +1,9 @@
-# import math
-#
-#
-# # callable测试
-# print(callable(math.sqrt))
-# a = 1
-# b = 2
-# if (a + b == 3) or (a - b == 1):
-#     # print('asda')
-#     print()
-# for i in [1, 2, 3]:
-#     print(i)
-#
-# a = '123'
-# print(a[:-1])
+import time
 
-for i in [1, 2] and [2, 3]:
-    print(i)
+t = (2009, 2, 17, 17, 3, 38, 1, 48, 0)
+timestamp = time.mktime(t)
+time_array = time.localtime(timestamp)
+print(time.strftime("%H:%M:%S", time_array))
+print(time.strftime("%H:%M", t))
 
 

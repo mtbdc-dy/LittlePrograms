@@ -13,7 +13,6 @@ import csv
 import json
 
 """
-今天开始iptv峰值*0.95哦 max_rate
 先复制CMNET出口报表至目录，重要的事情说三遍
 先复制CMNET出口报表至目录，重要的事情说三遍
 先复制CMNET出口报表至目录，重要的事情说三遍
@@ -53,6 +52,12 @@ startTime = ts.strftime('%Y-%m-%d')  # 调整时间格式
 endTime = now.strftime('%Y-%m-%d')  # 调整时间格式
 
 
+def timestamp_to_date(time_stamp, format_string="%H:%M"):
+    time_array = time.localtime(time_stamp)
+    str_date = time.strftime(format_string, time_array)
+    return str_date
+
+
 # 烽火
 def fenghuo():
     now_tiem = time.time()
@@ -66,11 +71,21 @@ def fenghuo():
     ans = list()
     for item in fenghuo_list:
         ans.append(float(item[1]))
-    # print(max(ans))
-    return max(ans)/1024/1024
+    m = max(ans)
+    for item in fenghuo_list:
+        if m == float(item[1]):
+            now_tiem = float(item[0])
+            # print(item[1])
+    now_tiem -= 1800
+    # print(timestamp_to_date(now_tiem))
+    str_ott = '' + timestamp_to_date(now_tiem)
+    now_tiem += 3600
+    # print(timestamp_to_date(now_tiem))
+    str_ott = str_ott + '-' + timestamp_to_date(now_tiem)
+    return max(ans)/1024/1024, str_ott
 
 
-fenghuo_ott = fenghuo()
+fenghuo_ott, ott_peak_period = fenghuo()
 
 
 '''part1 zte'''
@@ -84,19 +99,24 @@ zte_dict = json.loads(f)
 # print(zte_dict)
 online_user = list()
 bandwidth = list()
+
 for item in zte_dict:
     bandwidth.append(item['bandwidth'])
     online_user.append(item['onlineuser'])
 
+max_rate_tmp = max(bandwidth)
 max_rate = max(bandwidth)/1024/1024/1024
 max_user = max(online_user)
-
-'''
-分组信息
-区域节点 8 x 12 = 96G
-视频节点 1~3 20 x 12 = 240G
-视频节点 4 10 x 12 = 120G
-'''
+iptv_time_tmp = ''
+for item in zte_dict:
+    if item['bandwidth'] == max_rate_tmp:
+        iptv_time_tmp = item['stattime']
+h = iptv_time_tmp[0:2]
+m = iptv_time_tmp[-2:]
+# print(h, m)
+t = (2018, 12, 31, int(h), int(m), 0, 0, 0, 0)
+timestamp_iptv = time.mktime(t)
+iptv_peak_period = timestamp_to_date(timestamp_iptv - 1800) + '-' + timestamp_to_date(timestamp_iptv + 1800)
 
 
 def query_ottnode_zte(n, cookie):
@@ -250,15 +270,20 @@ for i in range(nrows):
 
 '''part4 发送邮件'''
 # ott_max_rate = float(ott_max_rate) + fenghuo_ott
-ott_max_rate = (25.97 + 93.74) * 1000 + fenghuo_ott
+ott_max_rate = (26.99 + 100.06) * 1000 + fenghuo_ott
 ott_mean_rate = float(ott_mean_rate)
-max_rate = float(max_rate) * 0.96
+max_rate = float(max_rate)
 maxStreamSTBs = float(maxStreamSTBs)
 max_user = float(max_user)
 print(maxStreamSTBs, max_rate, max_user, ott_max_rate)
 title = date + '互联网电视指标'
-email_content = 'OTT峰值流用户数: {:.2f}万人; OTT峰值流速: {:.2f}Gbps; OTT利用率: {:.2f}%; IPTV峰值流用户数: {:.2f}万人; IPTV峰值流速: {:.2f}Gbps; IPTV利用率: {:.2f}%。'.format(maxStreamSTBs/10000, ott_max_rate/1000, ott_max_rate/1000/OTT_total_capacity*100, max_user/10000, max_rate, max_rate/IPTV_total_capacity*100)
-email_content = startTime + ': ' + email_content
+email_content = 'OTT峰值时间段: ' + ott_peak_period + \
+                '; OTT峰值流用户数: {:.2f}万人; OTT峰值流速: {:.2f}Gbps; OTT利用率: {:.2f}%;'\
+                .format(maxStreamSTBs/10000, ott_max_rate/1000, ott_max_rate/1000/OTT_total_capacity*100) \
+                + 'IPTV峰值时间段: ' + iptv_peak_period +\
+                '; IPTV峰值流用户数: {:.2f}万人; IPTV峰值流速: {:.2f}Gbps; IPTV利用率: {:.2f}%。'\
+                    .format(max_user/10000, max_rate, max_rate/IPTV_total_capacity*100)
+email_content = '(' + startTime + ')' + email_content
 csv_content = [startTime] + ['{:.2f}'.format(maxStreamSTBs/10000)] + ['{:.2f}'.format(ott_max_rate/1000)] + ['%.2f' % (ott_mean_rate/1000)] + ['{:.2f}'.format(ott_max_rate/1000/OTT_total_capacity*100)] + ['{:.2f}'.format(max_user/10000)] + ['{:.2f}'.format(max_rate)] + ['{:.2f}'.format(max_rate/IPTV_total_capacity*100)] + ['{:.2f}'.format(laggy_device_ratio)] + [sum_box] + ['%.2f' % epg_success_ratio] + ['%.2f' % epg_latency]
 print('email_content: ', email_content)
 print('csv_content:', csv_content)
