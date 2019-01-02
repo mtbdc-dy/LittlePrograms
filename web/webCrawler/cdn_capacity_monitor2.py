@@ -103,12 +103,12 @@ def huawei():
 
     url = 'https://39.134.87.216:31943/rest/pm/history'
     form = {
-        'param': r'{"pageIndex":1,"historyTimeRange":0,"beginTime":' + time_start +r'000,"endTime":' + time_end + r'000,"isGetGraphicGroupData":true,"mo2Index":"[{\"dn\":\"com.huawei.hvs.pop=2101535\",\"indexId\":\"11735\",\"displayValue\":\"\",\"aggrType\":2}]","pmViewPage":"historyPm","isQueryOriginal":false}'
+        'param': r'{"pageIndex":1,"historyTimeRange":0,"beginTime":' + time_start + r'000,"endTime":' + time_end + r'000,"isGetGraphicGroupData":true,"mo2Index":"[{\"dn\":\"com.huawei.hvs.pop=2101535\",\"indexId\":\"11735\",\"displayValue\":\"\",\"aggrType\":2}]","pmViewPage":"historyPm","isQueryOriginal":false}'
     }
-    print(form)
+    # print(form)
     form_data = urllib.parse.urlencode(form).encode('utf8')
     f = post_ssl(url, form_data)
-    print(f)
+    # print(f)
     huawei_dict = json.loads(f)
     huawei_list = huawei_dict['result']['groupQueryData'][0][0]['indexValues']
     # print(huawei_list)
@@ -135,12 +135,13 @@ def huawei():
 
     for item in huawei_list:
         HW_FX_ott_rate.append(float(item['indexValue']))
-    # print(max(HW_FX_ott_rate))
+    print(max(HW_FX_ott_rate))
     HW_ott_rate += max(HW_FX_ott_rate)
     # print(max(HW_FX_ott_rate))
     return HW_ott_rate
 
 
+print('华为：')
 huawei_ott = huawei()
 
 
@@ -204,6 +205,7 @@ def fenghuo_yp():
     return max(ans)/1000/1000, str_ott
 
 
+print('烽火：')
 fenghuo_ott, ott_peak_period = fenghuo()
 print(fenghuo_ott, ott_peak_period)
 fenghuo_ott_yp, ott_peak_period = fenghuo_yp()
