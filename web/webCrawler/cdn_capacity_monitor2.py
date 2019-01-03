@@ -178,7 +178,7 @@ def fenghuo():
     now_tiem += 3600
     # print(timestamp_to_date(now_tiem))
     str_ott = str_ott + '-' + timestamp_to_date(now_tiem)
-    return max(ans)/1024, str_ott
+    return max(ans)/1024/1024/1024, str_ott
 
 
 def fenghuo_yp():
@@ -202,7 +202,7 @@ def fenghuo_yp():
     now_tiem += 3600
     # print(timestamp_to_date(now_tiem))
     str_ott = str_ott + '-' + timestamp_to_date(now_tiem)
-    return max(ans)/1024, str_ott
+    return max(ans)/1024/1024/1024, str_ott
 
 
 print('烽火：')
@@ -392,7 +392,7 @@ date = myPackages.getime.yesterday(1)
 
 '''part4 发送邮件'''
 # ott_max_rate = float(ott_max_rate) + fenghuo_ott
-ott_max_rate = huawei_ott * 1024 + fenghuo_ott
+ott_max_rate = huawei_ott + fenghuo_ott
 # ott_mean_rate = float(ott_mean_rate)
 ott_mean_rate = 0
 max_rate = float(max_rate)
@@ -402,13 +402,13 @@ print(maxStreamSTBs, max_rate, max_user, ott_max_rate)
 title = date + '互联网电视指标'
 email_content = 'OTT峰值时间段: ' + ott_peak_period + \
                 '; OTT峰值流用户数: {:.2f}万人; OTT峰值流速: {:.2f}Gbps; OTT利用率: {:.2f}%;'\
-                .format(maxStreamSTBs/10000, ott_max_rate/1024, ott_max_rate/1024/OTT_total_capacity*100) \
+                .format(maxStreamSTBs/10000, ott_max_rate, ott_max_rate/OTT_total_capacity*100) \
                 + 'IPTV峰值时间段: ' + iptv_peak_period +\
                 '; IPTV峰值流用户数: {:.2f}万人; IPTV峰值流速: {:.2f}Gbps; IPTV利用率: {:.2f}%。'\
                     .format(max_user/10000, max_rate, max_rate/IPTV_total_capacity*100)
 email_content = '(' + startTime + ')' + email_content
-csv_content = [startTime] + ['{:.2f}'.format(maxStreamSTBs/10000)] + ['{:.2f}'.format(ott_max_rate/1024)] +\
-              ['%.2f' % (ott_mean_rate/1024)] + ['{:.2f}'.format(ott_max_rate/1024/OTT_total_capacity*100)] +\
+csv_content = [startTime] + ['{:.2f}'.format(maxStreamSTBs/10000)] + ['{:.2f}'.format(ott_max_rate)] +\
+              ['%.2f' % (ott_mean_rate/1024)] + ['{:.2f}'.format(ott_max_rate/OTT_total_capacity*100)] +\
               ['{:.2f}'.format(max_user/10000)] + ['{:.2f}'.format(max_rate)] +\
               ['{:.2f}'.format(max_rate/IPTV_total_capacity*100)] + ['{:.2f}'.format(laggy_device_ratio)] +\
               [sum_box] + ['%.2f' % epg_success_ratio] + ['%.2f' % epg_latency]
@@ -423,7 +423,7 @@ user = [
     'zhouqihui@sh.chinamobile.com', 'chenhuanmin@sh.chinamobile.com', 'wuqian@sh.chinamobile.com',
     'yangjie@sh.chinamobile.com', 'xiongyt@sh.chinamobile.com', 'tanmiaomiao@sh.chinamobile.com',
     'wucaili@sh.chinamobile.com', 'dingy@sh.chinamobile.com', 'fenghongyu@sh.chinamobile.com',
-    'xuzicheng@sh.chinamobile.com', 'zhanghe@sh.chinamobile.com'
+    'xuzicheng@sh.chinamobile.com', 'zhanghe@sh.chinamobile.com', 'sufeng@sh.chinamobile.com'
 ]
 
 

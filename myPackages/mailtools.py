@@ -107,7 +107,7 @@ def mail_oa(content, my_user):
 
 if __name__ == '__main__':
     my_receiver = 'xuyuan2@sh.chinamobile.com'
-    ret = mail_oa('怎么回事小老弟', my_receiver)
+    ret = mail_oa('怎么回事老弟', my_receiver)
     if ret:
         print("ok")  # 如果发送成功则会返回ok，稍等20秒左右就可以收到邮件
     else:
