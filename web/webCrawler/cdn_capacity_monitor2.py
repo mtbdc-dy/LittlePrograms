@@ -274,7 +274,7 @@ def query_ottnode_zte(n, cookie):
     upstreamband = max(encodedjson['upstreamband'])
     concurrent = max(encodedjson['concurrent'])
     bandwidth = max(encodedjson['bandwidth'])
-    return concurrent, bandwidth, upstreamband
+    return concurrent, float(bandwidth), upstreamband
 
 
 concurrent_0, bandwidth_0, upstreamband_0 = query_ottnode_zte(0, cookie)    # 区域中心
@@ -289,7 +289,8 @@ concurrent_sj, bandwidth_sj, upstreamband_sj = query_ottnode_zte('sj', cookie)
 
 
 csv_content_zte = [startTime, bandwidth_0, bandwidth_1, bandwidth_2, bandwidth_3, bandwidth_4, bandwidth_cm,
-                   bandwidth_bs, bandwidth_jd, bandwidth_sj]
+                   bandwidth_bs, bandwidth_jd, bandwidth_sj, bandwidth_0+bandwidth_1+bandwidth_2+bandwidth_3 +
+                   bandwidth_4, bandwidth_cm+bandwidth_bs+bandwidth_jd+bandwidth_sj]
 
 print('{:.2f}'.format(bandwidth_0/99*100), '{:.2f}'.format(bandwidth_1/240*100),
       '{:.2f}'.format(bandwidth_2 / 240 * 100), '{:.2f}'.format(bandwidth_3/240*100),
