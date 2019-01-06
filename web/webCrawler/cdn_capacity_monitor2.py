@@ -410,7 +410,7 @@ max_rate = float(max_rate)
 maxStreamSTBs = float(maxStreamSTBs)
 max_user = float(max_user)
 # print(maxStreamSTBs, max_rate, max_user, ott_max_rate)
-title = date + '互联网电视指标'
+title = 'DoNotReply 互联网电视指标' + date
 email_content = 'OTT峰值时间段: ' + ott_peak_period + \
                 '; OTT峰值流用户数: {:.2f}万人; OTT峰值流速: {:.2f}Gbps; OTT利用率: {:.2f}%;'\
                 .format(maxStreamSTBs/10000, ott_max_rate, ott_max_rate/OTT_total_capacity*100) \

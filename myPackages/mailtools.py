@@ -31,7 +31,7 @@ def mail139_customise(title, content, my_user):
     flag = True
     try:
         msg = MIMEText(content, 'plain', 'utf-8')
-        msg['From'] = formataddr(["DoNotReply", '徐缘'])   # 括号里的对应发件人邮箱昵称、发件人邮箱账号
+        msg['From'] = formataddr(["DoNotReply 徐缘", 'shmcip@139.com'])   # 括号里的对应发件人邮箱昵称、发件人邮箱账号
         msg['To'] = formataddr(["收件人", my_user[0]])   # 收件人，必须是一个字符串
         msg['Subject'] = title  # 邮件的主题，也可以说是标题
 
@@ -48,7 +48,7 @@ def mail139_mine(title, content, my_user):
     flag = True
     try:
         msg = MIMEText(content, 'plain', 'utf-8')
-        msg['From'] = formataddr(["DoNotReply 徐缘", 'yxu9428@139.com'])   # 括号里的对应发件人邮箱昵称、发件人邮箱账号
+        msg['From'] = formataddr(["徐缘", 'yxu9428@139.com'])   # 括号里的对应发件人邮箱昵称、发件人邮箱账号
         msg['To'] = formataddr(["收件人", my_user[0]])   # 收件人，必须是一个字符串
         msg['Subject'] = title  # 邮件的主题，也可以说是标题
 
