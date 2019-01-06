@@ -221,7 +221,7 @@ def utm():
     pw = driver.find_element_by_xpath("//*[@id=\"password\"]")
     pw.send_keys("HuaWei12#$")
 
-    input('Press any key to continue...')
+    input('Press Enter to continue...')
     # captcha = driver.find_element_by_xpath("//*[@id=\"validate\"]")
     # vc = input('输入网页上的验证码')
     # captcha.send_keys(vc)

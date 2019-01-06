@@ -31,7 +31,7 @@ import json
 # 输出文件名
 file_output = 'cdn_rate.csv'
 # IPTV
-IPTV_total_capacity = 1241
+IPTV_total_capacity = 1321
 print('中兴总容量： \033[32;0m{:d}\033[0mG'.format(IPTV_total_capacity))
 # OTT
 FX_FengHuo_OTT = 240
@@ -284,13 +284,13 @@ concurrent_3, bandwidth_3, upstreamband_3 = query_ottnode_zte(3, cookie)    # �
 concurrent_4, bandwidth_4, upstreamband_4 = query_ottnode_zte(4, cookie)    # 节点4
 concurrent_cm, bandwidth_cm, upstreamband_cm = query_ottnode_zte('cm', cookie)    #
 concurrent_bs, bandwidth_bs, upstreamband_bs = query_ottnode_zte('bs', cookie)    #
-concurrent_jd, bandwidth_jd, upstreamband_jd = query_ottnode_zte('jd', cookie)    #
+concurrent_jd, bandwidth_jbl, upstreamband_jd = query_ottnode_zte('jbl', cookie)    #
 concurrent_sj, bandwidth_sj, upstreamband_sj = query_ottnode_zte('sj', cookie)
 
 
 csv_content_zte = [startTime, bandwidth_0, bandwidth_1, bandwidth_2, bandwidth_3, bandwidth_4, bandwidth_cm,
-                   bandwidth_bs, bandwidth_jd, bandwidth_sj, bandwidth_0+bandwidth_1+bandwidth_2+bandwidth_3 +
-                   bandwidth_4, round(bandwidth_cm+bandwidth_bs+bandwidth_jd+bandwidth_sj, 2)]
+                   bandwidth_bs, bandwidth_jbl, bandwidth_sj, bandwidth_0+bandwidth_1+bandwidth_2+bandwidth_3 +
+                   bandwidth_4, round(bandwidth_cm+bandwidth_bs+bandwidth_jbl+bandwidth_sj, 2)]
 
 print('{:.2f}'.format(bandwidth_0/99*100), '{:.2f}'.format(bandwidth_1/240*100),
       '{:.2f}'.format(bandwidth_2 / 240 * 100), '{:.2f}'.format(bandwidth_3/240*100),
@@ -451,7 +451,7 @@ check_code = input('y or n or s(save)').lower()
 if check_code == 'y':
     writer.writerow(csv_content)
     writer_zte.writerow(csv_content_zte)
-    ret = myPackages.mailtools.mail139_customise(title, email_content, user)
+    ret = myPackages.mailtools.mail139_mine(title, email_content, user)
     if ret:
         print("ok")  # 如果发送成功则会返回ok，稍等20秒左右就可以收到邮件
     else:
