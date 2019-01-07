@@ -37,7 +37,7 @@ print('中兴总容量： \033[32;0m{:d}\033[0mG'.format(IPTV_total_capacity))
 FX_FengHuo_OTT = 240
 YP_FengHuo_OTT = 90
 FX_HuaWei_OTT = 108
-PD_HuaWei_OTT = 150
+PD_HuaWei_OTT = 222
 OTT_total_capacity = FX_FengHuo_OTT + YP_FengHuo_OTT + FX_HuaWei_OTT + PD_HuaWei_OTT
 print('OTT总容量： \033[32;0m{:d}\033[0mG'.format(OTT_total_capacity))
 # 打开输出文件
