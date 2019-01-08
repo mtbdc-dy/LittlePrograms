@@ -1,8 +1,12 @@
 import math
 import myPackages.process_txt as mp
 import os
-
 import sys
+
+"""
+    path 相关
+"""
+
 print(os.path.dirname(os.path.abspath(__file__)))
 print(int(1/2))
 a = 1

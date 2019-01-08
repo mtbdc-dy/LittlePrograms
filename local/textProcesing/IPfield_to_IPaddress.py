@@ -1,84 +1,61 @@
 import csv
 import xlrd
+from IPy import IP
+import myPackages.ip as mi
+
+"""
+    将IP地址段转化成IP_start - IP_end 的形式
+    要求：
+        0、读文件，规范模板（Bras地址整理.xlsx）
+        1、合并同bras的ip地址
+        2、将输出转换成中兴，华为所需样式
+"""
 
 
-def convert(s):
-    if not s:
-        return '', ''
-    else:
-        ip_s = s.split('/')[0]
-        mask = s.split('/')[1]
-        ip_a = ip_s.split('.')[0]
-        ip_b = ip_s.split('.')[1]
-        ip_c = ip_s.split('.')[2]
-        # ip_d = ip_s.split('.')[3]
-        # print(ip_s, mask)
-        ip_e = ''
-        if mask == '24':
-            ip_e = ip_a + '.' + ip_b + '.' + ip_c + '.' + '255'
-        if mask == '22':
-            ip_e = ip_a + '.' + ip_b + '.' + str(int(ip_c) + 3) + '.' + '255'
-        return ip_s, ip_e
+if __name__ == '__main__':
+
+    filename = 'Bras地址整理.xlsx'
+    f = xlrd.open_workbook(filename)
+    filename_output = 'bras地址_hw.csv'
+    g = open(filename_output, 'w', newline='')
+    writer_hw = csv.writer(g)
+    filename_output = 'bras地址_zte.csv'
+    h = open(filename_output, 'w', newline='')
+    writer_zte = csv.writer(h)
+
+    table = f.sheet_by_name("Sheet1")
+    nrows = table.nrows
+    print(nrows)
+    csv_content = []
+    for i in range(nrows):
+        if i == 0:
+            continue
+
+        row = table.row_values(i)
+        if row[0] != '':
+            print(row)
+            bras = row[0]
+            try:
+                ip_unique = IP(row[2])
+            except:
+                ip_unique = IP('0.0.0.0')
+            ip_shared = IP(row[4])
+        else:
+            # print(row)
+            ip_shared_sec = IP(row[4])
+            try:
+                ip_shared = ip_shared + ip_shared_sec
+                # print(ip_shared)
+                writer_hw.writerow([bras, ip_shared.strNormal(2)])
+                writer_zte.writerow([bras, ip_shared.strNormal(3)])
+            except:
+                writer_hw.writerow([bras, ip_shared.strNormal(2), ip_shared_sec.strNormal(2)])
+                if mi.add_one_on_ip(str(ip_shared[-1])) == str(ip_shared_sec[0]):
+                    writer_zte.writerow([bras, str(ip_shared[0]) + '-' + str(ip_shared_sec[-1])])
+                elif str(ip_shared[0]) == mi.add_one_on_ip(str(ip_shared_sec[-1])):
+                    writer_zte.writerow([bras, str(ip_shared_sec[0]) + '-' + str(ip_shared[-1])])
+                else:
+                    writer_zte.writerow([bras, ip_shared.strNormal(3), ip_shared_sec.strNormal(3)])
 
 
-def check_continuity(e, s):
-    if not e or not s:
-        return False
-    if e[0] != s[0] or e[1] != s[1]:
-        return False
 
-    if int(e.split('.')[2]) + 1 == int(s.split('.')[2]):
-        return True
-
-
-filename = 'bras地址.xlsx'
-f = xlrd.open_workbook(filename)
-
-filename_output = 'bras地址.csv'
-g = open(filename_output, 'w', newline='')
-writer = csv.writer(g)
-
-
-table = f.sheet_by_name("Sheet1")
-nrows = table.nrows
-for i in range(nrows):
-    print()
-    row = table.row_values(i)
-    print(row)
-    line = [row[0]]
-    ips, ipe = convert(row[1])
-    line.append(ips)
-    line.append(ipe)
-
-    ips, ipe = convert(row[2])
-    line.append(ips)
-    line.append(ipe)
-
-    ips, ipe = convert(row[3])
-    line.append(ips)
-    line.append(ipe)
-    print(line)
-    for j, k in [(2, 3), (2, 5), (4, 1), (4, 5), (6, 1), (6, 3)]:
-
-        if check_continuity(line[j], line[k]):
-            line[j] = line[k+1]
-            del line[k+1]
-            line.remove(line[k])
-            break
-    print(line)
-    if len(line) == 3:
-        writer.writerow(line)
-    elif len(line) == 5:
-        new_line1 = [line[0], line[1], line[2]]
-        new_line2 = [line[0], line[3], line[4]]
-        writer.writerow(new_line1)
-        writer.writerow(new_line2)
-    elif len(line) == 7:
-        new_line1 = [line[0], line[1], line[2]]
-        new_line2 = [line[0], line[3], line[4]]
-        new_line3 = [line[0], line[5], line[6]]
-        writer.writerow(new_line1)
-        writer.writerow(new_line2)
-        writer.writerow(new_line3)
-    else:
-        print('wrong')
