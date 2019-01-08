@@ -291,8 +291,8 @@ concurrent_sj, bandwidth_sj, upstreamband_sj = query_ottnode_zte('sj', cookie)
 
 
 csv_content_zte = [startTime, bandwidth_0, bandwidth_1, bandwidth_2, bandwidth_3, bandwidth_4, bandwidth_cm,
-                   bandwidth_bs, bandwidth_jbl, bandwidth_sj, bandwidth_0+bandwidth_1+bandwidth_2+bandwidth_3 +
-                   bandwidth_4, round(bandwidth_cm+bandwidth_bs+bandwidth_jbl+bandwidth_sj, 2)]
+                   bandwidth_bs, bandwidth_jbl, bandwidth_sj, round(bandwidth_0+bandwidth_1+bandwidth_2+bandwidth_3 +
+                   bandwidth_4, 2), round(bandwidth_cm+bandwidth_bs+bandwidth_jbl+bandwidth_sj, 2)]
 
 print('{:.2f}'.format(bandwidth_0/99*100), '{:.2f}'.format(bandwidth_1/240*100),
       '{:.2f}'.format(bandwidth_2 / 240 * 100), '{:.2f}'.format(bandwidth_3/240*100),
