@@ -36,9 +36,8 @@ print('中兴总容量： \033[32;0m{:d}\033[0mG'.format(IPTV_total_capacity))
 # OTT
 FX_FengHuo_OTT = 240
 YP_FengHuo_OTT = 90
-FX_HuaWei_OTT = 108
 PD_HuaWei_OTT = 222
-OTT_total_capacity = FX_FengHuo_OTT + YP_FengHuo_OTT + FX_HuaWei_OTT + PD_HuaWei_OTT
+OTT_total_capacity = FX_FengHuo_OTT + YP_FengHuo_OTT + PD_HuaWei_OTT
 print('OTT总容量： \033[32;0m{:d}\033[0mG'.format(OTT_total_capacity))
 # 打开输出文件
 g = open(file_output, 'a', newline='')
@@ -100,23 +99,26 @@ def huawei():
     time_start = str(int(time_end) - 24 * 3600)
     # print(time_start, time_end)
 
-    url = 'https://39.134.87.216:31943/rest/pm/history'
-    form = {
-        'param': r'{"pageIndex":1,"historyTimeRange":0,"beginTime":' + time_start + r'000,"endTime":' + time_end + r'000,"isGetGraphicGroupData":true,"mo2Index":"[{\"dn\":\"com.huawei.hvs.pop=2101535\",\"indexId\":\"11735\",\"displayValue\":\"\",\"aggrType\":2}]","pmViewPage":"historyPm","isQueryOriginal":false}'
-    }
-    # print(form)
-    form_data = urllib.parse.urlencode(form).encode('utf8')
-    f = post_ssl(url, form_data)
-    # print(f)
-    huawei_dict = json.loads(f)
-    huawei_list = huawei_dict['result']['groupQueryData'][0][0]['indexValues']
-    # print(huawei_list)
-    HW_FX_ott_rate = list()
+    # 奉贤分组
+    # url = 'https://39.134.87.216:31943/rest/pm/history'
+    # form = {
+    #     'param': r'{"pageIndex":1,"historyTimeRange":0,"beginTime":' + time_start + r'000,"endTime":' + time_end + r'000,"isGetGraphicGroupData":true,"mo2Index":"[{\"dn\":\"com.huawei.hvs.pop=2101535\",\"indexId\":\"11735\",\"displayValue\":\"\",\"aggrType\":2}]","pmViewPage":"historyPm","isQueryOriginal":false}'
+    # }
+    # # print(form)
+    # form_data = urllib.parse.urlencode(form).encode('utf8')
+    # f = post_ssl(url, form_data)
+    # # print(f)
+    # huawei_dict = json.loads(f)
+    # huawei_list = huawei_dict['result']['groupQueryData'][0][0]['indexValues']
+    # # print(huawei_list)
+    # HW_FX_ott_rate = list()
+    #
+    # for item in huawei_list:
+    #     HW_FX_ott_rate.append(float(item['indexValue']))
+    # HW_ott_rate = max(HW_FX_ott_rate)
+    # print(max(HW_FX_ott_rate))
 
-    for item in huawei_list:
-        HW_FX_ott_rate.append(float(item['indexValue']))
-    HW_ott_rate = max(HW_FX_ott_rate)
-    print(max(HW_FX_ott_rate))
+    HW_ott_rate = 0
     url = 'https://39.134.87.216:31943/rest/pm/history'
     form = b'param=%7B%22pageIndex%22%3A1%2C%22historyTimeRange%22%3A0%2C%22beginTime%22%3A' +\
            bytes(str(time_start), encoding='utf-8') + b'000%2C%22endTime%22%3A' +\
