@@ -57,8 +57,16 @@ endTime = now.strftime('%Y-%m-%d')  # 调整时间格式
 '''Queries'''
 
 
+# 时间戳格式转换
+def timestamp_to_date(time_stamp, format_string="%H:%M"):
+    time_array = time.localtime(time_stamp)
+    str_date = time.strftime(format_string, time_array)
+    return str_date
+
+
 # p1 华为
 def huawei():
+
     cookie = wl.utm()
     # cookie = 'JSESSIONID=608d6bf3654d0e1a2406d2c1099270078e295634e76211a7'
     url = 'https://39.134.87.216:31943/rest/framework/random?_=1546344328109'
@@ -128,41 +136,42 @@ def huawei():
            b'splayValue%5C%22%3A%5C%22%5C%22%2C%5C%22aggrType%5C%22%3A2%7D%5D%22%7D'
     # form = b'param=%7B%22pageIndex%22%3A1%2C%22historyTimeRange%22%3A0%2C%22beginTime%22%3A1546185600000%2C%22endTime%22%3A1546272000000%2C%22isGetGraphicGroupData%22%3Atrue%2C%22mo2Index%22%3A%22%5B%7B%5C%22dn%5C%22%3A%5C%22com.huawei.hvs.pop%3D2101535%5C%22%2C%5C%22indexId%5C%22%3A%5C%2211735%5C%22%2C%5C%22displayValue%5C%22%3A%5C%22%5C%22%2C%5C%22aggrType%5C%22%3A2%7D%5D%22%2C%22pmViewPage%22%3A%22historyPm%22%2C%22isQueryOriginal%22%3Afalse%7D'
     f = post_ssl(url, form)
-    # print(f)
+    print(f)
     huawei_dict = json.loads(f)
     huawei_list = huawei_dict['result']['groupQueryData'][0][0]['indexValues']
     # print(huawei_list)
     HW_FX_ott_rate = list()
+    time_stamp = list()
 
     for item in huawei_list:
         HW_FX_ott_rate.append(float(item['indexValue']))
+        time_stamp.append(item['timestampStr'].split(' ')[1])
+
+    time_stamp_peak = time_stamp[HW_FX_ott_rate.index(max(HW_FX_ott_rate))]
+    print(time_stamp_peak)
+    t = (2018, 12, 31, int(time_stamp_peak.split(':')[0]), int(time_stamp_peak.split(':')[1]), 0, 0, 0, 0)
+    huawei_stamp = time.mktime(t)
+    ott_peak_period = timestamp_to_date(huawei_stamp - 1800) + '-' + timestamp_to_date(huawei_stamp + 1800)
+    print(ott_peak_period)
     print(max(HW_FX_ott_rate))
     HW_ott_rate += max(HW_FX_ott_rate)
     # print(max(HW_FX_ott_rate))
-    return HW_ott_rate
+    return HW_ott_rate, ott_peak_period
 
 
 print('华为：')
-huawei_ott = huawei()
-
-
-# 时间戳格式转换
-def timestamp_to_date(time_stamp, format_string="%H:%M"):
-    time_array = time.localtime(time_stamp)
-    str_date = time.strftime(format_string, time_array)
-    return str_date
+huawei_ott, ott_peak_period = huawei()
 
 
 # p2 烽火
 def fenghuo():
     now_tiem = time.time()
-    url = 'https://39.134.89.13:3000/api/datasources/proxy/1/api/v1/query_range?query=sum(irate(node_network_transmit' \
-          '_bytes_total%7Bdevice%3D~%22%5Elo%7Cbond0%7Cbond1%22%7D%5B5m%5D))%20%20*%208&start='\
-          + ('%d' % (now_tiem - (now_tiem + 8 * 3600) % 86400 - 86400)) + '&end='\
-          + ('%d' % (now_tiem - (now_tiem + 8 * 3600) % 86400)) + '&step=120'
+    # url = 'https://sh.csk.rhel.cc:3000/api/datasources/proxy/1/api/v1/query_range?query=sum(irate(node_network_transmit_bytes_total%7Bgroup%3D%22%E5%A5%89%E8%B4%A4%E4%B8%AD%E5%BF%83%E8%8A%82%E7%82%B9%22%2Cdevice%3D~%22e.*%22%7D%5B5m%5D))%20%20*%208&start=1546963200&end=1547049600&step=600'
     url = 'https://sh.csk.rhel.cc:3000/api/datasources/proxy/1/api/v1/query_range?query=sum(irate(node_network_transmit_bytes_total%7Bgroup%3D%22%E5%A5%89%E8%B4%A4%E4%B8%AD%E5%BF%83%E8%8A%82%E7%82%B9%22%2Cdevice%3D~%22e.*%22%7D%5B5m%5D))%20%20*%208&start='+ ('%d' % (now_tiem - (now_tiem + 8 * 3600) % 86400 - 86400)) + '&end='\
           + ('%d' % (now_tiem - (now_tiem + 8 * 3600) % 86400)) + '&step=240'
-    f = ww.get_web_page_ssl(url, 'grafana_user=fonsview; grafana_remember=c3b58bb8cedb745aec3cc76133b253f2ef3811425f9e86a89a308bf16692ae82bc26b431; csk_sess=827941d628a2d37d')
+
+    print(url)
+    f = ww.get_web_page_ssl(url, 'csk_sess=af51ac156f60680e; grafana_user=fonsview; grafana_remember=7a09dff47b67b97a0fedb308cc09636af8e2861184a8dc69b48ecb43e3a6464380a07fbd')
     fenghuo_dict = json.loads(f)
     fenghuo_list = fenghuo_dict['data']['result'][0]['values']
     ans = list()
@@ -207,11 +216,15 @@ def fenghuo_yp():
 
 
 print('烽火：')
-fenghuo_ott, ott_peak_period = fenghuo()
-print('FX: %.2f' % fenghuo_ott, ott_peak_period)
-fenghuo_ott_yp, ott_peak_period = fenghuo_yp()
-fenghuo_ott += fenghuo_ott_yp
-print('YP: %.2f' % fenghuo_ott_yp, ott_peak_period)
+# fenghuo_ott = 72.8
+# fenghuo_ott_yp = 73.3
+# ott_peak_period = '20:34-21:34'
+# fenghuo_ott, ott_peak_period = fenghuo()
+# print('FX: %.2f' % fenghuo_ott, ott_peak_period)
+# fenghuo_ott_yp, ott_peak_period = fenghuo_yp()
+# fenghuo_ott += fenghuo_ott_yp
+# print('YP: %.2f' % fenghuo_ott_yp, ott_peak_period)
+fenghuo_ott, fenghuo_ott_yp = wl.fonsview()
 
 
 '''part3 zte'''
@@ -405,7 +418,7 @@ date = myPackages.getime.yesterday(1)
 
 '''part5 发送邮件'''
 # ott_max_rate = float(ott_max_rate) + fenghuo_ott
-ott_max_rate = huawei_ott + fenghuo_ott
+ott_max_rate = huawei_ott + fenghuo_ott     # Gbps
 # ott_mean_rate = float(ott_mean_rate)
 ott_mean_rate = 0
 max_rate = float(max_rate)

@@ -12,6 +12,8 @@ from selenium.webdriver import Chrome
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver import ActionChains
 from selenium.common.exceptions import TimeoutException
+"""
+"""
 
 
 # 认证过程一般是 先去网站获取一个cookie 然后用账号密码认证这个cookie
@@ -252,8 +254,37 @@ def utm():
     return cookie
 
 
+def fonsview():
+    driver = Chrome()
+    driver.implicitly_wait(5)
+    driver.set_page_load_timeout(5)
+    driver.get('https://sh.csk.rhel.cc:3000/login')
+    # print(driver.page_source)
+    usr = driver.find_element_by_xpath("//*[@id=\"login-view\"]/form/div[1]/input")
+    usr.send_keys("fonsview")
+    pw = driver.find_element_by_xpath("//*[@id=\"inputPassword\"]")
+    pw.send_keys("ShangHai!23+")
+    pw.send_keys(Keys.ENTER)
+    pw = driver.find_element_by_xpath('/html/body/grafana-app/div[2]/div/div/div/dashnav/div/div[1]/a')
+    pw.click()
+    pw = driver.find_element_by_xpath('/html/body/grafana-app/div[2]/div/div/div/dashnav/dashboard-search/div[2]/div[2]/div[1]/div/div[1]/dashboard-search-results/div[8]/div[1]/span')
+    pw.click()
+    pw = driver.find_element_by_xpath('/html/body/grafana-app/div[2]/div/div/div/dashnav/dashboard-search/div[2]/div[2]/div[1]/div/div[1]/dashboard-search-results/div[8]/div[3]/a[2]/span[2]')
+    pw.click()
+    pw = driver.find_element_by_xpath('/html/body/grafana-app/div[2]/div/div/div/dashnav/div/gf-time-picker/div/button[1]')
+    pw.click()
+    pw = driver.find_element_by_xpath('/html/body/grafana-app/div[2]/div/div/div/dashnav/div/gf-time-picker/div[2]/div/ul[2]/li[1]/a')
+    pw.click()
+    pw = driver.find_element_by_xpath('//*[@id="panel-1"]/div/plugin-component/panel-plugin-graph/grafana-panel/div/div[2]/ng-transclude/div/div[2]/div/div[1]/tbody/div[1]/div[3]')
+    fx = pw.text.split(' ')[0]
+    pw = driver.find_element_by_xpath('//*[@id="panel-17"]/div/plugin-component/panel-plugin-graph/grafana-panel/div/div[2]/ng-transclude/div/div[2]/div/div[1]/tbody/div[1]/div[3]')
+    yp = pw.text.split(' ')[0]
+    return float(fx), float(yp)
+
+
 if __name__ == '__main__':
-    cookie = utm()
+    a,b = fonsview()
+    print(a, b)
 
     print()
 
