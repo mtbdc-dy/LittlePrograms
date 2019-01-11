@@ -279,6 +279,8 @@ def fonsview():
     fx = pw.text.split(' ')[0]
     pw = driver.find_element_by_xpath('//*[@id="panel-17"]/div/plugin-component/panel-plugin-graph/grafana-panel/div/div[2]/ng-transclude/div/div[2]/div/div[1]/tbody/div[1]/div[3]')
     yp = pw.text.split(' ')[0]
+
+    driver.close()
     return float(fx), float(yp)
 
 

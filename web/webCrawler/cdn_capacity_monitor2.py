@@ -31,7 +31,7 @@ import json
 # 输出文件名
 file_output = 'cdn_rate.csv'
 # IPTV
-IPTV_total_capacity = 1321
+IPTV_total_capacity = 1441
 print('中兴总容量： \033[32;0m{:d}\033[0mG'.format(IPTV_total_capacity))
 # OTT
 FX_FengHuo_OTT = 240
@@ -225,7 +225,8 @@ print('烽火：')
 # fenghuo_ott += fenghuo_ott_yp
 # print('YP: %.2f' % fenghuo_ott_yp, ott_peak_period)
 fenghuo_ott, fenghuo_ott_yp = wl.fonsview()
-
+print(fenghuo_ott, fenghuo_ott_yp)
+fenghuo_ott += fenghuo_ott_yp
 
 '''part3 zte'''
 print('中兴：')
