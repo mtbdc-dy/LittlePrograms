@@ -136,7 +136,7 @@ def huawei():
            b'splayValue%5C%22%3A%5C%22%5C%22%2C%5C%22aggrType%5C%22%3A2%7D%5D%22%7D'
     # form = b'param=%7B%22pageIndex%22%3A1%2C%22historyTimeRange%22%3A0%2C%22beginTime%22%3A1546185600000%2C%22endTime%22%3A1546272000000%2C%22isGetGraphicGroupData%22%3Atrue%2C%22mo2Index%22%3A%22%5B%7B%5C%22dn%5C%22%3A%5C%22com.huawei.hvs.pop%3D2101535%5C%22%2C%5C%22indexId%5C%22%3A%5C%2211735%5C%22%2C%5C%22displayValue%5C%22%3A%5C%22%5C%22%2C%5C%22aggrType%5C%22%3A2%7D%5D%22%2C%22pmViewPage%22%3A%22historyPm%22%2C%22isQueryOriginal%22%3Afalse%7D'
     f = post_ssl(url, form)
-    print(f)
+    # print(f)
     huawei_dict = json.loads(f)
     huawei_list = huawei_dict['result']['groupQueryData'][0][0]['indexValues']
     # print(huawei_list)
@@ -313,6 +313,7 @@ print('{:.2f}'.format(bandwidth_0/99*100), '{:.2f}'.format(bandwidth_1/240*100),
       '{:.2f}'.format(bandwidth_4 / 240 * 100))
 
 '''part4 SQM'''
+print('SQM：')
 cookie = wl.sqm_117()
 # SQM峰值流用户数
 # 系统特性 取某一日的值时需要始末日期一致
@@ -321,7 +322,7 @@ form = {
 }
 url = 'http://117.144.107.165:8088/evqmaster/report/reportaction!returnKpiData.action'
 f = ww.post_web_page(url, form, cookie)
-print(f)
+# print(f)
 tmp = f[f.find('maxStreamSTBs') + 18:]
 maxStreamSTBs = f[f.find('maxStreamSTBs') + 18: f.find('maxStreamSTBs') + 18 + tmp.index('\\')]
 
