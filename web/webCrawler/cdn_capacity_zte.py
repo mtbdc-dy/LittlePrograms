@@ -24,6 +24,7 @@ def query_ottnode_zte(n, cookie):
     }
 
     # 可以改成dict，好看点
+    # default nodeid SHFX_NODE3 -> 区域中心
     if n == 1:
         form['nodeid'] = 'SHFX_NODE1'
     if n == 2:
@@ -40,6 +41,9 @@ def query_ottnode_zte(n, cookie):
         form['nodeid'] = 'servicenode5'
     if n == 'sj':
         form['nodeid'] = 'servicenode6'
+    if n == 'fx':
+        form['nodeid'] = 'servicenode7'
+
     f = ww.post_web_page_ssl(url, form, cookie)
     encodedjson = json.loads(f)
 
@@ -72,10 +76,13 @@ for i in range(n_days):
     concurrent_bs, bandwidth_bs, upstreamband_bs = query_ottnode_zte('bs', cookie)    #
     concurrent_jd, bandwidth_jd, upstreamband_jd = query_ottnode_zte('jd', cookie)    #
     concurrent_sj, bandwidth_sj, upstreamband_sj = query_ottnode_zte('sj', cookie)
+    concurrent_fx, bandwidth_fx, upstreamband_fx = query_ottnode_zte('xf', cookie)
 
     csv_content_zte = [startTime, bandwidth_0, bandwidth_1, bandwidth_2, bandwidth_3, bandwidth_4, bandwidth_cm,
-                       bandwidth_bs, bandwidth_jd, bandwidth_sj, bandwidth_0+bandwidth_1+bandwidth_2+bandwidth_3+
-                       bandwidth_4, bandwidth_cm+bandwidth_bs+bandwidth_jd+bandwidth_sj]
+                       bandwidth_bs, bandwidth_jd, bandwidth_sj, bandwidth_fx,
+                       bandwidth_0+bandwidth_1+bandwidth_2+bandwidth_3+ bandwidth_4,
+                       bandwidth_cm+bandwidth_bs+bandwidth_jd+bandwidth_sj+bandwidth_fx
+                       ]
     writer_zte.writerow(csv_content_zte)
     print(i)
 

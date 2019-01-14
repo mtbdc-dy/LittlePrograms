@@ -293,24 +293,24 @@ def query_ottnode_zte(n, cookie):
     return concurrent, float(bandwidth), upstreamband
 
 
-concurrent_0, bandwidth_0, upstreamband_0 = query_ottnode_zte(0, cookie)    # 区域中心
-concurrent_1, bandwidth_1, upstreamband_1 = query_ottnode_zte(1, cookie)    # 节点1
-concurrent_2, bandwidth_2, upstreamband_2 = query_ottnode_zte(2, cookie)    # 节点2
-concurrent_3, bandwidth_3, upstreamband_3 = query_ottnode_zte(3, cookie)    # 节点3
-concurrent_4, bandwidth_4, upstreamband_4 = query_ottnode_zte(4, cookie)    # 节点4
-concurrent_cm, bandwidth_cm, upstreamband_cm = query_ottnode_zte('cm', cookie)    #
-concurrent_bs, bandwidth_bs, upstreamband_bs = query_ottnode_zte('bs', cookie)    #
-concurrent_jd, bandwidth_jbl, upstreamband_jd = query_ottnode_zte('jbl', cookie)    #
-concurrent_sj, bandwidth_sj, upstreamband_sj = query_ottnode_zte('sj', cookie)
+# concurrent_0, bandwidth_0, upstreamband_0 = query_ottnode_zte(0, cookie)    # 区域中心
+# concurrent_1, bandwidth_1, upstreamband_1 = query_ottnode_zte(1, cookie)    # 节点1
+# concurrent_2, bandwidth_2, upstreamband_2 = query_ottnode_zte(2, cookie)    # 节点2
+# concurrent_3, bandwidth_3, upstreamband_3 = query_ottnode_zte(3, cookie)    # 节点3
+# concurrent_4, bandwidth_4, upstreamband_4 = query_ottnode_zte(4, cookie)    # 节点4
+# concurrent_cm, bandwidth_cm, upstreamband_cm = query_ottnode_zte('cm', cookie)    #
+# concurrent_bs, bandwidth_bs, upstreamband_bs = query_ottnode_zte('bs', cookie)    #
+# concurrent_jd, bandwidth_jbl, upstreamband_jd = query_ottnode_zte('jbl', cookie)    #
+# concurrent_sj, bandwidth_sj, upstreamband_sj = query_ottnode_zte('sj', cookie)
+#
+#
+# csv_content_zte = [startTime, bandwidth_0, bandwidth_1, bandwidth_2, bandwidth_3, bandwidth_4, bandwidth_cm,
+#                    bandwidth_bs, bandwidth_jbl, bandwidth_sj, round(bandwidth_0+bandwidth_1+bandwidth_2+bandwidth_3 +
+#                    bandwidth_4, 2), round(bandwidth_cm+bandwidth_bs+bandwidth_jbl+bandwidth_sj, 2)]
 
-
-csv_content_zte = [startTime, bandwidth_0, bandwidth_1, bandwidth_2, bandwidth_3, bandwidth_4, bandwidth_cm,
-                   bandwidth_bs, bandwidth_jbl, bandwidth_sj, round(bandwidth_0+bandwidth_1+bandwidth_2+bandwidth_3 +
-                   bandwidth_4, 2), round(bandwidth_cm+bandwidth_bs+bandwidth_jbl+bandwidth_sj, 2)]
-
-print('{:.2f}'.format(bandwidth_0/99*100), '{:.2f}'.format(bandwidth_1/240*100),
-      '{:.2f}'.format(bandwidth_2 / 240 * 100), '{:.2f}'.format(bandwidth_3/240*100),
-      '{:.2f}'.format(bandwidth_4 / 240 * 100))
+# print('{:.2f}'.format(bandwidth_0/99*100), '{:.2f}'.format(bandwidth_1/240*100),
+#       '{:.2f}'.format(bandwidth_2 / 240 * 100), '{:.2f}'.format(bandwidth_3/240*100),
+#       '{:.2f}'.format(bandwidth_4 / 240 * 100))
 
 '''part4 SQM'''
 print('SQM：')
@@ -467,7 +467,7 @@ print('Once you choose \'y\', about 25 e-mails will be sent.')
 check_code = input('y or n or s(save)').lower()
 if check_code == 'y':
     writer.writerow(csv_content)
-    writer_zte.writerow(csv_content_zte)
+    # writer_zte.writerow(csv_content_zte)
     ret = myPackages.mailtools.mail139_mine(title, email_content, user)
     if ret:
         print("ok")  # 如果发送成功则会返回ok，稍等20秒左右就可以收到邮件
@@ -475,4 +475,4 @@ if check_code == 'y':
         print("failed")  # 如果发送失败则会返回filed
 elif check_code == 's':
     writer.writerow(csv_content)
-    writer_zte.writerow(csv_content_zte)
+    # writer_zte.writerow(csv_content_zte)
