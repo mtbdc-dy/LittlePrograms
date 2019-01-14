@@ -27,6 +27,7 @@ def mail_customise(title, content, my_user):
     return flag
 
 
+# unavailable
 def mail139_customise(title, content, my_user):
     flag = True
     try:
@@ -58,6 +59,25 @@ def mail139_mine(title, content, my_user):
         server.quit()   # 这句是关闭连接的意思
     except Exception:   # 如果try中的语句没有执行，则会执行下面的ret=False
         flag = False
+    return flag
+
+
+def mail139_mine_table(title, content, my_user):
+    flag = True
+    # try:
+    msg = MIMEMultipart()
+    msg['From'] = formataddr(["徐缘", 'yxu9428@139.com'])   # 括号里的对应发件人邮箱昵称、发件人邮箱账号
+    msg['To'] = formataddr(["收件人", my_user[0]])   # 收件人，必须是一个字符串
+    msg['Subject'] = title  # 邮件的主题，也可以说是标题
+    msg.attach(MIMEText('table_hello_world', 'plain', 'utf-8'))
+    msg.attach(MIMEText(content, _subtype='html', _charset='utf-8'))
+
+    server = smtplib.SMTP("smtp.139.com", 25)  # 发件人邮箱中的SMTP服务器，端口是25
+    server.login('yxu9428@139.com', "Yd940208")    # 括号中对应的是发件人邮箱账号、邮箱密码
+    server.sendmail('yxu9428@139.com', my_user, msg.as_string())   # 括号中对应的是发件人邮箱账号、收件人邮箱账号、发送邮件
+    server.quit()   # 这句是关闭连接的意思
+    # except Exception:   # 如果try中的语句没有执行，则会执行下面的ret=False
+    #     flag = False
     return flag
 
 
@@ -123,12 +143,16 @@ def mail_oa(content, my_user):
 
 
 if __name__ == '__main__':
+    # a = 'hello'
+    # my_receiver = 'xuyuan2@sh.chinamobile.com'
+    # my_receiver = 'yxu9428@163.com'
+    # content_1 = """<p>Python 邮件发送测试...</p><p><a href="http://www.runoob.com">这是一个链接</a></p>"""
+    # ret = mail139_mine_table('table_hello', content_1, my_receiver)
+    # if ret:
+    #     print("ok")  # 如果发送成功则会返回ok，稍等20秒左右就可以收到邮件
+    # else:
+    #     print("failed")  # 如果发送失败则会返回filed
+
     my_receiver = 'xuyuan2@sh.chinamobile.com'
-    ret = mail139_mine('怎么回事老弟', '怎么回事老弟', my_receiver)
-    if ret:
-        print("ok")  # 如果发送成功则会返回ok，稍等20秒左右就可以收到邮件
-    else:
-        print("failed")  # 如果发送失败则会返回filed
-
-
+    mail139_mine('table_hello','table_hello', my_receiver)
 
