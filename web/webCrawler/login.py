@@ -275,6 +275,7 @@ def fonsview():
     pw.click()
     pw = driver.find_element_by_xpath('/html/body/grafana-app/div[2]/div/div/div/dashnav/div/gf-time-picker/div[2]/div/ul[2]/li[1]/a')
     pw.click()
+    time.sleep(1)
     pw = driver.find_element_by_xpath('//*[@id="panel-1"]/div/plugin-component/panel-plugin-graph/grafana-panel/div/div[2]/ng-transclude/div/div[2]/div/div[1]/tbody/div[1]/div[3]')
     fx = pw.text.split(' ')[0]
     pw = driver.find_element_by_xpath('//*[@id="panel-17"]/div/plugin-component/panel-plugin-graph/grafana-panel/div/div[2]/ng-transclude/div/div[2]/div/div[1]/tbody/div[1]/div[3]')
