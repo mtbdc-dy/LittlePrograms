@@ -6,4 +6,11 @@ time_array = time.localtime(timestamp)
 print(time.strftime("%H:%M:%S", time_array))
 print(time.strftime("%H:%M", t))
 
+a = 'b'
 
+b = """a""" + a + """c"""
+
+c = """d"""
+
+print(type(a), type(c))
+print(b)

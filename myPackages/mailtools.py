@@ -143,16 +143,40 @@ def mail_oa(content, my_user):
 
 
 if __name__ == '__main__':
-    # a = 'hello'
-    # my_receiver = 'xuyuan2@sh.chinamobile.com'
-    # my_receiver = 'yxu9428@163.com'
-    # content_1 = """<p>Python 邮件发送测试...</p><p><a href="http://www.runoob.com">这是一个链接</a></p>"""
-    # ret = mail139_mine_table('table_hello', content_1, my_receiver)
-    # if ret:
-    #     print("ok")  # 如果发送成功则会返回ok，稍等20秒左右就可以收到邮件
-    # else:
-    #     print("failed")  # 如果发送失败则会返回filed
+    my_receiver = ['xuyuan2@sh.chinamobile.com']
+    content_1 = """
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<table border="" style="border-collapse: collapse; text-align: center">
+    <tr style="font-weight: bold;">
+        <td></td><td>容量(Gbps)</td><td>峰值(Gbps)</td><td>利用率(%)</td><td>峰值流用户数(万人)</td><td>峰值时段</td>
+    </tr>
 
-    my_receiver = 'xuyuan2@sh.chinamobile.com'
-    mail139_mine('table_hello','table_hello', my_receiver)
+    <tr>
+        <td>烽火汇总</td><td>330</td><td></td><td></td><td></td><td></td>
+    </tr>
+
+    <tr>
+        <td>华为汇总</td><td>222</td><td></td><td></td><td></td><td></td>
+    </tr>
+
+    <tr>
+        <td>OTT汇总</td><td>552</td><td></td><td></td><td></td><td></td>
+    </tr>
+
+    <tr>
+        <td>中兴(IPTV)汇总</td><td>1521</td><td></td><td></td><td></td><td></td>
+    </tr>
+</table>
+<br>
+<p>""" + """a""" + """</p>"""
+    ret = mail139_mine_table('table_hello', content_1, my_receiver)
+    if ret:
+        print("ok")  # 如果发送成功则会返回ok，稍等20秒左右就可以收到邮件
+    else:
+        print("failed")  # 如果发送失败则会返回filed
+
+    # my_receiver = ['xuyuan2@sh.chinamobile.com']
+    # if mail139_mine('table_hello', 'table_hello', my_receiver):
+    #     print('OK')
+
 

@@ -36,6 +36,7 @@ print('中兴总容量： \033[32;0m{:d}\033[0mG'.format(IPTV_total_capacity))
 # OTT
 FX_FengHuo_OTT = 240
 YP_FengHuo_OTT = 90
+FengHuo_Total = YP_FengHuo_OTT + FX_FengHuo_OTT
 PD_HuaWei_OTT = 222
 OTT_total_capacity = FX_FengHuo_OTT + YP_FengHuo_OTT + PD_HuaWei_OTT
 print('OTT总容量： \033[32;0m{:d}\033[0mG'.format(OTT_total_capacity))
@@ -216,17 +217,9 @@ def fenghuo_yp():
 
 
 print('烽火：')
-# fenghuo_ott = 72.8
-# fenghuo_ott_yp = 73.3
-# ott_peak_period = '20:34-21:34'
-# fenghuo_ott, ott_peak_period = fenghuo()
-# print('FX: %.2f' % fenghuo_ott, ott_peak_period)
-# fenghuo_ott_yp, ott_peak_period = fenghuo_yp()
+fenghuo_ott_fx, fenghuo_ott_yp, fenghuo_ott = wl.fonsview()
+print(fenghuo_ott_fx, fenghuo_ott_yp, fenghuo_ott)
 # fenghuo_ott += fenghuo_ott_yp
-# print('YP: %.2f' % fenghuo_ott_yp, ott_peak_period)
-fenghuo_ott, fenghuo_ott_yp = wl.fonsview()
-print(fenghuo_ott, fenghuo_ott_yp)
-fenghuo_ott += fenghuo_ott_yp
 
 '''part3 zte'''
 print('中兴：')
@@ -419,14 +412,15 @@ date = myPackages.getime.yesterday(1)
 #         ott_mean_rate = row[3]
 
 '''part5 发送邮件'''
-# ott_max_rate = float(ott_max_rate) + fenghuo_ott
-ott_max_rate = huawei_ott + fenghuo_ott     # Gbps
-# ott_mean_rate = float(ott_mean_rate)
-ott_mean_rate = 0
-max_rate = float(max_rate)
-maxStreamSTBs = float(maxStreamSTBs)
-max_user = float(max_user)
-# print(maxStreamSTBs, max_rate, max_user, ott_max_rate)
+# 数据准备和格式转换
+huawei_ott = round(huawei_ott, 2)           # 华为汇总
+fenghuo_ott = round(fenghuo_ott, 2)         # 烽火汇总
+ott_max_rate = round(huawei_ott + fenghuo_ott, 2)     # OTT求和
+ott_mean_rate = 0                           # 暂无均值
+max_rate = round(max_rate, 2)               # IPTV汇总
+maxStreamSTBs = float(maxStreamSTBs)        # OTT人数
+max_user = float(max_user)                  # IPTV人数
+
 title = 'DoNotReply 互联网电视指标' + date
 email_content = 'OTT峰值时间段: ' + ott_peak_period + \
                 '; OTT峰值流用户数: {:.2f}万人; OTT峰值流速: {:.2f}Gbps; OTT利用率: {:.2f}%;'\
@@ -435,6 +429,33 @@ email_content = 'OTT峰值时间段: ' + ott_peak_period + \
                 '; IPTV峰值流用户数: {:.2f}万人; IPTV峰值流速: {:.2f}Gbps; IPTV利用率: {:.2f}%。'\
                     .format(max_user/10000, max_rate, max_rate/IPTV_total_capacity*100)
 email_content = '(' + startTime + ')' + email_content
+
+# table 准备
+table_content = """<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<table border="" style="border-collapse: collapse; text-align: center">
+    <tr style="font-weight: bold;">
+        <td></td><td>容量(Gbps)</td><td>峰值(Gbps)</td><td>利用率(%)</td>
+    </tr>
+
+    <tr>
+        <td>烽火汇总</td><td>""" + str(FengHuo_Total) + """</td><td>""" + str(fenghuo_ott) + """</td><td>""" + str(round(fenghuo_ott / FengHuo_Total * 100, 2)) + """</td>
+    </tr>
+
+    <tr>
+        <td>华为汇总</td><td>""" + str(PD_HuaWei_OTT) + """</td><td>""" + str(huawei_ott) + """</td><td>""" + str(round(huawei_ott / PD_HuaWei_OTT * 100, 2)) + """</td>
+    </tr>
+
+    <tr>
+        <td>OTT总和</td><td>""" + str(OTT_total_capacity) + """</td><td>""" + str(ott_max_rate) + """</td><td>""" + str(round(ott_max_rate / OTT_total_capacity * 100, 2)) + """</td>
+    </tr>
+
+    <tr>
+        <td>中兴(IPTV)汇总</td><td>""" + str(IPTV_total_capacity) + """</td><td>""" + str(max_rate) + """</td><td>""" + str(round(max_rate/IPTV_total_capacity*100, 2)) + """</td>
+    </tr>
+</table>
+<br>
+<p>""" + email_content + """</p>"""
+
 csv_content = [startTime] + ['{:.2f}'.format(maxStreamSTBs/10000)] + ['{:.2f}'.format(ott_max_rate)] +\
               ['%.2f' % (ott_mean_rate/1024)] + ['{:.2f}'.format(ott_max_rate/OTT_total_capacity*100)] +\
               ['{:.2f}'.format(max_user/10000)] + ['{:.2f}'.format(max_rate)] +\
@@ -453,6 +474,7 @@ user = [
     'wucaili@sh.chinamobile.com', 'dingy@sh.chinamobile.com', 'fenghongyu@sh.chinamobile.com',
     'xuzicheng@sh.chinamobile.com', 'zhanghe@sh.chinamobile.com', 'sufeng@sh.chinamobile.com'
 ]
+# user = ['xuyuan2@sh.chinamobile.com']
 
 '''part6 指标达标检测'''
 # print('EPG请求成功率：%.2f' % epg_success_ratio, end=' ')
@@ -468,7 +490,7 @@ check_code = input('y or n or s(save)').lower()
 if check_code == 'y':
     writer.writerow(csv_content)
     # writer_zte.writerow(csv_content_zte)
-    ret = myPackages.mailtools.mail139_mine(title, email_content, user)
+    ret = myPackages.mailtools.mail139_mine_table(title, table_content, user)
     if ret:
         print("ok")  # 如果发送成功则会返回ok，稍等20秒左右就可以收到邮件
     else:
