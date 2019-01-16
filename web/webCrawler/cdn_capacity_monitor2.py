@@ -442,7 +442,7 @@ table_content = """<meta http-equiv="Content-Type" content="text/html; charset=u
     </tr>
 
     <tr>
-        <td>华为汇总</td><td>""" + str(PD_HuaWei_OTT) + """</td><td>""" + str(huawei_ott) + """</td><td>""" + str(round(huawei_ott / PD_HuaWei_OTT * 100, 2)) + """</td>
+        <td>华为</td><td>""" + str(PD_HuaWei_OTT) + """</td><td>""" + str(huawei_ott) + """</td><td>""" + str(round(huawei_ott / PD_HuaWei_OTT * 100, 2)) + """</td>
     </tr>
 
     <tr>
