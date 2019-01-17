@@ -1,7 +1,12 @@
+"""
+    求出数组中单独出现的数字。其它的都是成对的
+"""
+
+
 def singleNumber(nums):
     res = 0
     for num in nums:
-        res ^= num
+        res ^= num      # res = res ^ num
         print(res)
     return res
 
