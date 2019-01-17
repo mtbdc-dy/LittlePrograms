@@ -22,22 +22,34 @@ print(d['epg'])
 print(d['epgSuc'])
 count = 0
 total = 0
+total_all = 0
+total_suc = 0
 for item in d['vod']:
-    # if item['FaultID'] == 3:
-    #     print(item['Count'])
-    #     print(item['Count']/item['Total'])
-    #     count += int(item['Count'])
-    #     total += int(item['Total'])
-    print(item['FaultID'], item['Dimensionality'])
-    print(item['Count'], item['Total'])
-    print(item['Count']/item['Total'])
-    print(item['Total'] / item['Count'])
+    if item['FaultID'] == 3:
+        print(item['Count'])
+        print(item['Total'])
+        print(item['Count']/item['Total'])
+        print(item['Total']/item['Count'])
+        count += int(item['Count'])
+        total += int(item['Total'])
+
+    if item['FaultID'] == 7:
+        print(item['Total'])
+        total_all += int(item['Total'])
+        
+    if item['FaultID'] == 8:
+        total_suc += int(item['Total'])
+    # print(item['FaultID'], item['Dimensionality'])
+    # print(item['Count'], item['Total'])
+    # print(item['Count']/item['Total'])
+    # print(item['Total'] / item['Count'])
     # print(item)
     # print(item['Count'])
     # print(item['Total'])
     # print((int(item['Count'])/int(item['Total'])*100))
     print()
 
-# print(count / total * 100, count, total)
-
+print(count / total * 100, count, total)
+print(total / count * 100, count, total)
+print(total_all, total_suc/total_all)
 

@@ -1,127 +1,1416 @@
+
 <html>
 <head>
-<LINK href="./style/global.css" type="text/css" rel=stylesheet />
-<LINK href="./style/table.css" type="text/css" rel=stylesheet />
-<LINK href="./style/page.css" type="text/css" rel=stylesheet />
-<script language="javascript" src="./script/dom.js"></script>
-<script language="javascript" src="./script/tools.js"></script>
-<script language="javascript" src="./script/key.js"></script>
-<script language="javascript" src="./script/tooltip.js"></script>
-<script>
+	<LINK REL="SHORTCUT ICON" HREF="asset/ico/evqmaster.jpg">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>EyeNet视频业务质量监测系统</title>
+	<link rel="stylesheet" type="text/css" href="resources/jqwidgets/styles/jqx.base.css" />
+	<link rel="stylesheet" type="text/css" href="resources/jqwidgets/styles/jqx.dekscom.css">
+	<link rel="stylesheet" type="text/css" href="resources/css/defaultgui.css" />
 
-function chgShowGraph(show, hide, chart)
-{
-    $(show).style.display = "none";
-    $(hide).style.display = "block";
-    $(chart).style.display = "block";
-}
+	<!-- 确定Master顶级页面,必须在最前面 -->
+	<script type="text/javascript">
+        var MYNAME_IS_EVQMASTER;
+	</script>
 
-function chgHideGraph(show, hide, chart)
-{
-    $(show).style.display = "block";
-    $(hide).style.display = "none";
-    $(chart).style.display = "none";
-}
+	<script type="text/javascript" src="resources/js/jquery-1.11.1.js"></script>
+	<script type="text/javascript" src="resources/js/global.js"></script>
+	<script type="text/javascript" src="resources/js/jquery.i18n.properties-1.0.9.js"></script>
+	<script type="text/javascript" src="resources/jqwidgets/globalization/globalize.js"></script>
+	<script type="text/javascript" src="resources/jqwidgets/jqxcore.js"></script>
+	<script type="text/javascript" src="resources/jqwidgets/jqxdatetimeinput.js"></script>
+	<script type="text/javascript" src="resources/jqwidgets/jqxcalendar.js"></script>
+	<script type="text/javascript" src="resources/jqwidgets/jqxlistbox.js"></script>
+	<script type="text/javascript" src="resources/jqwidgets/jqxbuttons.js"></script>
+	<script type="text/javascript" src="resources/jqwidgets/jqxscrollbar.js"></script>
+	<script type="text/javascript" src="resources/jqwidgets/jqxdropdownlist.js"></script>
+	<script type="text/javascript" src="resources/jqwidgets/jqxsplitter.js"></script>
+	<script type="text/javascript" src="resources/jqwidgets/jqxwindow.js"></script>
 
-function viewIP(ip)
-{
-    var winwidth = 700;
-    var winheight = 560;
-    var winleft = (screen.availWidth - winwidth)/2;
-    var wintop = (screen.availHeight - winheight)/2;
-    var winDimension = "toolbar=no,menubar=no,resizable=yes,scrollbars=yes,status=yes," + "height=" + winheight + ",width=" + winwidth + ",left=" + winleft + ",top=" + wintop;
+	<script type="text/javascript" src="resources/js/md5.js"></script>
+	<script type="text/javascript" src="resources/js/datagrid.js"></script>
+	<script type="text/javascript" src="resources/js/jqxlanguage.js"></script>
+	<script type="text/javascript" src="resources/js/popuputil.js"></script>
+	<script type="text/javascript" src="resources/js/CfgDBTableDef.js"></script>
 
-    var pos = ip.indexOf("/");
-    if(pos == -1)
-    {
-        pos = ip.length;
-    }
-    var jspurl = "http://ipwhois.cnnic.net.cn/ipwhoisresult.php?query_option=ipv4&txtquery=" + ip.substr(0, pos);
-    window.open(jspurl,"",winDimension);
-}
+	<!--<script type="text/javascript" src="include.js"></script>  -->
+	<!-- <include file="include.html" /> -->
+	<!-- <script type="text/javascript">function include(url){$.get(url,function(data){document.write(data);})};include('include.html');</script> -->
 
-window.onload=pageInit;
-function pageInit()
-{
-    parent.hideLoading();
-    alertInfo();
-}
+	<script type="text/javascript" src="index.js"></script>
+	<script type="text/javascript" src="guicfg.js"></script>
+	<script type="text/javascript">
+		var nowProcess = 0;//当前初始化文件加载进度
+        //在IE情况下，地图和master给出提示使用chrome或360极速版
+        window.onload = function(){
+            var Sys = {};
+            var ua = navigator.userAgent.toLowerCase();//取得浏览器的userAgent字符串
+            var s;
+            (s = ua.match(/msie ([\d.]+)/)) ? Sys.ie = s[1]  : 0;//判断是否IE浏览器
+            if ((!!window.ActiveXObject || "ActiveXObject" in window)&&Sys.ie){
+                //当IE版本过低时，弹出弹窗提示
+                alert("您的IE浏览器版本低，建议您使用更高的版本或者选择Chrome、360极速版等其他浏览器！");
+            }
+        }
+        window.onbeforeunload=function(){
+            try{SaveUSActionInfo("exit","");}catch(e){}
+        };
+        var timeLater=0;
+        ///////////////////////////////初始化页面布局/////////////////////////////////////////
+        var gLoadComplete=false;  //标志页面是否加载完成，
+        document.onreadystatechange = function()
+        {
+            //页面加载完成时gLoadConplete=true
+            if(document.readyState =="complete"){
+                gLoadComplete=true;
+            }
+        }
 
-function toPage(index)
-{
-    $("currentPage").value = index;
-    $("form1").submit();
-}
+        var gLocationIP="";
+        var gLocationCity="";
 
-function reload()
-{
-    $("form1").submit();
-}
-</script>
+        //监听页面消息
+        //主要和e2e对接
+        window.addEventListener('message', function(event){
+            var strParam=decodeURI(event.data);
+            var param=getNoPwdLoginWay(strParam);
+            gChildIndex=param.RequestParam.childIndex;
+            selectView(param.RequestParam.viewIndex*1,param.RequestParam.viewText);
+            updateData();
+        }, false);
+        var gurlparameter=decodeURI(decodeURIComponent(location.search));//获取url中？后的参数
+        var gAllUrl=location.href.substr(0,location.href.indexOf("/evqmaster",7));  //获取整个url字符串
+
+        var mLoginWay=-1; //登录方式
+        var mRequestParam=new Object();
+
+        function validateSession(sParam){
+            $.ajax({
+                url : "./configaction!validateSession.action",
+                type : "post",
+                dataType : "json",
+                data : "paramData="+mRequestParam.sessionid,
+                contentType : "application/x-www-form-urlencoded;charset=utf-8",
+                success : function(data) {
+                    if(data.resultData!="true"){
+                        //验证失败显示登录页面
+                        location.href="./login.html";
+                    }else{
+                        //认证成功 加载数据
+                        getUserInfo();
+                    }
+                }
+            });
+        }
+        function getSessionInfo(){
+            getModeOfMaster();
+            $.ajax({complete:gComplete,
+                url : "configaction!checkUser.action",
+                async: false,
+                type : "post",
+                dataType : "json",
+                contentType : "application/x-www-form-urlencoded;chartset=utf-8",
+                success : function(data) {
+                    if(data.resultData){
+                        //成功加载数据
+                        gSessionInfo= $.parseJSON(data.resultData);
+                        if(gSessionInfo.userinfo!=null){
+                        	gUserInfo= $.parseJSON(gSessionInfo.userinfo);
+	                        gsAuthority=gUserInfo.authority;
+	                        gsUserName=gUserInfo.userName;
+                        }
+                        if(gUserInfo.sessionid){
+                        	if(gUserInfo.sessionid){
+                                if(gUserInfo.operator&&typeof(gUserInfo.province)!="undefined"&&typeof(gUserInfo.node)!="undefined")
+                                    mLoginWay=2;
+                            }else if(gUserInfo.DeviceID&&gUserInfo.KPIUTCSec&&gUserInfo.SampleInterval)
+                                mLoginWay=3;
+                            else if(gUserInfo.operator&&typeof(gUserInfo.province)!="undefined"&&typeof(gUserInfo.node)!="undefined")
+                                mLoginWay=1;
+                            gObjResult["FreeLogWay"]=mLoginWay;  //免密码登录方式
+                        	gObjResult["RequestParam"]=gUserInfo;
+                            setUNameAndAuthor();   //设置用户名和权限
+                        	getUserInfo();
+                        	return;
+                        }
+                        preInitIns();
+                        initIns();
+                        if(gUserInfo){
+                            var timer=setInterval(function() {
+                                if(mprogressvalue==100&&gLoadComplete==true){
+                                    getIDByCode(gUserInfo.province,gUserInfo.city);
+                                    setSupperPageConfig(gUserInfo.pageConfig);
+                                    setPageConfig(gUserInfo.pageConfig);
+                                    confirmCusRep(gUserInfo.customReport,gUserInfo.pbGridExport);
+                                    loginSucc(gUserInfo.probeGridCols);
+                                    clearInterval(timer);
+                                }
+                            }, 60);
+                        }else{
+                            var timer=setInterval(function() {
+                                timeLater+=60;
+                                if((mprogressvalue==100&&gtop.gLoadComplete==true)||timeLater>20000){
+                                    var sParam=gObjResult.RequestParam;
+                                    setSupperPageConfig("");
+                                    setPageConfig("");
+                                    getIDByCode(sParam.province,sParam.node,"");
+                                    mCityCode=sParam.node;
+                                    confirmCusRep(0,1);
+                                    loginSucc("",sParam.viewIndex,sParam.viewText,sParam.childIndex);
+                                    clearInterval(timer);
+                                }
+                            }, 60);
+                        }
+                    }else{
+                        location.href="./login.html"+gurlparameter;
+                    }
+                }
+            });
+        }
+
+
+        function LoadingBar(id){
+            this.loadbar = $("#" + id);
+            this.percentEle = $(".percent", this.loadbar);
+            this.percentNumEle = $(".percentNum", this.loadbar);
+            this.max = 100;
+            this.currentProgress = 0;
+        }
+        LoadingBar.prototype = {
+            constructor: LoadingBar,
+            setProgress: function (val)
+            {
+                this.currentProgress = val + "%";
+                this.percentEle.width(this.currentProgress);
+                this.percentNumEle.text(this.currentProgress);
+            }
+        };
+
+        function updateProcess(nProcess){
+            nowProcess = nProcess;
+            if(nProcess>=100)
+                nProcess=99;
+            new LoadingBar("divProcess").setProgress(nProcess);
+            new LoadingBar("divProcess1").setProgress(nProcess);
+        }
+
+
+        function forLogin(){
+            switch(mLoginWay){
+                //http://localhost:8088/evqmaster/?evqmParam=DeviceID:3c09ed5a||KPIUTCSec:1466352000||SampleInterval:86400
+                case 3:
+// 				gtop.selectKPIUTCSec=new Date(gObjResult.RequestParam.KPIUTCSec*1000).format("yyyy-MM-dd hh:mm:ss");
+// 				gtop.selectDeviceID=gObjResult.RequestParam.DeviceID;
+// 				if(mprogressvalue==100&&gLoadComplete==true){
+// 					setPageConfig("");
+// 					if(gObjResult.RequestParam.viewText&&gObjResult.RequestParam.viewIndex){
+// 						gtop.loginSucc("",gObjResult.RequestParam.viewIndex,gObjResult.RequestParam.viewText,gObjResult.RequestParam.childIndex);
+// 					}
+// 					else
+// 						loginSucc();
+// 					clearInterval(timer);
+// 				}
+                    break;
+                //http://localhost:8088/evqmaster/?evqmParam=operator:user||province:23||node:all
+                //http://localhost:8088/evqmaster/?evqmParam=username:Admin||operator:admin||province:||node:||sessionid:9A91E2616921BAE06B260A173D04911B"
+                //http://localhost:8088/evqmaster/?evqmParam=username:Admin||operator:admin||province:||node:||sessionid:979B0031625EC4EEAEDB16809A181DD6||viewIndex:3||viewText:一键诊断||childIndex:5"
+                case 1:
+                    getUserInfo();
+                    break
+//                 case 2:
+//                     validateSession();
+//                     break;
+                //直接登录
+                default:
+                    getSessionInfo();
+                    break;
+            }
+            ///////////////////////////////////////////////////
+            // 直接登录调试
+			/*
+			 gsUserName="admin_test";
+			 gsAuthority="admin";
+			 var timer=setInterval(function() {
+			 if(mprogressvalue==100&&gLoadComplete==true){
+			 setPageConfig("");
+			 confirmCusRep(1,1);
+			 loginSucc();
+			 clearInterval(timer);
+			 }
+			 }, 60);
+			 */
+        }
+        var mbIsTop=true;
+
+
+        function initElement(){
+            $("#divTime").jqxDateTimeInput({
+                width : 170,
+                height : 25,
+                disabled : true,
+                formatString : "yyyy-MM-dd HH:mm:ss",
+                animationType : "fade",
+                theme : 'dekscom'
+            });
+            $("#divTime").jqxDateTimeInput("disabled", gbRunning);
+            $('#topContainer').jqxSplitter({
+                height : '99.9%',
+                width : '99.92%',
+                resizable : false,
+                showSplitBar : false,
+                splitBarSize : 0,
+                orientation : 'horizontal',
+                panels : [ {
+                    size : 60
+                }, {
+                    size : '100%'
+                } ]
+            });
+            $('#topContainer1').jqxSplitter({
+                height : '100%',
+                width : '100%',
+                resizable : false,
+                showSplitBar : false,
+                splitBarSize : 0,
+                orientation : 'vertical',
+                panels : [ {
+                    size : 25
+                }, {
+                    size : '100%'
+                } ]
+            });
+            $('#gMainFrm').jqxSplitter({
+                height : '100%',
+                width : '100%',
+                resizable : false,
+                showSplitBar : true,
+                splitBarSize : 1,
+                orientation : "horizontal",
+                panels : [ {
+                    size : 28
+                }, {
+                    size : '100%'
+                } ]
+            });
+        }
+
+        //获取master模式，省模式还是、全国模式
+        function getModeOfMaster(){
+            $.ajax({complete:gComplete,
+                url : "areaaction!returnDefProvinceID.action",
+                async: false,
+                type : "get",
+                dataType : "json",
+                contentType : "application/x-www-form-urlencoded;chartset=utf-8",
+                success : function(data) {
+                    DefProvinceID=data.resultData;
+                    DefProvinceIDCode=data.resultData;
+                    if(DefProvinceID=="2"||DefProvinceID=="1")
+                        DefProvinceID=parseInt(DefProvinceID);
+                    else
+                        DefProvinceID=parseInt(DefProvinceID)+2;
+                },
+            });
+        }
+
+
+
+
+        $(document).ready(function() {
+            initElement();
+        });
+        function setUNameAndAuthor(){
+            if(gObjResult.FreeLogWay==3){
+                gsAuthority="services";
+                return;
+            }
+            gsUserName=gObjResult.RequestParam.operator;
+            gsAuthority="user"; //默认设置权限为user
+            if(gObjResult.FreeLogWay==1){
+                if(gObjResult.RequestParam.operator=="services")
+                    gsAuthority="services";
+
+            }else{
+                if(gsUserName=="admin"||gsUserName=="user"||gsUserName=="services")
+                    gsAuthority=gsUserName;
+                else{
+                    var sAuthor=returnAuthority(gsUserName);
+                    if(sAuthor)
+                        gsAuthotity=sAuthor;
+                }
+            }
+        }
+        //获取用户名对应的权限
+        function returnAuthority(userName){
+            var result="";
+            $.ajax({complete:gComplete,
+                url : "./configaction!returnAuthority.action",
+                async : false,
+                type : "post",
+                dataType : "json",
+                data : "paramData="+userName,
+                contentType : "application/x-www-form-urlencoded;charset=utf-8",
+                success : function(data) {
+                    result=data.resultData;
+                }
+            });
+            return result;
+        }
+
+        function getUserInfo(){
+            getModeOfMaster();
+            $.ajax({complete:gComplete,
+                url:"configaction!returnUserInfo.action",
+                type:"POST",
+                data:"paramData="+gsUserName,
+                dataType:"json",
+                success: function (data) {
+                    mbDirect=true;
+                    preInitIns();
+                    initIns();
+                    if(data.resultData){
+                        var result=$.parseJSON(data.resultData);
+                        if(result!=null&&result[0]&&(result[0].Province!=""||result[0].City!="")){
+                            mCityCode=result[0].City;
+                            userAuthority=result[0].Authority;
+                            getIDByCode(result[0].Province,result[0].City);
+                        }
+                        loginByValidUser(result);
+                    }
+                    else{
+                        var timer=setInterval(function() {
+                            timeLater+=60;
+                            if((mprogressvalue==100&&gtop.gLoadComplete==true)||timeLater>20000){
+                                var sParam=gObjResult.RequestParam;
+                                var userAuthority="";
+                                if(gtop.gpCompanyCfg[gtop.gsCompany]&&gtop.gpCompanyCfg[gtop.gsCompany]["userAuthority"]){
+                                    userAuthority=gtop.gpCompanyCfg[gtop.gsCompany]["userAuthority"];
+                                }else{
+                                    userAuthority=gtop.gpCompanyCfg["general"]["userAuthority"];
+                                }
+                                setSupperPageConfig(userAuthority);
+                                setPageConfig(userAuthority);
+                                getIDByCode(sParam.province,sParam.node,"");
+                                mCityCode=sParam.node;
+                                confirmCusRep(0,1);
+                                loginSucc("",sParam.viewIndex,sParam.viewText,sParam.childIndex);
+                                clearInterval(timer);
+                            }
+                        }, 60);
+                    }
+                }
+            });
+        }
+        function loginByValidUser(result){
+            var timer=setInterval(function() {
+                timeLater+=60;
+                if((mprogressvalue==100&&gLoadComplete==true)||timeLater>30000){
+// 				setPageConfig("");
+                    setSupperPageConfig(result[0].PageConfig);
+                    setPageConfig(result[0].PageConfig);
+                    var sParam=gObjResult.RequestParam;
+                    if(result)
+                        confirmCusRep(result[0].CustomReport,result[0].PbGridExport);
+                    else
+                        confirmCusRep(0,1);
+                    loginSucc(result[0].ProbeGridCols,sParam.viewIndex,sParam.viewText,sParam.childIndex);
+                    clearInterval(timer);
+                }
+            }, 60);
+        }
+
+        function getNoPwdLoginWay(sUrl) {
+            //http://localhost:8088/evqmaster/?evqmParam=operator:user||province:23||node:all
+            //http://localhost:8088/evqmaster/?evqmParam=DeviceID:3c09ed5a||KPIUTCSec:1466352000||SampleInterval:86400
+            //http://localhost:8088/evqmaster/?evqmParam=username:Admin||operator:admin||province:||node:||sessionid:9A91E2616921BAE06B260A173D04911B"
+            //http://localhost:8088/evqmaster/?evqmParam=operator:admin||province:||node:||sessionid:9A91E2616921BAE06B260A173D04911B"
+            var arr=new Array();
+            if (sUrl.indexOf("?") != -1) {
+                var str=sUrl.split("?")[1];
+                strs = str.split("=");
+                if(strs[0]!="evqmParam")
+                    return null;
+                arr=strs[1].split("||");
+                for(var i=0;i<arr.length;i++){
+                    var tmparr=arr[i].split(":");
+                    mRequestParam[tmparr[0]]=tmparr[1];
+                }
+            }
+            /**
+             免密码登录 三大类：
+             1.免认证登录：1）显示全部页面（除配置）
+             2）显示指定的某个页面
+             2.认证登录（sessionid）  用于e2e跳转
+
+             3.单个机顶盒面密码登录
+             */
+            //认证方式 针对e2e
+            if(mRequestParam.sessionid){
+                if(mRequestParam.operator&&typeof(mRequestParam.province)!="undefined"&&typeof(mRequestParam.node)!="undefined")
+                    mLoginWay=2;
+            }else if(mRequestParam.DeviceID&&mRequestParam.KPIUTCSec&&mRequestParam.SampleInterval)
+                mLoginWay=3;
+            else if(mRequestParam.operator&&typeof(mRequestParam.province)!="undefined"&&typeof(mRequestParam.node)!="undefined")
+                mLoginWay=1;
+            var obj=new Object();
+            obj["FreeLogWay"]=mLoginWay;  //免密码登录方式
+            obj["RequestParam"]=mRequestParam;  //参数
+            return obj;
+        }
+
+        var userAuthority="";
+
+
+        function getIDByCode(province,city,probrGridCol){
+            var code="";
+            if(city=="")
+                code=province;
+            else
+                code=city;
+            mCityCode=city;
+            $.ajax({complete:gComplete,
+                url:"configaction!returnIDByCode.action",
+                type:"POST",
+                data:"paramData={'code':'"+code+"'}",
+                dataType:"json",
+                async:false,
+                success: function (data) {
+                    var sdata=$.parseJSON(data.resultData);
+                    if(sdata.length!=0){
+                        if(sdata[0].ID>33)
+                            mcityID=sdata[0].ID;
+                        var b=true;
+                        for(var i=0;i<gpArea.areaList.length;i++){
+                            if(gpArea.areaList[i].id==sdata[0].ID){
+                                DefProvinceID=gpArea.areaList[i].id;
+                                b=false;
+                                break;
+                            }
+                        }
+                        for(var i=0;i<gpArea.areaList.length;i++){
+                            if(gpArea.areaList[i].location==sdata[0].Province){
+                                DefProvinceID=gpArea.areaList[i].id;
+                                break;
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        //据账号信息来确定其要显示的页面
+        function setPageConfig(sPageConfig){
+            //NetWork@Failure@Probe@Server@Report@Config   or   NetMonitor#NetTrend@Failure@Probe@Server@Report@Config
+            var mpPageShow=gpPageView;
+            var firstBtns = gtop.superPageConfigSet.firstBtns;
+            var secondBtns = superPageConfigSet.secondBtns;
+            var firPageObj,secPageObj;
+            if(typeof(sPageConfig)=="undefined"||sPageConfig==null||sPageConfig.length<=0){
+                if(gpCompanyCfg[gsCompany]&&gpCompanyCfg[gsCompany].pageViews)
+                    sPageConfig=gpCompanyCfg[gsCompany].pageViews;
+                else
+                    sPageConfig=gpCompanyCfg.general.pageViews;
+            }
+
+            var firstArr = sPageConfig.split("@");
+            var sKey,sFirstKey,sSecondKey;
+            var secondArr;
+            var bExit=false,bSecExit=false;
+            for(var i=0;i<firstArr.length;i++){
+                sFirstKey=firstArr[i];
+                secondArr=sFirstKey.split("#");
+                bExit=false;
+                var boolOfShowAll=false;
+                for(var k=0;k<secondArr.length;k++){
+                    for(var p in mpPageShow){
+                        if(mpPageShow[p].key==secondArr[k]){//用户权限直接写的是一级权限
+                            if($.inArray(secondArr[k],firstBtns) != -1){
+                                mpPageShow[p]["show"]="true";
+                            }
+                            for(var q in mpPageShow[p].element){
+                                if($.inArray(mpPageShow[p].element[q].key,secondBtns) != -1){//判断该二级页面 是不是包括在pageViews中
+                                    mpPageShow[p].element[q]["show"]="true";
+                                    mpPageShow[p]["show"]="true";
+                                }
+                            }
+                            break;
+                        }
+                        for(var q in mpPageShow[p].element)
+                            if(mpPageShow[p].element[q].key==secondArr[k]){
+                                if($.inArray(mpPageShow[p].element[q].key,secondBtns) != -1){
+                                    mpPageShow[p].element[q]["show"]="true";
+                                    mpPageShow[p]["show"]="true";
+                                }
+                            }
+                    }
+                }
+            }
+        }
+
+        /**
+         *
+         * @param pageConfig
+         * 			数据库中存储的用户权限
+         * @return
+         * 			用户最多能显示哪些页面
+         */
+        function setSupperPageConfig(pageConfig){
+            var pageViews=gpCompanyCfg.general.pageViews;//默认pageViews是general的pageViws值
+            if(gpCompanyCfg[gsCompany]&&gpCompanyCfg[gsCompany].pageViews){//如果该用户自己配置了pageViews使用客户自己的pageViews
+                pageViews=gpCompanyCfg[gsCompany].pageViews;
+            }
+
+            if(!userAuthority){
+                userAuthority=gsAuthority;
+            }
+            var userViews=gpCompanyCfg.general[userAuthority+"Authority"]; // 获取用户对应权限。
+            if(gpCompanyCfg[gsCompany]&&gpCompanyCfg[gsCompany][userAuthority+"Authority"]){
+                userViews=gpCompanyCfg[gsCompany][userAuthority+"Authority"];
+            }
+
+            superPageConfigSet = {
+                "firstBtns":[],//一级页面最多能显示的按钮
+                "secondBtns":[]//二级页面最多能显示的按钮
+            };
+
+            var mpPageShow=gpPageView;
+
+            var firstArr = pageViews.split("@");
+            var sFirstKey;
+            var secondArr;
+            var userAuthrityPages = userAuthorityPage(userViews);
+            var userDbPages = userDbPage(pageConfig);
+            for(var i=0;i<firstArr.length;i++){
+                sFirstKey=firstArr[i];
+                secondArr=sFirstKey.split("#");
+                for(var k=0;k<secondArr.length;k++){
+                    for(var firstItem in mpPageShow){
+                        if(mpPageShow[firstItem].key==secondArr[k]){//判读配置的是否是一个大类
+                            var firstBtn = mpPageShow[firstItem].key;
+                            //判断用户是否有权限显示该一级页面
+                            if ($.inArray(firstBtn,userAuthrityPages.firstBtns)!=-1 && $.inArray(firstBtn,userDbPages.firstBtns)!=-1){
+                                superPageConfigSet.firstBtns.push(firstBtn);//放入一级按钮
+                            }
+                            for(var secondItem in mpPageShow[firstItem].element){
+                                var secondBtn = mpPageShow[firstItem].element[secondItem].key;
+                                if ($.inArray(secondBtn,userAuthrityPages.secondBtns)!=-1 && $.inArray(secondBtn,userDbPages.secondBtns) != -1){
+                                    superPageConfigSet.secondBtns.push(secondBtn);//放入二级按钮
+                                }
+                            }
+                            break;
+                        }
+                        for(var secondItem in mpPageShow[firstItem].element){
+                            if(mpPageShow[firstItem].element[secondItem].key==secondArr[k]){
+                                var firstBtn = mpPageShow[firstItem].key;
+                                var firstBtns = superPageConfigSet.firstBtns;
+                                //判断用户有权限显示该一级页面，且当前用户数据库数据说明他可以访问该页面, 且需要避免加入多次
+                                if($.inArray(firstBtn,userAuthrityPages.firstBtns)!=-1 && $.inArray(firstBtn,userDbPages.firstBtns)!=-1 && $.inArray(firstBtn,firstBtns) == -1){
+                                    superPageConfigSet.firstBtns.push(firstBtn);//放入一级按钮
+                                }
+                                var secondBtn = mpPageShow[firstItem].element[secondItem].key;
+                                //判断用户有权限显示该二级页面
+                                if($.inArray(secondBtn,userAuthrityPages.secondBtns) != -1 && $.inArray(secondBtn,userDbPages.secondBtns)!=-1){
+                                    superPageConfigSet.secondBtns.push(secondBtn);//放入二级按钮
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+
+        /**
+         * 用户有权限显示哪些页面(这里的权限指的是adminAuthority、userAuthority等表示能显示哪些页面)
+         */
+        function userAuthorityPage(userViews){
+            var mpPageShow=gpPageView;
+            var firstArr = userViews.split("@");
+            var sFirstKey;
+            var secondArr;
+            var userAuthorityPage = {
+                "firstBtns":[],//一级页面最多能显示的按钮
+                "secondBtns":[]//二级页面最多能显示的按钮
+            };
+            for(var i=0;i<firstArr.length;i++) {
+                sFirstKey = firstArr[i];
+                secondArr = sFirstKey.split("#");
+                for (var k = 0; k < secondArr.length; k++) {
+                    for (var firstItem in mpPageShow) {
+                        if (mpPageShow[firstItem].key == secondArr[k]) {//判读配置的是否是一个大类
+                            var firstBtn = mpPageShow[firstItem].key;
+                            userAuthorityPage.firstBtns.push(firstBtn);//放入一级按钮
+                            for (var secondItem in mpPageShow[firstItem].element) {
+                                var secondBtn = mpPageShow[firstItem].element[secondItem].key;
+                                userAuthorityPage.secondBtns.push(secondBtn);//放入二级按钮
+                            }
+                            break;
+                        }
+                        for (var secondItem in mpPageShow[firstItem].element) {
+                            if (mpPageShow[firstItem].element[secondItem].key == secondArr[k]) {
+                                var firstBtn = mpPageShow[firstItem].key;
+                                var firstBtns = userAuthorityPage.firstBtns;
+                                if ($.inArray(firstBtn, firstBtns) == -1) {//避免加入多次
+                                    userAuthorityPage.firstBtns.push(firstBtn);//放入一级按钮
+                                }
+                                var secondBtn = mpPageShow[firstItem].element[secondItem].key;
+                                userAuthorityPage.secondBtns.push(secondBtn);//放入二级按钮
+                            }
+                        }
+                    }
+                }
+            }
+            return userAuthorityPage;
+        }
+
+
+        /**
+         * 用户存储在数据库中的,表示当前用户能够显示哪些页面
+         * @param pageConfig
+         */
+        function userDbPage(pageConfig){
+            var mpPageShow=gpPageView;
+            var firstArr = pageConfig.split("@");
+            var sFirstKey;
+            var secondArr;
+            var userDbPages = {
+                "firstBtns":[],//一级页面最多能显示的按钮
+                "secondBtns":[]//二级页面最多能显示的按钮
+            };
+            for(var i=0;i<firstArr.length;i++) {
+                sFirstKey = firstArr[i];
+                secondArr = sFirstKey.split("#");
+                for (var k = 0; k < secondArr.length; k++) {
+                    for (var firstItem in mpPageShow) {
+                        if (mpPageShow[firstItem].key == secondArr[k]) {//判读配置的是否是一个大类
+                            var firstBtn = mpPageShow[firstItem].key;
+                            userDbPages.firstBtns.push(firstBtn);//放入一级按钮
+                            for (var secondItem in mpPageShow[firstItem].element) {
+                                var secondBtn = mpPageShow[firstItem].element[secondItem].key;
+                                userDbPages.secondBtns.push(secondBtn);//放入二级按钮
+                            }
+                            break;
+                        }
+                        for (var secondItem in mpPageShow[firstItem].element) {
+                            if (mpPageShow[firstItem].element[secondItem].key == secondArr[k]) {
+                                var firstBtn = mpPageShow[firstItem].key;
+                                var firstBtns = userDbPages.firstBtns;
+                                if ($.inArray(firstBtn, firstBtns) == -1) {//避免加入多次
+                                    userDbPages.firstBtns.push(firstBtn);//放入一级按钮
+                                }
+                                var secondBtn = mpPageShow[firstItem].element[secondItem].key;
+                                userDbPages.secondBtns.push(secondBtn);//放入二级按钮
+                            }
+                        }
+                    }
+                }
+            }
+            return userDbPages;
+        }
+
+        //判断登录用户的部分功能权限
+        function confirmCusRep(nCusRep,nPbGExport){
+            //是否能创建自定义报表
+            if(nCusRep==1)
+                report.general.gpReport.mbUserCusRep=true;
+// 		else
+// 			report.gpReport.mbUserCusRep=false;
+            //是否能导出终端列表信息
+            if(nPbGExport==1)
+                terminal.mbPbGridExport=true;
+// 		else
+// 			terminal.mbPbGridExport=false;
+        }
+
+        //终端明细一览表
+        function goSTBState(){
+            var indexSID=$.parseJSON(gpI18n.prop("login"));
+            var position={"width":900,"height":600,"left":250,"top":20};
+            mTitle_id_Div="div"+new Date().getTime();
+            pop=popupWindow(position,"<div id='"+mTitle_id_Div+"'></div>", "terminal/probe/terminal_STBState.html");
+        }
+        function showExpertDetail(rowData){
+            var h=document.documentElement.clientHeight;
+            var w=document.documentElement.clientWidth;
+            var position={"width":550,"height":400,"left":w/2-220,"top":h/2-200};
+            pop=popupWindow(position,"故障详细信息", "terminal/detail/showExpertDetail.html",rowData);
+        }
+        function showTask(){
+            var h=document.documentElement.clientHeight;
+            var w=document.documentElement.clientWidth;
+            var position={"width":0.6*w,"height":0.7*h,"left":w/10,"top":0.15*h};
+            mTitle_id_Div="div"+new Date().getTime();
+            mselect_Type="type"+new Date().getTime();
+            pop=popupWindow(position,"<div id=\""+mTitle_id_Div+"\"></div>", "task.html");
+        }
+
+        var mTitle_id_Div;
+        //添加用户命令
+        //命令查询结果页 会针对多个盒子下发命令！！type用来标识 终端状态页 还是命令查询页
+        //1 终端状态页 0 命令查询页
+        function sendcmd(rowData,type){
+            var indexSID=$.parseJSON(gpI18n.prop("login"));
+            if(rowData.State==0){  //关机的盒子不可发送命令
+                alert(indexSID.alert_index)
+                return;
+            }
+            if(rowData==""&&type=="NetTest"){
+                var position={"width":650,"height":550,"left":450,"top":150};
+                pop=popupWindow(position,indexSID.addusercmd, "terminal/probe/terminal_CmdTestAndConfig.html",rowData);
+            }else if(rowData==""&&type=="STBConfig"){
+                var position={"width":650,"height":520,"left":450,"top":150};
+                pop=popupWindow(position,indexSID.addusercmd, "terminal/command/cmdSTBParamSet.html",rowData);
+            }else if(type=="STBRemake"){
+                var position={"width":290,"height":520,"left":450,"top":150};
+                pop=popupWindow(position,"添加机顶盒备注信息", "terminal/probe/terminal_SetManagerName.html",rowData);
+            }else if(type=="ResultShow"){
+                if(rowData.Mode=="traceroute"){
+                    var position={"width":400,"height":410,"left":450,"top":150};
+                    pop=popupWindow(position,indexSID.traceroute, "terminal/command/cmdResultShow.html",rowData);
+                }else{
+                    var position={"width":550,"height":400,"left":450,"top":150};
+                    if(rowData.Mode=="ping")
+                        pop=popupWindow(position,indexSID.ping, "terminal/command/cmdResultShow.html",rowData);
+                    else if(rowData.Mode=="TestNetRate")
+                        pop=popupWindow(position,indexSID.TestNetRate, "terminal/command/cmdResultShow.html",rowData);
+                    else
+                        pop=popupWindow(position,rowData.Mode.toUpperCase()+indexSID.shell, "terminal/command/cmdResultShow.html",rowData);
+                }
+            }
+            if(type=="Diagnosis"){
+                var position={"width":450,"height":350,"left":500,"top":200};
+                pop=popupWindow(position,indexSID.selectSTB,"terminal/diagnosis/diagnosisShow.html",rowData);
+            }
+
+            if(type=="STBGDDial"){
+                var position={"width":650,"height":520,"left":450,"top":150};
+                pop=popupWindow(position,indexSID.selectSTB,"terminal/probe/terminal_SendGDDialtest.html",rowData);
+            }
+            if(type=="STBDial"){
+                var position={"width":650,"height":520,"left":450,"top":150};
+                pop=popupWindow(position,indexSID.selectSTB,"terminal/probe/terminal_SendDialtest.html",rowData);
+            }
+
+            if(type=="showFaultList"){
+                var position={"width":600,"height":350,"left":500,"top":200};
+                pop=popupWindow(position,indexSID.showFaultList,"terminal/diagnosis/showFaultList.html",rowData);
+            }
+            if(rowData.Mode=="Daily"||rowData.Mode==1){
+                var position={"width":500,"height":600,"left":450,"top":100};
+                mTitle_id_Div="div"+new Date().getTime();
+                pop=popupWindow(position,"<div id=\""+mTitle_id_Div+"\"></div>", "terminal/probe/terminal_SendCmd.html",rowData);
+            }
+            if(rowData.Mode=="Debug"||rowData.Mode==2||rowData.Mode==3){
+                var position={"width":500,"height":600,"left":450,"top":100};
+                rowData.mIfHavePopClose=true;
+                mTitle_id_Div="div"+new Date().getTime();
+                pop=popupWindow(position,"<div id=\""+mTitle_id_Div+"\"></div>", "terminal/probe/terminal_SendCmd.html",rowData);
+            }
+        }
+        //修改上报模式
+        function tochangemode(params, onReceiveSTBMode){
+            var indexSID=$.parseJSON(gpI18n.prop("login"));
+            var position={"width":350,"height":250,"left":550,"top":220};
+            pop=popupWindow(position,indexSID.changemode, "terminal/probe/terminal_ChangeMode.html",params,onReceiveSTBMode);
+        }
+
+        //故障、事件数详细信息展示
+        function showEventCount(sTitle,params){
+            var position={"width":770,"height":530,"left":450,"top":110};
+            pop=popupWindow(position, sTitle, "terminal/probe/terminal_FaultShow.html",params)
+        }
+
+        //网元信息Bras、OLT详细信息展示
+        function showNetEle(sTitle,params){
+            var position={"width":670,"height":330,"left":450,"top":220};
+            pop=popupWindow(position, sTitle, "terminal/probe/terminal_NetEle.html",params);
+        }
+
+        function resize(){
+            login.resize();
+        }
+
+        function changeDayOrHour(){
+            updateData();
+        }
+
+        var CallMethod;
+        var CallType=0;
+        var isCall=false;
+        //显示弹窗                               标题         提示内容      判断是否自动隐藏      判断是否有取消按钮 1为没有 2有  (3，4特殊的弹框)    确定的点击事件
+        function showHint(title,content,isHide,mtype,_method){
+            var hintdata=$.parseJSON(gpI18n.prop("misc"));
+            CallMethod=_method;
+            CallType=0;
+            if(title!=null){
+                $("#title_msg").text(title);
+            }
+            if(mtype!=4){
+                $("#content_div").css("display","block");
+                $("#content_reset").css("display","none");
+                $("#content_msg").html(content);
+            }else{
+                CallType=mtype;
+                $("#content_div").css("display","none");
+                $("#content_reset").css("display","block");
+                $("#content_old").html(content.split(",")[0]);
+                $("#content_new").html(content.split(",")[1]);
+                $("#content_pwd").html(content.split(",")[2]);
+            }
+            $("#hint_ensure").text(hintdata.btn_ensure);
+            $("#hint_cancel").text(hintdata.btn_cancel);
+            $("#content_div").css("margin","0px");
+            if(mtype==1){
+                $(".div_hint").css("width","200px");
+                $(".div_hint").css("height","120px");
+                $("#hint_cancel").css("display","none");
+                $("#content_info").css("display","none");
+                isCall=false;
+            }else if(mtype==2){
+                $(".div_hint").css("width","260px");
+                $(".div_hint").css("height","110px");
+                $("#hint_cancel").css("display","inline-block");
+                $("#content_info").css("display","none");
+                isCall=true;
+            }else if(mtype==3){
+                $(".div_hint").css("width","350px");
+                $(".div_hint").css("height","140px");
+                $("#hint_cancel").css("display","inline-block");
+                $("#content_info").css("display","inline-block");
+                $("#content_div").css("margin-top","15px");
+                $("#content_div").css("margin-bottom","12px");
+                isCall=true;
+            }else if(mtype==4){
+                $(".div_hint").css("width","370px");
+                $(".div_hint").css("height","180px");
+                $("#content_pwdtext").css("margin-left","13px");
+                isCall=true;
+            }
+
+            $(".showhint").show();
+            if(mtype==3)
+                $("#content_info").focus();
+            if(isHide)
+                setTimeout(function(){$(".showhint").hide();},1000);
+        }
+        function onEnsure(){
+            if(CallType!=4){
+                var contentInfo=$("#content_info").val();
+                if(isCall==true){
+                    CallMethod(contentInfo);
+                }
+                $("#content_info").val("");
+                $(".showhint").hide();
+                return;
+            }
+            $.ajax({complete:gComplete,
+                url : "./useraction!returnUserByName.action",
+                type : "post",
+                dataType : "json",
+                data : 	"paramData={'userName':'" + gsUserName + "'}",
+                contentType : "application/x-www-form-urlencoded; charset=utf-8",
+                success : function(data) {
+                    var userData = data.resultData;
+                    if(userData==null)
+                        return;
+                    tmpData=$.parseJSON(userData);
+                    var isHide=false;
+                    var clearOldPwd = false;
+                    var contentInfo=$("#content_info").val();
+                    if(isCall==true){
+                        if(CallType==4){
+                            var reset_old=$("#content_oldtext").val();
+                            var reset_new=$("#content_newtext").val();
+                            var reset_pwd=$("#content_pwdtext").val();
+                            changePassword = hex_md5("nts-" + reset_old).toUpperCase();
+                            if(reset_old==""||reset_new==""||reset_pwd=="")
+                                showHint1("提示信息","信息输入不完整!");
+                            else if(reset_new!=reset_pwd)
+                                showHint1("提示信息","两次输入密码不一致!");
+                            else if(reset_new.length<8)
+                                showHint1("提示信息","密码长度至少要8位!");
+                            else if(!onCheck(reset_pwd)){
+                                showHint1("提示信息","密码至少包含两种字符(1:大写字母 2:小写字母 3:数字 4:特殊符号)!");
+                            }else if(!(tmpData[0].PassWord==changePassword)){
+                                showHint1("提示信息","原密码不正确!");
+                                clearOldPwd=true;
+                            }else if(reset_pwd==reset_old)
+                                showHint1("提示信息","密码不能与原密码相同!");
+                            else
+                                isHide=true;
+                            contentInfo=hex_md5("nts-" + reset_pwd).toUpperCase();
+                        }else
+                            isHide=true;
+                        if(isHide)
+                            CallMethod(contentInfo);
+                    }
+                    if(clearOldPwd)
+                        $("#content_oldtext").val("");
+                    else{
+                        $("#content_info").val("");
+                        //				$("#content_oldtext").val("");
+                        $("#content_newtext").val("");
+                        $("#content_pwdtext").val("");
+                    }
+                    if(isHide)
+                        $(".showhint").hide();
+                }
+            });
+        }
+        function onCancel(){
+            $("#content_info").val("");
+            $(".showhint").hide();
+        }
+        //另一弹窗			标题,内容,是否自动隐藏
+        function showHint1(title,content,isHide){
+            $("#title_msg1").html(title);
+            $("#content_msg1").html(content);
+            $("#hint_ensure1").text("确定");
+            $(".div_hint1").css("width","200px");
+            $(".div_hint1").css("height","120px");
+            $(".showhint1").show();
+            if(isHide)
+                setTimeout(function(){$(".showhint1").hide();},1000);
+        }
+        function onEnsure1(){
+            $(".showhint1").hide();
+        }
+        //遍历输入的密码是否至少包含两种字符
+        function onCheck(data) {
+            var tmpstr=data.split("");
+            var maxCount=tmpstr.length;
+            //   数字  	小写字母	大写字母	 特殊字符
+            var type_A=0,type_B=0,type_C=0,type_D=0;
+            for (var i= 0; i< tmpstr.length; i++) {
+                if(/^\d+$/.test(tmpstr[i]))
+                    type_A++;
+                else if(/^[a-z]+$/.test(tmpstr[i]))
+                    type_B++;
+                else if(/^[A-Z]+$/.test(tmpstr[i]))
+                    type_C++;
+                else
+                    type_D++;
+            }
+            if(type_A==maxCount||type_B==maxCount||type_C==maxCount||type_D==maxCount)
+                return false;
+            else
+                return true;
+        }
+        function getDataSource(){
+            return $("#selectDBFrom").get(0).selectedIndex;
+        }
+        function changeSelectDB(){
+            //var str=$("#selectDBFrom option:selected").val();
+            var str =$("#selectDBFrom").get(0).selectedIndex;
+            var sinterval =$("#divType").get(0).selectedIndex;
+            var interval=sinterval==0?3600:86400;
+            var cTime=$("#divTime").val();
+            var curSec=Date.parse(cTime)/1000;
+            $.ajax({complete:gComplete,
+                url : "./configaction!changeDataSource.action",
+                type : "post",
+                dataType : "json",
+                data : 	"paramData={'dataSource':'" + str + "'}",
+                contentType : "application/x-www-form-urlencoded; charset=utf-8",
+                success : function(data) {
+                    //如果切换数据源成功，重新获取数据
+                    if(data.resultData=="success"){
+                        network.chinaevqmap.resetMapDB(true,curSec,interval);
+                        updateData();
+                    }
+                },
+                failed:function(data){
+                    network.chinaevqmap.resetMapDB(false,curSec,interval);
+                }
+            });
+        }
+        var gObjResult={};
+        var mTaskNum; //存放故障分析下载任务信息
+        //无名称匿名函数
+        //在声行且执行一次
+        var mRequestParam =new Object();
+        (function(){
+            var arr=new Array();
+            var sUrl=gurlparameter;
+            if (sUrl.indexOf("?") != -1) {
+                var str=sUrl.split("?")[1];
+                strs = str.split("=");
+                if(strs[0]!="evqmParam")
+                    return null;
+                arr=strs[1].split("||");
+                for(var i=0;i<arr.length;i++){
+                    var tmparr=arr[i].split(":");
+                    mRequestParam[tmparr[0]]=tmparr[1];
+                }
+            }
+            if(mRequestParam.sessionid){
+                if(mRequestParam.operator&&typeof(mRequestParam.province)!="undefined"&&typeof(mRequestParam.node)!="undefined")
+                    mLoginWay=2;
+            }else if(mRequestParam.DeviceID&&mRequestParam.KPIUTCSec&&mRequestParam.SampleInterval)
+                mLoginWay=3;
+            else if(mRequestParam.operator&&typeof(mRequestParam.province)!="undefined"&&typeof(mRequestParam.node)!="undefined")
+                mLoginWay=1;
+            gObjResult["FreeLogWay"]=mLoginWay;  //免密码登录方式
+            gObjResult["RequestParam"]=mRequestParam;  //参数
+            setUNameAndAuthor();   //设置用户名和权限
+            forLogin();
+        })();
+	</script>
+	<style type="text/css">
+		body,html{
+			overflow: hidden;
+			overflow-x: hidden;
+			overflow-y: hidden;
+			border: none;
+			margin: 0px;
+			padding: 0px;
+			width: 100%;
+			height: 100%;
+			background-color: #0096cb;
+		}
+
+		#gMainFrm,#topContainer1 {
+			margin: 0px;
+			overflow: hidden;
+			overflow-x: hidden;
+			overflow-y: hidden;
+		}
+
+		#gToolbar {
+			height: 27px;
+			list-style-type: none;
+			margin: 0;
+			padding: 0px;
+			font-weight: normal;
+			text-align: left;
+			vertical-align:middle;
+			background-repeat: no-repeat;
+			width: 100%;
+			background-size:100% 100%;
+			background-image: url("asset/ico/toolbar.png");
+		}
+
+		#div_views {
+			margin-top: 0px;
+			height: 100%;
+			width: 100%;
+			overflow: hidden;
+			overflow-x: hidden;
+			overflow-y: hidden;
+		}
+
+		#navigation {
+			float: left;
+			padding-left: 5px;
+			color: #fff;
+		}
+
+		#imgUpdate {
+			vertical-align: middle;
+			width: 23px;
+			height: 23px;
+			cursor: pointer;
+		}
+
+		#refresh {
+			vertical-align: middle;
+			/* 	box-shadow:10px 10px 5px #000000; */
+			width: 23px;
+			height: 23px;
+			cursor: pointer;
+		}
+
+		#div_net,#div_terminal,#div_dig,#div_conf,#div_report,#div_server,#div_program {
+			width: 100%;
+			height: 100%;
+		}
+
+		li {
+			list-style-type: none;
+			float:right;
+			padding-right:5px;
+		}
+
+		.showhint,.showhint1{
+			position:fixed;
+			top:0;
+			left:0;
+			width:100%;
+			height:100%;
+			display:none;
+			z-index:999999;
+			background:rgba(238,238,238,0.6);
+		}
+
+		.div_hint{
+			position:fixed;
+			border: solid 0.5px #bdb8b8;
+			top:45%;
+			left:45%;
+			margin:-60px 0 0 -100px;
+			width:200px;
+			z-index:999;
+			background:#fff;
+		}
+		.div_hint1{
+			position:fixed;
+			border: solid 0.5px #bdb8b8;
+			top:50%;
+			left:51%;
+			margin:-60px 0 0 -100px;
+			width:200px;
+			z-index:999;
+			background:#fff;
+		}
+		.hint_title,.hint_title1{
+			padding-left:10px;
+			height:27px;
+			line-height:27px;
+			background:#82c1e2;
+			font-size:12px;
+			color:#fff;
+			border-top:1px solid #529dc4;
+		}
+
+		.hint_content,.hint_content1{
+			padding:12px 0;
+			text-align:center;
+			font-size:12px;
+			line-height:1.5;
+		}
+
+		.reset_label{
+			margin-left:50px;
+		}
+
+		.reset_input{
+			margin-left:25px;
+		}
+
+		.hint_btn,.hint_btn1{
+			padding:3px 0;
+			text-align:center;
+			margin-bottom:10px;
+		}
+		.topView{
+			position: absolute !important;
+			top: 0 !important;
+			left: 0 !important;
+			width: 100% !important;
+			height: 100% !important;
+		}
+
+		#hint_cancel{
+			margin-left: 15px;
+		}
+
+		.CmdWinTitle{
+			width: 472px;
+			height: 30px;
+			margin-top: -8px;
+			margin-left: -10px;
+		}
+		.ProDetailWin{
+			width: 870px;
+			height: 30px;
+			margin-top: -8px;
+			margin-left: -10px;
+		}
+		/* 进度条 */
+		.loadBar {
+			width: 250px;
+			height: 7px;
+			border: 3px solid #212121;
+			border-radius: 20px;
+			position: relative;
+			margin-top: 60px;
+		}
+
+		.loadBar div {
+			width: 100%;
+			height: 100%;
+			position: absolute;
+			top: 0;
+			left: 0;
+		}
+
+		.loadBar div span,.loadBar div i {
+			box-shadow: inset 0 -2px 6px rgba(0, 0, 0, .4);
+			width: 0%;
+			display: block;
+			height: 100%;
+			position: absolute;
+			top: 0;
+			left: 0;
+			border-radius: 20px;
+		}
+
+		.loadBar div i {
+			width: 100%;
+			-webkit-animation: move .8s linear infinite;
+			background: -webkit-linear-gradient(left top, #7ed047 0%, #7ed047 25%, #4ea018 25%,#4ea018 50%, #7ed047 50%, #7ed047 75%, #4ea018 75%, #4ea018 100%);
+			background-size: 40px 40px;
+		}
+		.loadBar .percentNum {
+			position: absolute;
+			top: 100%;
+			right: 0%;
+			padding: 1px 15px;
+			border-bottom-left-radius: 16px;
+			border-bottom-right-radius: 16px;
+			border: 1px solid #222;
+			background-color: #222;
+			color: #fff;
+		}
+		#div_login{
+			position: relative;
+			width: 100%;
+			height: 100%;
+			border: 1px solid #000;
+		}
+		.middle,#divProcess1{
+			position: absolute;
+			top: 42%;
+			left: 48%;
+			transform: translate(-50%,-50%);
+		}
+		#divProcess1{
+			position: absolute;
+			margin-top:160px;
+			left:51%;
+			transform: translate(-50%,-50%);
+		}
+	</style>
 </head>
 <body>
+<div id="div_login" style="display: block;">
+	<div id="div_noPwd" class="middle" style="display: block;">
+		<div style="position: absolute;">
+			<div style="text-align: center;"><img alt="icon" src="asset/ico/evqmaster.png" /></div>
+		</div>
+	</div>
+	<div id="divProcess1" class="loadBar" style="display: block;">
+		<div><span class="percent"><i></i></span></div>
+		<span class="percentNum">0%</span>
+	</div>
+</div>
+<div id="topContainer" style="display: none;">
+	<div id="gHeader">
+		<iframe id="header" name="header" src="header.html"></iframe>
+	</div>
+	<div>
+		<div id="topContainer1">
+			<div id="div_indexLeft" style="width: 20px; height: 100%">
+				<iframe style="z-index: 10;" src="index_frame.html"
+						id="indexLeft" name="indexLeft"></iframe>
+			</div>
+			<div>
+				<div id="gMainFrm" style="margin-top: 0px">
+					<div id="gToolbar">
+						<!-- iframe id="maintoolbar" name="maintoolbar" width="100%" height="100%" style="z-index: 20;" src="maintoolbar.html"></iframe> -->
 
+						<ul id="myul" style="margin-top: 4px; padding-left: 0px">
+							<li id="navigation"><span id="id_title"></span></li>
+							<li><img
+									id="refresh" src="asset/ico/refresh.png" alt="刷新"
+									width="25" height="25" onClick="changeUpDate(true);" /></li>
+							<li><img
+									id="imgUpdate" alt="update" src="asset/ico/connect.png"
+									width="25" height="25" onClick="changeUpDate(false);" /></li>
+							<li>
+								<div>
+									<div id="divTime"></div>
+								</div>
+							</li>
+							<li>
+								<div>
+									<select id="divType" style="width:70px;background-image:url(./asset/btn-bg-hover.png);background-size:cover;" onchange="changeDayOrHour();"></select>
+								</div>
+							</li>
+							<li>
+								<div>
+									<select id="selectDBFrom" style="display:none;width:70px;background-image:url(./asset/btn-bg-hover.png);background-size:cover;" onchange="changeSelectDB();">
+										<option>分省</option>
+										<option>基地</option>
+										<option>混合</option>
+									</select>
+								</div>
+							</li>
 
+						</ul>
 
-
-
-
-
-
-
-<form id="form1" action="viewAnaIPTopNList.htm" method="post">
-<input type="hidden" id="currentPage" name="currentPage" value="">
-<input type="hidden" name="analyseMask" value="2097152"/>
-<input type="hidden" name="filterMask" value="0"/>
-<input type="hidden" name="deviceType" value="2"/>
-<input type="hidden" name="deviceId" value=" 0"/>
-<input type="hidden" name="devGrpId" value=" 161"/>
-<input type="hidden" name="svcId" value="0"/>
-<input type="hidden" name="subServiceId" value="0"/>
-<input type="hidden" id="id" name="id" value="0"/>
-</form>
-<table style="margin:0;padding:0px;width:100%">
-
-
-<tr>
-  <td class="body">
-    <div class="table3DImg" style="width:1010;height:100%">
-    <table width="100%"  cellpadding=0 cellspacing=0>
-    <thead>
-    <tr>
-      <th>序号</th>
-      <th></th>
-      <th style="display: none;">运营商</th>
-      <th>所属区域</th>
-      <th>双向流量(Mbps)</th>
-      <th>入境流量(Mbps)</th>
-      <th>出境流量(Mbps)</th>
-    </tr>
-    </thead>
-    <tbody>
-
-    </tbody>
-    </table>
-    </div>
-  </td>
-</tr>
-
-</table>
-
-
-
-<div id="div_alert" style="display:none;position:absolute;padding:8px 10px;color:#514721;border:1px solid #FFD324;background:#FFF6BF;width:170px;z-index:10000;"><table width="100%" height="30"><tr><td><img src="./images/ok_32x32.gif"></td><td valign="middle" style="font-size:14px;">&nbsp;For input string: &quot; 161&quot;</td></tr></table></div>
-<script>
-function alertInfo()
-{
-    o = document.getElementById("div_alert");
-    o.style.display = "";
-    o.style.left = (document.body.clientWidth-o.offsetWidth)/2 + "px";
-    o.style.top = (document.body.clientHeight-o.offsetHeight-100)/2 + "px";
-}
-setTimeout(function(){document.getElementById("div_alert").style.display="none";},2000);
-</script>
-
-
+					</div>
+					<!-- 便于调试 <-- 搜索   -->
+					<div id="div_views">
+						<div id="div_net" style="display: block;">
+							<iframe id="iframe_network" name="network" style="z-index: 10;"
+									src="network/network.html"></iframe>
+						</div>
+						<div id="div_terminal" style="display: none;">
+							<iframe id="iframe_terminal" name="terminal" style="z-index: 10;"
+									src="terminal/terminalView.html"></iframe>
+						</div>
+						<div id="div_dig" style="display: none;">
+							<iframe id="iframe_dig" name="failure" style="z-index: 10;"
+									src="failureDig/failureManage.html"></iframe>
+						</div>
+						<div id="div_server" style="display: none;">
+							<iframe id="iframe_server" name="server" style="z-index: 10;"
+									src="server/serverManage.html"></iframe>
+						</div>
+						<div id="div_program" style="display: none;">
+							<iframe id="iframe_program" name="program" style="z-index: 10;"
+									src="program/programManage.html"></iframe>
+						</div>
+						<div id="div_report" style="display: none;">
+							<iframe id="iframe_report" name="report" style="z-index: 10;"
+									src="report/reportMain.html"></iframe>
+						</div>
+						<div id="div_conf" style="display: none;">
+							<iframe id="iframe_conf" name="config" style="z-index: 10;"
+									src="configview/config.html"></iframe>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="showhint">
+	<div class="div_hint">
+		<div class="hint_title"><label id="title_msg"></label></div>
+		<div class="hint_content" id='content_div'>
+			<label id="content_msg"></label>
+			<input type="text" id="content_info">
+		</div>
+		<div class="hint_reset" id="content_reset">
+			<div style="margin-top:15px;">
+				<label class="reset_label" id="content_old"></label>
+				<input class="reset_input" type="password" id="content_oldtext">
+			</div>
+			<div style="margin-top:10px;">
+				<label class="reset_label" id="content_new"></label>
+				<input class="reset_input" type="password" id="content_newtext">
+			</div>
+			<div style="margin-top:10px;margin-bottom:12px;">
+				<label class="reset_label" id="content_pwd"></label>
+				<input class="reset_input" type="password" id="content_pwdtext">
+			</div>
+		</div>
+		<div class="hint_btn">
+			<button id="hint_ensure" class="buttonStyle" onclick="onEnsure();"></button>
+			<button id="hint_cancel" class="buttonStyle" onclick="onCancel();"></button>
+		</div>
+	</div>
+</div>
+<div class="showhint1">
+	<div class="div_hint1">
+		<div class="hint_title1"><label id="title_msg1"></label></div>
+		<div class="hint_content1" id='content_div1'><label id="content_msg1" style="margin:10px;"></label></div>
+		<div class="hint_btn1">
+			<button id="hint_ensure1" class="buttonStyle" onclick="onEnsure1();"></button>
+		</div>
+	</div>
+</div>
+<div id="showTips" style="position: absolute; background-color:#F0E68C;font-size:12px"></div>
 </body>
-</html>
