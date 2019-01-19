@@ -237,6 +237,7 @@ for item in zte_dict:
     online_user.append(item['onlineuser'])
 max_rate_tmp = max(bandwidth)
 max_rate = max(bandwidth)/1024/1024/1024
+print(max_rate)
 max_user = max(online_user)
 iptv_time_tmp = ''
 for item in zte_dict:
