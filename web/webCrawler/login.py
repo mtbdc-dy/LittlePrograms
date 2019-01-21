@@ -119,13 +119,13 @@ def sqm():
 
 
 def sqm_117():
-    cookie = 'ERROR'
     # 获取cookie
-    url = 'http://117.144.107.165:8088/evqmaster/CheckCode'
-    cj = ww.get_cookie_without_form(url)
-    for item in cj:
-        cookie = item.name + '=' + item.value
-    print(cookie)
+    # url = 'http://117.144.107.165:8088/evqmaster/CheckCode'
+    # cj = ww.get_cookie_without_form(url)
+    # for item in cj:
+    #     cookie = item.name + '=' + item.value
+    # print(cookie)
+    cookie = 'JSESSIONID=DA0E2EE0EF500EB6F06423E7E89E440F'
 
     # 获取验证码 加random 是为了改一下请求 那样就不会去缓存中获取这张图片了
     url = 'http://117.144.107.165:8088/evqmaster/CheckCode?' + str(random.random())
@@ -142,6 +142,7 @@ def sqm_117():
 
     f = ww.post_web_page(url, form, cookie)
     print(f)
+    # http://117.144.107.165:8088/evqmaster/configaction!logout.action
     return cookie
 
 
@@ -288,8 +289,7 @@ def fonsview():
 
 
 if __name__ == '__main__':
-    a,b = fonsview()
-    print(a, b)
+    sqm_117()
 
     print()
 
