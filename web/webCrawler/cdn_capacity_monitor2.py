@@ -219,7 +219,7 @@ def fenghuo_yp():
 print('烽火：')
 fenghuo_ott_fx, fenghuo_ott_yp, fenghuo_ott = wl.fonsview()
 print(fenghuo_ott_fx, fenghuo_ott_yp, fenghuo_ott)
-# fenghuo_ott += fenghuo_ott_yp
+
 
 '''part3 zte'''
 print('中兴：')
@@ -308,7 +308,9 @@ def query_ottnode_zte(n, cookie):
 
 '''part4 SQM'''
 print('SQM：')
+print(startTime)
 cookie = wl.sqm_117()
+# cookie = 'JSESSIONID=4CD5A39212EAA84F77E3BE9817B6AC09'
 # SQM峰值流用户数
 # 系统特性 取某一日的值时需要始末日期一致
 form = {
@@ -316,7 +318,7 @@ form = {
 }
 url = 'http://117.144.107.165:8088/evqmaster/report/reportaction!returnKpiData.action'
 f = ww.post_web_page(url, form, cookie)
-# print(f)
+print(f)
 tmp = f[f.find('maxStreamSTBs') + 18:]
 maxStreamSTBs = f[f.find('maxStreamSTBs') + 18: f.find('maxStreamSTBs') + 18 + tmp.index('\\')]
 
@@ -336,6 +338,7 @@ url = 'http://117.144.107.165:8088/evqmaster/report/reportaction!returnKpiData.a
 form = {
     'paramData': '{\"location\": 4, \"secFrom\": \"' + startTime + ' 00:00:00\", \"secTo\": \"' + startTime + ' 00:00:00\", \"dimension\": \"1\", \"idfilter\": \"4\", \"type\": \"usercard\", \"dataType\": \"1\"}'
 }
+
 f = ww.post_web_page(url, form, cookie)
 tmp_index = f.find('GrnDevices')
 f = f[tmp_index:]

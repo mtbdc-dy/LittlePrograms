@@ -51,7 +51,7 @@ def zte_anyservice_uniportal():
         cookie = item.name + '=' + item.value
     print(cookie)
 
-    # cookie = 'JSESSIONID=3276F5B76C95383468C71976890DF58C'
+    # cookie = 'JSESSIONID=4CD5A39212EAA84F77E3BE9817B6AC09'
     url = 'https://117.135.56.61:8443/authimg'
     ww.get_validate_code(url, cookie)
 
@@ -120,15 +120,15 @@ def sqm():
 
 def sqm_117():
     # 获取cookie
-    # url = 'http://117.144.107.165:8088/evqmaster/CheckCode'
-    # cj = ww.get_cookie_without_form(url)
-    # for item in cj:
-    #     cookie = item.name + '=' + item.value
-    # print(cookie)
-    cookie = 'JSESSIONID=DA0E2EE0EF500EB6F06423E7E89E440F'
+    url = 'http://117.144.107.165:8088/evqmaster/CheckCode'
+    cj = ww.get_cookie_without_form(url)
+    for item in cj:
+        cookie = item.name + '=' + item.value
+    print(cookie)
+    # cookie = 'JSESSIONID=859D1BE9728F46E71C2B765186B593A1'
 
     # 获取验证码 加random 是为了改一下请求 那样就不会去缓存中获取这张图片了
-    url = 'http://117.144.107.165:8088/evqmaster/CheckCode?' + str(random.random())
+    url = 'http://117.144.107.165:8088/evqmaster/CheckCode'  # ?' + str(random.random())
     ww.get_validate_code(url, cookie)
     pwd = input('输入验证码，谢谢')
 
@@ -142,6 +142,9 @@ def sqm_117():
 
     f = ww.post_web_page(url, form, cookie)
     print(f)
+    # url = 'http://117.144.107.165:8088/evqmaster/index.html'
+    # f = ww.get_web_page(url, cookie)
+    # print(f)
     # http://117.144.107.165:8088/evqmaster/configaction!logout.action
     return cookie
 
@@ -289,8 +292,13 @@ def fonsview():
 
 
 if __name__ == '__main__':
-    sqm_117()
-
+    cookie = sqm_117()
+    form = {
+        'paramData': '{\"location\": 4, \"secFrom\": \"2019-01-21 00:00:00\", \"secTo\": \"2019-01-21 00:00:00\", \"dimension\": \"1\",\"idfilter\": \"4\", \"type\": \"activeuser\", \"dataType\": \"1\"}'
+    }
+    url = 'http://117.144.107.165:8088/evqmaster/report/reportaction!returnKpiData.action'
+    f = ww.post_web_page(url, form, cookie)
+    print(f)
     print()
 
 
