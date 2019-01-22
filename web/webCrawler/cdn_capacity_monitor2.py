@@ -236,7 +236,9 @@ for item in zte_dict:
     bandwidth.append(item['bandwidth'])
     online_user.append(item['onlineuser'])
 max_rate_tmp = max(bandwidth)
+mean_rate = sum(bandwidth)/len(bandwidth)/1024/1024/1024
 max_rate = max(bandwidth)/1024/1024/1024
+print('mean rate: ', mean_rate)
 print(max_rate)
 max_user = max(online_user)
 iptv_time_tmp = ''

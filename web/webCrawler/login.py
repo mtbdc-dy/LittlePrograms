@@ -4,7 +4,9 @@ import web.webCrawler.webcrawler as ww
 import random
 import myPackages.number_base_conversion
 import myPackages.pic_processing as mp
+import myPackages.getime as md
 import time
+import datetime
 import json  # eoms用json传了RSA公钥
 import rsa
 import base64
@@ -291,14 +293,69 @@ def fonsview():
     return float(fx), float(yp), float(fh_hz)
 
 
+def fonsview_mean(nd, ndb):
+    driver = Chrome()
+    driver.implicitly_wait(5)
+    driver.set_page_load_timeout(5)
+    driver.get('https://sh.csk.rhel.cc:3000/login')
+    # print(driver.page_source)
+    usr = driver.find_element_by_xpath("//*[@id=\"login-view\"]/form/div[1]/input")
+    usr.send_keys("fonsview")
+    pw = driver.find_element_by_xpath("//*[@id=\"inputPassword\"]")
+    pw.send_keys("ShangHai!23+")
+    pw.send_keys(Keys.ENTER)
+
+    pw = driver.find_element_by_xpath('/html/body/grafana-app/div[2]/div/div/div/dashnav/div/div[1]/a')
+    pw.click()
+    pw = driver.find_element_by_xpath(
+        '/html/body/grafana-app/div[2]/div/div/div/dashnav/dashboard-search/div[2]/div[2]/div[1]/div/div[1]/dashboard-search-results/div[8]/div[1]/span')
+    pw.click()
+    pw = driver.find_element_by_xpath(
+        '/html/body/grafana-app/div[2]/div/div/div/dashnav/dashboard-search/div[2]/div[2]/div[1]/div/div[1]/dashboard-search-results/div[8]/div[3]/a[2]/span[2]')
+    pw.click()
+
+    pw = driver.find_element_by_xpath(
+        '/html/body/grafana-app/div[2]/div/div/div/dashnav/div/gf-time-picker/div/button[1]')
+    pw.click()
+
+    # 选择日期
+    start_time = str(md.n_days_ago(ndb + 1))
+    end_time = str(md.n_days_ago(ndb))
+    print(start_time, end_time)
+    pw = driver.find_element_by_xpath('/html/body/grafana-app/div[2]/div/div/div/dashnav/div/gf-time-picker/div[2]/form/div[1]/div[1]/input')
+    for i in range(10):
+        pw.send_keys(Keys.BACKSPACE)
+    pw.send_keys(start_time + " 00:00:00")
+    pw = driver.find_element_by_xpath('/html/body/grafana-app/div[2]/div/div/div/dashnav/div/gf-time-picker/div[2]/form/div[2]/div[1]/input')
+    for i in range(10):
+        pw.send_keys(Keys.BACKSPACE)
+    pw.send_keys(end_time + " 00:00:00")
+    pw = driver.find_element_by_xpath('/html/body/grafana-app/div[2]/div/div/div/dashnav/div/gf-time-picker/div[2]/form/div[3]/div[2]/button')
+    pw.click()
+    time.sleep(1)
+
+    fh_hz_mean = list()
+    for i in range(nd):
+        # 下一天
+        pw = driver.find_element_by_xpath('/html/body/grafana-app/div[2]/div/div/div/dashnav/div/gf-time-picker/div/button[3]')
+        pw.click()
+        time.sleep(1)
+        pw.click()
+        time.sleep(1)
+
+        # 取值
+        pw = driver.find_element_by_xpath('//*[@id="panel-16"]/div/plugin-component/panel-plugin-graph/grafana-panel/div/div[2]/ng-transclude/div/div[2]/div/div[1]/tbody/div[1]/div[4]')
+        fh_hz_mean.append(float(pw.text.split(' ')[0]))
+    print(fh_hz_mean)
+    print(sum(fh_hz_mean)/len(fh_hz_mean))
+    driver.close()
+
+    return sum(fh_hz_mean)/len(fh_hz_mean)
+
+
 if __name__ == '__main__':
-    cookie = sqm_117()
-    form = {
-        'paramData': '{\"location\": 4, \"secFrom\": \"2019-01-21 00:00:00\", \"secTo\": \"2019-01-21 00:00:00\", \"dimension\": \"1\",\"idfilter\": \"4\", \"type\": \"activeuser\", \"dataType\": \"1\"}'
-    }
-    url = 'http://117.144.107.165:8088/evqmaster/report/reportaction!returnKpiData.action'
-    f = ww.post_web_page(url, form, cookie)
-    print(f)
+
+    print(fonsview_mean(7, 8))
     print()
 
 

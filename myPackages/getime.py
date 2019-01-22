@@ -20,8 +20,8 @@ def n_days_ago(n):
     delta = datetime.timedelta(days=n)
     n_days = now-delta
     n_days.strftime('%Y-%m-%d')  # 不会改变对象的值
-    print(n_days)
-    return n_days
+    # print(n_days)
+    return n_days.strftime('%Y-%m-%d')
 
 
 def today():
@@ -35,10 +35,5 @@ def get_today_zero_stamp():
 
 
 if __name__ == '__main__':
-    now = time.time() # time.time() 零时区时间戳
-    print('%d' % (now - (now + 8 * 3600) % 86400))  # 当天凌晨
-    print(type('%d' % (now - (now + 8 * 3600) % 86400 - 86400)))
-
-    a = '1'
-    b = b'2' + bytes(a, encoding='utf')
-    print(b)
+    print(n_days_ago(1))
+    print()
