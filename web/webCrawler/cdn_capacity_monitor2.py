@@ -31,7 +31,7 @@ import json
 # 输出文件名
 file_output = 'cdn_rate.csv'
 # IPTV
-IPTV_total_capacity = 1521 + 99
+IPTV_total_capacity = 1773
 print('中兴总容量： \033[32;0m{:d}\033[0mG'.format(IPTV_total_capacity))
 # OTT
 FX_FengHuo_OTT = 240
