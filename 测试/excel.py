@@ -2,7 +2,7 @@ import xlrd  # 读excel
 import xlwt  # 写excel
 
 # '''写 excel start'''
-# filename = 'excel_name.xlsx'
+# filename = 'desc.xlsx'
 # f = xlwt.Workbook(filename)  # 打开excel
 # ws = f.add_sheet('sheet_name')  # 新建一个sheet
 # for i in range(10):
@@ -12,7 +12,7 @@ import xlwt  # 写excel
 #
 #
 # '''读excel start'''
-# filename = 'excel_name.xlsx'    # 文件名
+# filename = 'desc.xlsx'    # 文件名
 #
 # f = xlrd.open_workbook(filename)    # 打开excel
 # table = f.sheet_by_name("sheet_name")   # 打开sheet
