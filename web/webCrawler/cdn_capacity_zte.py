@@ -43,6 +43,8 @@ def query_ottnode_zte(n, cookie):
         form['nodeid'] = 'servicenode6'
     if n == 'fx':
         form['nodeid'] = 'servicenode7'
+    if n == 'js':
+        form['nodeid'] = 'servicenode8'
 
     f = ww.post_web_page_ssl(url, form, cookie)
     encodedjson = json.loads(f)
@@ -57,7 +59,7 @@ def query_ottnode_zte(n, cookie):
 
 g_zte = open('cdn_rate_zte.csv', 'a', newline='')
 writer_zte = csv.writer(g_zte)
-n_days = int(input('想取多少天数据？'))
+n_days = int(input('想取多少天数据？:'))
 for i in range(n_days):
     now = datetime.datetime.now()
     delta = datetime.timedelta(days=n_days-i)
@@ -77,13 +79,15 @@ for i in range(n_days):
     concurrent_bs, bandwidth_bs, mean_ns, upstreamband_bs = query_ottnode_zte('bs', cookie)    #
     concurrent_jd, bandwidth_jd, mean_jd, upstreamband_jd = query_ottnode_zte('jd', cookie)    #
     concurrent_sj, bandwidth_sj, mean_sj, upstreamband_sj = query_ottnode_zte('sj', cookie)
-    concurrent_fx, bandwidth_fx, mean_fx, upstreamband_fx = query_ottnode_zte('xf', cookie)
+    concurrent_fx, bandwidth_fx, mean_fx, upstreamband_fx = query_ottnode_zte('fx', cookie)
+    concurrent_js, bandwidth_js, mean_js, upstreamband_js = query_ottnode_zte('js', cookie)
 
     csv_content_zte = [startTime, bandwidth_0, bandwidth_1, bandwidth_2, bandwidth_3, bandwidth_4, bandwidth_cm,
-                       bandwidth_bs, bandwidth_jd, bandwidth_sj, bandwidth_fx,
+                       bandwidth_bs, bandwidth_jd, bandwidth_sj, bandwidth_fx, bandwidth_js,
                        bandwidth_0+bandwidth_1+bandwidth_2+bandwidth_3+ bandwidth_4,
-                       bandwidth_cm+bandwidth_bs+bandwidth_jd+bandwidth_sj+bandwidth_fx,
-                       mean_0 + mean_1 + mean_2 + mean_3 + mean_4 + mean_cm + mean_ns + mean_jd + mean_sj + mean_fx
+                       bandwidth_cm+bandwidth_bs+bandwidth_jd+bandwidth_sj+bandwidth_fx+bandwidth_js,
+                       mean_0 + mean_1 + mean_2 + mean_3 + mean_4
+                       + mean_cm + mean_ns + mean_jd + mean_sj + mean_fx + mean_js
                        ]
     writer_zte.writerow(csv_content_zte)
     print(i)
