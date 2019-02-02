@@ -271,12 +271,25 @@ def fonsview():
     pw = driver.find_element_by_xpath("//*[@id=\"inputPassword\"]")
     pw.send_keys("ShangHai!23+")
     pw.send_keys(Keys.ENTER)
+
+    # 点击做上面的栏目
     pw = driver.find_element_by_xpath('/html/body/grafana-app/div[2]/div/div/div/dashnav/div/div[1]/a')
     pw.click()
-    pw = driver.find_element_by_xpath('/html/body/grafana-app/div[2]/div/div/div/dashnav/dashboard-search/div[2]/div[2]/div[1]/div/div[1]/dashboard-search-results/div[8]/div[1]/span')
+
+    # pw = driver.find_element_by_xpath('/html/body/grafana-app/div[2]/div/div/div/dashnav/dashboard-search/div[2]/div[2]/div[1]/div/div[1]/dashboard-search-results/div[8]/div[1]/span')
+    # print(pw.text)
+    # exit()
+
+    # 点击栏目下的网络监控
+    pw = driver.find_element_by_xpath('/html/body/grafana-app/div[2]/div/div/div/dashnav/dashboard-search/div[2]/div[2]/div[1]/div/div[1]/dashboard-search-results/div[7]/div[1]/span')
     pw.click()
-    pw = driver.find_element_by_xpath('/html/body/grafana-app/div[2]/div/div/div/dashnav/dashboard-search/div[2]/div[2]/div[1]/div/div[1]/dashboard-search-results/div[8]/div[3]/a[2]/span[2]')
+    # 点击地市节点总量
+    pw = driver.find_element_by_xpath('/html/body/grafana-app/div[2]/div/div/div/dashnav/dashboard-search/div[2]/div[2]/div[1]/div/div[1]/dashboard-search-results/div[7]/div[3]/a[2]/span[2]')
     pw.click()
+
+    # pw = driver.find_element_by_xpath('/html/body/grafana-app/div[2]/div/div/div/dashnav/dashboard-search/div[2]/div[2]/div[1]/div/div[1]/dashboard-search-results/div[8]/div[3]/a[2]/span[2]')
+    # pw.click()
+
     pw = driver.find_element_by_xpath('/html/body/grafana-app/div[2]/div/div/div/dashnav/div/gf-time-picker/div/button[1]')
     pw.click()
     pw = driver.find_element_by_xpath('/html/body/grafana-app/div[2]/div/div/div/dashnav/div/gf-time-picker/div[2]/div/ul[2]/li[1]/a')
