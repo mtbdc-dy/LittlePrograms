@@ -239,7 +239,7 @@ max_rate_tmp = max(bandwidth)
 mean_rate = sum(bandwidth)/len(bandwidth)/1024/1024/1024
 max_rate = max(bandwidth)/1024/1024/1024
 print('mean rate: ', mean_rate)
-print(max_rate)
+print('max rate: ', max_rate)
 max_user = max(online_user)
 iptv_time_tmp = ''
 for item in zte_dict:
@@ -425,6 +425,7 @@ fenghuo_ott = round(fenghuo_ott, 2)         # 烽火汇总
 ott_max_rate = round(huawei_ott + fenghuo_ott, 2)     # OTT求和
 ott_mean_rate = huawei_mean_ott             # 暂无均值，暂只存华为OTT
 max_rate = round(max_rate, 2)               # IPTV汇总
+mean_rate = round(mean_rate, 2)
 maxStreamSTBs = float(maxStreamSTBs)        # OTT人数
 max_user = float(max_user)                  # IPTV人数
 
@@ -465,7 +466,7 @@ table_content = """<meta http-equiv="Content-Type" content="text/html; charset=u
 
 csv_content = [startTime] + ['{:.2f}'.format(maxStreamSTBs/10000)] + ['{:.2f}'.format(ott_max_rate)] +\
               ['%.2f' % (ott_mean_rate/1024)] + ['{:.2f}'.format(ott_max_rate/OTT_total_capacity*100)] +\
-              ['{:.2f}'.format(max_user/10000)] + ['{:.2f}'.format(max_rate)] +\
+              ['{:.2f}'.format(max_user/10000)] + ['{:.2f}'.format(max_rate)] + ['{:.2f}'.format(mean_rate)] +\
               ['{:.2f}'.format(max_rate/IPTV_total_capacity*100)] + ['{:.2f}'.format(laggy_device_ratio)] +\
               [sum_box] + ['%.2f' % epg_success_ratio] + ['%.2f' % epg_latency]
 print('email_content: ', email_content)
