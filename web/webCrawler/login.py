@@ -126,7 +126,7 @@ def sqm_117():
     cj = ww.get_cookie_without_form(url)
     for item in cj:
         cookie = item.name + '=' + item.value
-    print(cookie)
+    # print(cookie)
     # cookie = 'JSESSIONID=859D1BE9728F46E71C2B765186B593A1'
 
     # 获取验证码 加random 是为了改一下请求 那样就不会去缓存中获取这张图片了
@@ -143,7 +143,7 @@ def sqm_117():
     }
 
     f = ww.post_web_page(url, form, cookie)
-    print(f)
+    # print(f)
     # url = 'http://117.144.107.165:8088/evqmaster/index.html'
     # f = ww.get_web_page(url, cookie)
     # print(f)
@@ -254,7 +254,7 @@ def utm():
         # print(item)
         if item['name'] == 'JSESSIONID':
             cookie = 'JSESSIONID=' + item['value']
-    print(cookie)
+    # print(cookie)
 
     driver.close()
     return cookie
@@ -301,9 +301,13 @@ def fonsview():
     yp = pw.text.split(' ')[0]
     pw = driver.find_element_by_xpath('//*[@id="panel-16"]/div/plugin-component/panel-plugin-graph/grafana-panel/div/div[2]/ng-transclude/div/div[2]/div/div[1]/tbody/div[1]/div[3]')
     fh_hz = pw.text.split(' ')[0]
+    pw = driver.find_element_by_xpath('//*[@id="panel-16"]/div/plugin-component/panel-plugin-graph/grafana-panel/div/div[2]/ng-transclude/div/div[2]/div/div[1]/tbody/div[1]/div[4]')
+    fh_mean_hz = pw.text.split(' ')[0]
 
     driver.close()
-    return float(fx), float(yp), float(fh_hz)
+    print('峰值:', fh_hz)
+    print('均值:', fh_mean_hz)
+    return float(fx), float(yp), float(fh_hz), float(fh_mean_hz)
 
 
 def fonsview_mean(nd, ndb):

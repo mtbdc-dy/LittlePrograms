@@ -149,12 +149,12 @@ def huawei():
         time_stamp.append(item['timestampStr'].split(' ')[1])
 
     time_stamp_peak = time_stamp[HW_FX_ott_rate.index(max(HW_FX_ott_rate))]
-    print(time_stamp_peak)
+    # print('峰值时刻:', time_stamp_peak)
     t = (2018, 12, 31, int(time_stamp_peak.split(':')[0]), int(time_stamp_peak.split(':')[1]), 0, 0, 0, 0)
     huawei_stamp = time.mktime(t)
     ott_peak_period = timestamp_to_date(huawei_stamp - 1800) + '-' + timestamp_to_date(huawei_stamp + 1800)
-    print(ott_peak_period)
-    print(max(HW_FX_ott_rate))
+    print('峰值时间段:', ott_peak_period)
+    print('浦东峰值:', max(HW_FX_ott_rate))
     HW_ott_rate += max(HW_FX_ott_rate)
     # print(max(HW_FX_ott_rate))
     return HW_ott_rate, ott_peak_period, sum(HW_FX_ott_rate)/len(HW_FX_ott_rate)
@@ -217,100 +217,52 @@ def fenghuo_yp():
 
 
 print('烽火：')
-fenghuo_ott_fx, fenghuo_ott_yp, fenghuo_ott = wl.fonsview()
-print(fenghuo_ott_fx, fenghuo_ott_yp, fenghuo_ott)
+fenghuo_ott_fx, fenghuo_ott_yp, fenghuo_ott, fenghuo_mean_ott = wl.fonsview()
 
 
-'''part3 zte'''
-print('中兴：')
-cookie = wl.zte_anyservice_uniportal_v2()
-url = 'https://117.135.56.61:8443/dashboard_queryChartData.action'
-form = {}   # 仅仅是应为我写的方法，需要填form。也表明这个页面的请求方法有问题。
-f = ww.post_web_page_ssl(url, form, cookie)
-# print(f)
-zte_dict = json.loads(f)
-# print(zte_dict)
-online_user = list()
-bandwidth = list()
-for item in zte_dict:
-    bandwidth.append(item['bandwidth'])
-    online_user.append(item['onlineuser'])
-max_rate_tmp = max(bandwidth)
-mean_rate = sum(bandwidth)/len(bandwidth)/1024/1024/1024
-max_rate = max(bandwidth)/1024/1024/1024
-print('mean rate: ', mean_rate)
-print('max rate: ', max_rate)
-max_user = max(online_user)
-iptv_time_tmp = ''
-for item in zte_dict:
-    if item['bandwidth'] == max_rate_tmp:
-        iptv_time_tmp = item['stattime']
-h = iptv_time_tmp[0:2]
-m = iptv_time_tmp[-2:]
-# print(h, m)
-t = (2018, 12, 31, int(h), int(m), 0, 0, 0, 0)
-timestamp_iptv = time.mktime(t)
-iptv_peak_period = timestamp_to_date(timestamp_iptv - 1800) + '-' + timestamp_to_date(timestamp_iptv + 1800)
-
-
-def query_ottnode_zte(n, cookie):
-    url = 'https://117.135.56.61:8443/monitor/ottnode_query.action'
+# p3 中兴
+def zte():
+    cookie = wl.zte_anyservice_uniportal_v2()
+    url = 'https://117.135.56.61:8443/monitor/cpstat_query.action?t=1549951114288'
     form = {
-        'areaid': '# all#',
-        'nodeid': 'SHFX_NODE3',
-        'starttime': startTime + ' 00:00:00',
-        'endtime': endTime + ' 00:00:00'
+        'starttime': '2019-02-11 00:00:00',
+        'endtime': '2019-02-12 00:00:00',
+        'cpid': '000000000000',
+        'servicetype': 'total'
     }
-
-    # 可以改成dict，好看点
-    if n == 1:
-        form['nodeid'] = 'SHFX_NODE1'
-    if n == 2:
-        form['nodeid'] = 'SHFX_NODE2'
-    if n == 3:
-        form['nodeid'] = 'OTT_3'
-    if n == 4:
-        form['nodeid'] = 'servicenode2'
-    if n == 'cm':
-        form['nodeid'] = 'servicenode3'
-    if n == 'bs':
-        form['nodeid'] = 'servicenode4'
-    if n == 'jd':
-        form['nodeid'] = 'servicenode5'
-    if n == 'sj':
-        form['nodeid'] = 'servicenode6'
     f = ww.post_web_page_ssl(url, form, cookie)
-    encodedjson = json.loads(f)
+    # print(f)
+    zte_dict = json.loads(f)
+    # print(zte_dict.keys())
+    online_user = zte_dict['onlineusers']
+    bandwidth = zte_dict['bandwidth']
+    max_rate_tmp = max(bandwidth)
+    mean_rate = round(sum(bandwidth) / len(bandwidth), 2)
+    max_rate = max(bandwidth)
+    max_user = max(online_user)
+    print('max user: ', max_user)
+    print('max rate: ', max_rate)
+    print('mean rate: ', mean_rate)
+    # 获取峰值时间段
+    iptv_time_tmp = str(zte_dict['xaxis'][bandwidth.index(max_rate_tmp)])[11:]
+    # print(bandwidth.index(max_rate_tmp))
+    # print(iptv_time_tmp)
+    h = iptv_time_tmp[0:2]
+    m = iptv_time_tmp[3:5]
+    # print(h, m)
+    t = (2018, 12, 31, int(h) + 8, int(m), 0, 0, 0, 0)  # 鬼知道中兴的研发在搞什么
+    timestamp_iptv = time.mktime(t)
+    iptv_peak_period = timestamp_to_date(timestamp_iptv - 1800) + '-' + timestamp_to_date(timestamp_iptv + 1800)
+    print('峰值时间段:', iptv_peak_period)
+    return max_user, max_rate, mean_rate, iptv_peak_period
 
-    # unit单位 upstreamband回源带宽
-    upstreamband = max(encodedjson['upstreamband'])
-    concurrent = max(encodedjson['concurrent'])
-    bandwidth = max(encodedjson['bandwidth'])
-    return concurrent, float(bandwidth), upstreamband
 
-
-# concurrent_0, bandwidth_0, upstreamband_0 = query_ottnode_zte(0, cookie)    # 区域中心
-# concurrent_1, bandwidth_1, upstreamband_1 = query_ottnode_zte(1, cookie)    # 节点1
-# concurrent_2, bandwidth_2, upstreamband_2 = query_ottnode_zte(2, cookie)    # 节点2
-# concurrent_3, bandwidth_3, upstreamband_3 = query_ottnode_zte(3, cookie)    # 节点3
-# concurrent_4, bandwidth_4, upstreamband_4 = query_ottnode_zte(4, cookie)    # 节点4
-# concurrent_cm, bandwidth_cm, upstreamband_cm = query_ottnode_zte('cm', cookie)    #
-# concurrent_bs, bandwidth_bs, upstreamband_bs = query_ottnode_zte('bs', cookie)    #
-# concurrent_jd, bandwidth_jbl, upstreamband_jd = query_ottnode_zte('jbl', cookie)    #
-# concurrent_sj, bandwidth_sj, upstreamband_sj = query_ottnode_zte('sj', cookie)
-#
-#
-# csv_content_zte = [startTime, bandwidth_0, bandwidth_1, bandwidth_2, bandwidth_3, bandwidth_4, bandwidth_cm,
-#                    bandwidth_bs, bandwidth_jbl, bandwidth_sj, round(bandwidth_0+bandwidth_1+bandwidth_2+bandwidth_3 +
-#                    bandwidth_4, 2), round(bandwidth_cm+bandwidth_bs+bandwidth_jbl+bandwidth_sj, 2)]
-
-# print('{:.2f}'.format(bandwidth_0/99*100), '{:.2f}'.format(bandwidth_1/240*100),
-#       '{:.2f}'.format(bandwidth_2 / 240 * 100), '{:.2f}'.format(bandwidth_3/240*100),
-#       '{:.2f}'.format(bandwidth_4 / 240 * 100))
+print('中兴：')
+max_user, max_rate, mean_rate, iptv_peak_period = zte()
 
 '''part4 SQM'''
 print('SQM：')
-print(startTime)
+# print(startTime)
 cookie = wl.sqm_117()
 # cookie = 'JSESSIONID=4CD5A39212EAA84F77E3BE9817B6AC09'
 # SQM峰值流用户数
@@ -320,9 +272,10 @@ form = {
 }
 url = 'http://117.144.107.165:8088/evqmaster/report/reportaction!returnKpiData.action'
 f = ww.post_web_page(url, form, cookie)
-print(f)
+# print(f)
 tmp = f[f.find('maxStreamSTBs') + 18:]
 maxStreamSTBs = f[f.find('maxStreamSTBs') + 18: f.find('maxStreamSTBs') + 18 + tmp.index('\\')]
+print('峰值流用户数:', maxStreamSTBs)
 
 # SQM终端盒子总数
 url = 'http://117.144.107.165:8088/evqmaster/networkaction!returnAreaDetailByID.action'
@@ -398,8 +351,6 @@ def sqm_nei(cookie):
     return epg_latency, epg_success_ratio
 
 
-# epg_latency = 0
-# epg_success_ratio = 0
 epg_latency, epg_success_ratio = sqm_nei(cookie)
 print()
 
@@ -417,18 +368,20 @@ date = myPackages.getime.yesterday(1)
 #         ott_max_rate = row[4]
 #         ott_mean_rate = row[3]
 
-'''part5 发送邮件'''
+'''part5 准备邮件内容'''
 # 数据准备和格式转换
-huawei_ott = round(huawei_ott, 2)           # 华为汇总
-huawei_mean_ott = round(huawei_mean_ott, 2)
-fenghuo_ott = round(fenghuo_ott, 2)         # 烽火汇总
-ott_max_rate = round(huawei_ott + fenghuo_ott, 2)     # OTT求和
-ott_mean_rate = huawei_mean_ott             # 暂无均值，暂只存华为OTT
-max_rate = round(max_rate, 2)               # IPTV汇总
-mean_rate = round(mean_rate, 2)
-maxStreamSTBs = float(maxStreamSTBs)        # OTT人数
-max_user = float(max_user)                  # IPTV人数
+huawei_ott = round(huawei_ott, 2)                       # 华为汇总
+huawei_mean_ott = round(huawei_mean_ott, 2)             # 华为均值
+fenghuo_ott = round(fenghuo_ott, 2)                     # 烽火汇总
+fenghuo_mean_ott = round(fenghuo_mean_ott, 2)           # 烽火均值
+ott_max_rate = round(huawei_ott + fenghuo_ott, 2)       # OTT求和
+ott_mean_rate = huawei_mean_ott + fenghuo_mean_ott      # OTT均值
+max_rate = round(max_rate, 2)                       # IPTV汇总
+mean_rate = round(mean_rate, 2)                     # IPTV均值
+maxStreamSTBs = float(maxStreamSTBs)                    # OTT人数
+max_user = float(max_user)                          # IPTV人数
 
+# 邮件正文
 title = 'DoNotReply 互联网电视指标' + date
 email_content = 'OTT峰值时间段: ' + ott_peak_period + \
                 '; OTT峰值流用户数: {:.2f}万人; OTT峰值流速: {:.2f}Gbps; OTT利用率: {:.2f}%;'\
@@ -437,8 +390,7 @@ email_content = 'OTT峰值时间段: ' + ott_peak_period + \
                 '; IPTV峰值流用户数: {:.2f}万人; IPTV峰值流速: {:.2f}Gbps; IPTV利用率: {:.2f}%。'\
                     .format(max_user/10000, max_rate, max_rate/IPTV_total_capacity*100)
 email_content = '(' + startTime + ')' + email_content
-
-# table 准备
+# 邮件表格
 table_content = """<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <table border="" style="border-collapse: collapse; text-align: center">
     <tr style="font-weight: bold;">
@@ -463,14 +415,14 @@ table_content = """<meta http-equiv="Content-Type" content="text/html; charset=u
 </table>
 <br>
 <p>""" + email_content + """</p>"""
-
+# excel内容
 csv_content = [startTime] + ['{:.2f}'.format(maxStreamSTBs/10000)] + ['{:.2f}'.format(ott_max_rate)] +\
-              ['%.2f' % (ott_mean_rate/1024)] + ['{:.2f}'.format(ott_max_rate/OTT_total_capacity*100)] +\
+              ['%.2f' % ott_mean_rate] + ['{:.2f}'.format(ott_max_rate/OTT_total_capacity*100)] +\
               ['{:.2f}'.format(max_user/10000)] + ['{:.2f}'.format(max_rate)] + ['{:.2f}'.format(mean_rate)] +\
               ['{:.2f}'.format(max_rate/IPTV_total_capacity*100)] + ['{:.2f}'.format(laggy_device_ratio)] +\
               [sum_box] + ['%.2f' % epg_success_ratio] + ['%.2f' % epg_latency]
 print('email_content: ', email_content)
-print('csv_content:', csv_content)
+# print('csv_content:', csv_content)
 user = [
     'xuyuan2@sh.chinamobile.com', 'bianningyan@sh.chinamobile.com', 'chenlei5@sh.chinamobile.com',
     'huanglinling@sh.chinamobile.com', 'lilin2@sh.chinamobile.com', 'liujinlin@sh.chinamobile.com',
@@ -482,7 +434,7 @@ user = [
     'wucaili@sh.chinamobile.com', 'dingy@sh.chinamobile.com', 'fenghongyu@sh.chinamobile.com',
     'xuzicheng@sh.chinamobile.com', 'zhanghe@sh.chinamobile.com', 'sufeng@sh.chinamobile.com'
 ]
-# user = ['xuyuan2@sh.chinamobile.com']
+# user = ['xuyuan2@sh.chinamobile.com'] # 调试用
 
 '''part6 指标达标检测'''
 # print('EPG请求成功率：%.2f' % epg_success_ratio, end=' ')
@@ -491,18 +443,16 @@ user = [
 # if epg_latency > 0.02:
 #     print('\033[32;0mepg_latency过高\033[0m')
 
-
+'''part7 存储数据和发送邮件'''
 print()
 print('Once you choose \'y\', about 25 e-mails will be sent.')
-check_code = input('y or n or s(save)').lower()
+check_code = input('y, n or s(save)').lower()
 if check_code == 'y':
     writer.writerow(csv_content)
-    # writer_zte.writerow(csv_content_zte)
     ret = myPackages.mailtools.mail139_mine_table(title, table_content, user)
     if ret:
-        print("ok")  # 如果发送成功则会返回ok，稍等20秒左右就可以收到邮件
+        print("ok")         # 如果发送成功则会返回ok，稍等20秒左右就可以收到邮件
     else:
-        print("failed")  # 如果发送失败则会返回filed
-elif check_code == 's':
+        print("failed")     # 如果发送失败则会返回filed
+elif check_code == 's' or check_code == 'save':
     writer.writerow(csv_content)
-    # writer_zte.writerow(csv_content_zte)

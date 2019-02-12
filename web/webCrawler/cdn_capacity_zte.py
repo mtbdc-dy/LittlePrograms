@@ -13,53 +13,59 @@ import myPackages.mailtools
 import csv
 import json
 
+NODE_DICT = {
+        'area1': 'SHFX_NODE3',      # 区域中心1
+        'area2': 'servicenode10',   # 区域中心2
+        1: 'SHFX_NODE1',            # 节点1
+        2: 'SHFX_NODE2',            # 节点2
+        3: 'OTT_3',                 # 节点3
+        4: 'servicenode2',          # 节点4
+        5: 'servicenode9',          # 节点5
+        'cm': 'servicenode3',       # 崇明
+        'bs': 'servicenode4',       # 宝山
+        'jd': 'servicenode5',       # 嘉定
+        'sj': 'servicenode6',       # 松江
+        'fx': 'servicenode7',       # 奉贤
+        'js': 'servicenode8',       # 金山
+        'qz': 'servicenode11',      # 钦州
+        'qp': 'servicenode12',      # 青浦
+    }
+
 
 def query_ottnode_zte(n, cookie):
     url = 'https://117.135.56.61:8443/monitor/ottnode_query.action'
     form = {
         'areaid': '# all#',
-        'nodeid': 'SHFX_NODE3',
+        'nodeid': NODE_DICT[n],
         'starttime': startTime + ' 00:00:00',
         'endtime': endTime + ' 00:00:00'
     }
 
-    # 可以改成dict，好看点
-    # default nodeid SHFX_NODE3 -> 区域中心
-    if n == 1:
-        form['nodeid'] = 'SHFX_NODE1'
-    if n == 2:
-        form['nodeid'] = 'SHFX_NODE2'
-    if n == 3:
-        form['nodeid'] = 'OTT_3'
-    if n == 4:
-        form['nodeid'] = 'servicenode2'
-    if n == 'cm':
-        form['nodeid'] = 'servicenode3'
-    if n == 'bs':
-        form['nodeid'] = 'servicenode4'
-    if n == 'jd':
-        form['nodeid'] = 'servicenode5'
-    if n == 'sj':
-        form['nodeid'] = 'servicenode6'
-    if n == 'fx':
-        form['nodeid'] = 'servicenode7'
-    if n == 'js':
-        form['nodeid'] = 'servicenode8'
-
     f = ww.post_web_page_ssl(url, form, cookie)
     encodedjson = json.loads(f)
-
     # unit单位 upstreamband回源带宽
     upstreamband = max(encodedjson['upstreamband'])
     concurrent = max(encodedjson['concurrent'])
     bandwidth = max(encodedjson['bandwidth'])
     mean = sum(encodedjson['bandwidth'])/len(encodedjson['bandwidth'])
-    return concurrent, float(bandwidth), mean, upstreamband
+
+    # 数值小的时候 传过来的单位会变
+    if encodedjson['unit'] == 'Mbps':
+        return round(float(bandwidth) / 1024, 2), round(mean / 1024, 2)
+    else:
+        return float(bandwidth), round(mean, 2)
+    # 数值小的时候 传过来的单位会变
+    # if encodedjson['unit'] == 'Mbps':
+    #     return concurrent, round(float(bandwidth)/1024, 2), round(mean/1024, 2), upstreamband/1024
+    # else:
+    #     return concurrent, float(bandwidth), mean, upstreamband
 
 
 g_zte = open('cdn_rate_zte.csv', 'a', newline='')
 writer_zte = csv.writer(g_zte)
-n_days = int(input('想取多少天数据？:'))
+n_days = int(input('想取多少天数据？: '))
+print(len(NODE_DICT) * n_days, 'requests will be sent.')
+
 for i in range(n_days):
     now = datetime.datetime.now()
     delta = datetime.timedelta(days=n_days-i)
@@ -70,25 +76,17 @@ for i in range(n_days):
     endTime = te.strftime('%Y-%m-%d')  # 调整时间格式
 
     cookie = wl.zte_anyservice_uniportal_v2()
-    concurrent_0, bandwidth_0, mean_0, upstreamband_0 = query_ottnode_zte(0, cookie)    # 区域中心
-    concurrent_1, bandwidth_1, mean_1, upstreamband_1 = query_ottnode_zte(1, cookie)    # 节点1
-    concurrent_2, bandwidth_2, mean_2, upstreamband_2 = query_ottnode_zte(2, cookie)    # 节点2
-    concurrent_3, bandwidth_3, mean_3, upstreamband_3 = query_ottnode_zte(3, cookie)    # 节点3
-    concurrent_4, bandwidth_4, mean_4, upstreamband_4 = query_ottnode_zte(4, cookie)    # 节点4
-    concurrent_cm, bandwidth_cm, mean_cm, upstreamband_cm = query_ottnode_zte('cm', cookie)    #
-    concurrent_bs, bandwidth_bs, mean_ns, upstreamband_bs = query_ottnode_zte('bs', cookie)    #
-    concurrent_jd, bandwidth_jd, mean_jd, upstreamband_jd = query_ottnode_zte('jd', cookie)    #
-    concurrent_sj, bandwidth_sj, mean_sj, upstreamband_sj = query_ottnode_zte('sj', cookie)
-    concurrent_fx, bandwidth_fx, mean_fx, upstreamband_fx = query_ottnode_zte('fx', cookie)
-    concurrent_js, bandwidth_js, mean_js, upstreamband_js = query_ottnode_zte('js', cookie)
+    max_rate = list()
+    mean_rate = list()
+    for j in NODE_DICT.keys():
+        max_rate_tmp, mean_rate_tmp = query_ottnode_zte(j, cookie)
+        max_rate.append(max_rate_tmp)
+        mean_rate.append(mean_rate_tmp)
 
-    csv_content_zte = [startTime, bandwidth_0, bandwidth_1, bandwidth_2, bandwidth_3, bandwidth_4, bandwidth_cm,
-                       bandwidth_bs, bandwidth_jd, bandwidth_sj, bandwidth_fx, bandwidth_js,
-                       bandwidth_0+bandwidth_1+bandwidth_2+bandwidth_3+ bandwidth_4,
-                       bandwidth_cm+bandwidth_bs+bandwidth_jd+bandwidth_sj+bandwidth_fx+bandwidth_js,
-                       mean_0 + mean_1 + mean_2 + mean_3 + mean_4
-                       + mean_cm + mean_ns + mean_jd + mean_sj + mean_fx + mean_js
-                       ]
+    csv_content_zte = [startTime]
+    csv_content_zte.extend(max_rate)
+    csv_content_zte.extend(mean_rate)
     writer_zte.writerow(csv_content_zte)
     print(i)
+    print(csv_content_zte)
 

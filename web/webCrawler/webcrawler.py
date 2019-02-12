@@ -14,7 +14,7 @@ from PIL import Image   # 这个包叫pillow就很奇怪
 import socket
 
 
-print('from the webcrawler.py')
+# print('from the webcrawler.py')
 
 
 def get_web_page(url, cookie=''):
