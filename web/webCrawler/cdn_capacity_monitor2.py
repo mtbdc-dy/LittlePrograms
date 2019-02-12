@@ -394,23 +394,23 @@ email_content = '(' + startTime + ')' + email_content
 table_content = """<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <table border="" style="border-collapse: collapse; text-align: center">
     <tr style="font-weight: bold;">
-        <td></td><td>容量(Gbps)</td><td>峰值(Gbps)</td><td>利用率(%)</td>
+        <td></td><td>容量(Gbps)</td><td>峰值(Gbps)</td><td>均值(Gbps)</td><td>利用率(%)</td>
     </tr>
 
     <tr>
-        <td>烽火汇总</td><td>""" + str(FengHuo_Total) + """</td><td>""" + str(fenghuo_ott) + """</td><td>""" + str(round(fenghuo_ott / FengHuo_Total * 100, 2)) + """</td>
+        <td>烽火汇总</td><td>""" + str(FengHuo_Total) + """</td><td>""" + str(fenghuo_ott) + """</td><td>""" + str(fenghuo_mean_ott) + """</td><td>""" + str(round(fenghuo_ott / FengHuo_Total * 100, 2)) + """</td>
     </tr>
 
     <tr>
-        <td>华为</td><td>""" + str(PD_HuaWei_OTT) + """</td><td>""" + str(huawei_ott) + """</td><td>""" + str(round(huawei_ott / PD_HuaWei_OTT * 100, 2)) + """</td>
+        <td>华为</td><td>""" + str(PD_HuaWei_OTT) + """</td><td>""" + str(huawei_ott) + """</td><td>""" + str(huawei_mean_ott) + """</td><td>""" + str(round(huawei_ott / PD_HuaWei_OTT * 100, 2)) + """</td>
     </tr>
 
     <tr>
-        <td>OTT总和</td><td>""" + str(OTT_total_capacity) + """</td><td>""" + str(ott_max_rate) + """</td><td>""" + str(round(ott_max_rate / OTT_total_capacity * 100, 2)) + """</td>
+        <td>OTT总和</td><td>""" + str(OTT_total_capacity) + """</td><td>""" + str(ott_max_rate) + """</td><td>""" + str(ott_mean_rate) + """</td><td>""" + str(round(ott_max_rate / OTT_total_capacity * 100, 2)) + """</td>
     </tr>
 
     <tr>
-        <td>中兴(IPTV)汇总</td><td>""" + str(IPTV_total_capacity) + """</td><td>""" + str(max_rate) + """</td><td>""" + str(round(max_rate/IPTV_total_capacity*100, 2)) + """</td>
+        <td>中兴(IPTV)汇总</td><td>""" + str(IPTV_total_capacity) + """</td><td>""" + str(max_rate) + """</td><td>""" + str(mean_rate) + """</td><td>""" + str(round(max_rate/IPTV_total_capacity*100, 2)) + """</td>
     </tr>
 </table>
 <br>
