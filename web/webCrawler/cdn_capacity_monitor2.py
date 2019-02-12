@@ -157,11 +157,11 @@ def huawei():
     print(max(HW_FX_ott_rate))
     HW_ott_rate += max(HW_FX_ott_rate)
     # print(max(HW_FX_ott_rate))
-    return HW_ott_rate, ott_peak_period
+    return HW_ott_rate, ott_peak_period, sum(HW_FX_ott_rate)/len(HW_FX_ott_rate)
 
 
 print('华为：')
-huawei_ott, ott_peak_period = huawei()
+huawei_ott, ott_peak_period, huawei_mean_ott = huawei()
 
 
 # p2 烽火
@@ -420,9 +420,10 @@ date = myPackages.getime.yesterday(1)
 '''part5 发送邮件'''
 # 数据准备和格式转换
 huawei_ott = round(huawei_ott, 2)           # 华为汇总
+huawei_mean_ott = round(huawei_mean_ott, 2)
 fenghuo_ott = round(fenghuo_ott, 2)         # 烽火汇总
 ott_max_rate = round(huawei_ott + fenghuo_ott, 2)     # OTT求和
-ott_mean_rate = 0                           # 暂无均值
+ott_mean_rate = huawei_mean_ott             # 暂无均值，暂只存华为OTT
 max_rate = round(max_rate, 2)               # IPTV汇总
 maxStreamSTBs = float(maxStreamSTBs)        # OTT人数
 max_user = float(max_user)                  # IPTV人数
