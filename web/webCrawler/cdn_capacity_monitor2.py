@@ -155,6 +155,7 @@ def huawei():
     ott_peak_period = timestamp_to_date(huawei_stamp - 1800) + '-' + timestamp_to_date(huawei_stamp + 1800)
     print('峰值时间段:', ott_peak_period)
     print('浦东峰值:', max(HW_FX_ott_rate))
+    print('浦东均值:', sum(HW_FX_ott_rate)/len(HW_FX_ott_rate))
     HW_ott_rate += max(HW_FX_ott_rate)
     # print(max(HW_FX_ott_rate))
     return HW_ott_rate, ott_peak_period, sum(HW_FX_ott_rate)/len(HW_FX_ott_rate)
@@ -370,15 +371,15 @@ date = myPackages.getime.yesterday(1)
 
 '''part5 准备邮件内容'''
 # 数据准备和格式转换
-huawei_ott = round(huawei_ott, 2)                       # 华为汇总
-huawei_mean_ott = round(huawei_mean_ott, 2)             # 华为均值
-fenghuo_ott = round(fenghuo_ott, 2)                     # 烽火汇总
-fenghuo_mean_ott = round(fenghuo_mean_ott, 2)           # 烽火均值
-ott_max_rate = round(huawei_ott + fenghuo_ott, 2)       # OTT求和
-ott_mean_rate = huawei_mean_ott + fenghuo_mean_ott      # OTT均值
+huawei_ott = round(huawei_ott, 2)                               # 华为汇总
+huawei_mean_ott = round(huawei_mean_ott, 2)                     # 华为均值
+fenghuo_ott = round(fenghuo_ott, 2)                             # 烽火汇总
+fenghuo_mean_ott = round(fenghuo_mean_ott, 2)                   # 烽火均值
+ott_max_rate = round(huawei_ott + fenghuo_ott, 2)               # OTT求和
+ott_mean_rate = round(huawei_mean_ott + fenghuo_mean_ott, 2)    # OTT均值
 max_rate = round(max_rate, 2)                       # IPTV汇总
 mean_rate = round(mean_rate, 2)                     # IPTV均值
-maxStreamSTBs = float(maxStreamSTBs)                    # OTT人数
+maxStreamSTBs = float(maxStreamSTBs)                            # OTT人数
 max_user = float(max_user)                          # IPTV人数
 
 # 邮件正文
