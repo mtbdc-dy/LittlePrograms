@@ -155,7 +155,7 @@ def huawei():
     ott_peak_period = timestamp_to_date(huawei_stamp - 1800) + '-' + timestamp_to_date(huawei_stamp + 1800)
     print('峰值时间段:', ott_peak_period)
     print('浦东峰值:', max(HW_FX_ott_rate))
-    print('浦东均值:', sum(HW_FX_ott_rate)/len(HW_FX_ott_rate))
+    print('浦东均值:', round(sum(HW_FX_ott_rate)/len(HW_FX_ott_rate)), 2)
     HW_ott_rate += max(HW_FX_ott_rate)
     # print(max(HW_FX_ott_rate))
     return HW_ott_rate, ott_peak_period, sum(HW_FX_ott_rate)/len(HW_FX_ott_rate)
@@ -226,8 +226,8 @@ def zte():
     cookie = wl.zte_anyservice_uniportal_v2()
     url = 'https://117.135.56.61:8443/monitor/cpstat_query.action?t=1549951114288'
     form = {
-        'starttime': '2019-02-11 00:00:00',
-        'endtime': '2019-02-12 00:00:00',
+        'starttime': startTime + ' 00:00:00',
+        'endtime': endTime + ' 00:00:00',
         'cpid': '000000000000',
         'servicetype': 'total'
     }
