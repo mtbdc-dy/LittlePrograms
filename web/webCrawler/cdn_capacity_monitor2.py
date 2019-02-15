@@ -384,12 +384,12 @@ max_user = float(max_user)                          # IPTV人数
 
 # 邮件正文
 title = 'DoNotReply 互联网电视指标' + date
-email_content = 'OTT峰值时间段: ' + ott_peak_period + \
+email_content = '<br>OTT峰值时间段: ' + ott_peak_period + \
                 '; OTT峰值流用户数: {:.2f}万人; OTT峰值流速: {:.2f}Gbps; OTT利用率: {:.2f}%;'\
                 .format(maxStreamSTBs/10000, ott_max_rate, ott_max_rate/OTT_total_capacity*100) \
-                + 'IPTV峰值时间段: ' + iptv_peak_period +\
+                + '</br><br>IPTV峰值时间段: ' + iptv_peak_period +\
                 '; IPTV峰值流用户数: {:.2f}万人; IPTV峰值流速: {:.2f}Gbps; IPTV利用率: {:.2f}%。'\
-                    .format(max_user/10000, max_rate, max_rate/IPTV_total_capacity*100)
+                    .format(max_user/10000, max_rate, max_rate/IPTV_total_capacity*100) + '</br>'
 email_content = '(' + startTime + ')' + email_content
 # 邮件表格
 table_content = """<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -446,7 +446,7 @@ user = [
 
 '''part7 存储数据和发送邮件'''
 print()
-print('Once you choose \'y\', about 25 e-mails will be sent.')
+print('Once you choose \'y\', ' + str(len(user)) + ' e-mails will be sent.')
 check_code = input('y, n or s(save)').lower()
 if check_code == 'y':
     writer.writerow(csv_content)
