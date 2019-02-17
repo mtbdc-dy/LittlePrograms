@@ -1,1416 +1,1468 @@
-
 <html>
 <head>
-	<LINK REL="SHORTCUT ICON" HREF="asset/ico/evqmaster.jpg">
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<title>EyeNet视频业务质量监测系统</title>
-	<link rel="stylesheet" type="text/css" href="resources/jqwidgets/styles/jqx.base.css" />
-	<link rel="stylesheet" type="text/css" href="resources/jqwidgets/styles/jqx.dekscom.css">
-	<link rel="stylesheet" type="text/css" href="resources/css/defaultgui.css" />
+<title>Report MiGu</title>
+    <script type="text/javascript">
+    	var mpReportMigu=null;
+    	var reportSID=null;
+    	var reportMiguSID=null;
+    	var mOperatorVal=5;
+    	var gpReportMigu=$.parseJSON(gtop.getSIDText("report")).reportMigu;
+    	var noticeInfos=gpReportMigu.noticeInfos.split(",");
+    	var mOperatorCols=["",noticeInfos[0],noticeInfos[1]];
 
-	<!-- 确定Master顶级页面,必须在最前面 -->
-	<script type="text/javascript">
-        var MYNAME_IS_EVQMASTER;
-	</script>
+    	$(document).ready(function(){
+    		mpReportMigu = new ReportMigu();
+    	});
 
-	<script type="text/javascript" src="resources/js/jquery-1.11.1.js"></script>
-	<script type="text/javascript" src="resources/js/global.js"></script>
-	<script type="text/javascript" src="resources/js/jquery.i18n.properties-1.0.9.js"></script>
-	<script type="text/javascript" src="resources/jqwidgets/globalization/globalize.js"></script>
-	<script type="text/javascript" src="resources/jqwidgets/jqxcore.js"></script>
-	<script type="text/javascript" src="resources/jqwidgets/jqxdatetimeinput.js"></script>
-	<script type="text/javascript" src="resources/jqwidgets/jqxcalendar.js"></script>
-	<script type="text/javascript" src="resources/jqwidgets/jqxlistbox.js"></script>
-	<script type="text/javascript" src="resources/jqwidgets/jqxbuttons.js"></script>
-	<script type="text/javascript" src="resources/jqwidgets/jqxscrollbar.js"></script>
-	<script type="text/javascript" src="resources/jqwidgets/jqxdropdownlist.js"></script>
-	<script type="text/javascript" src="resources/jqwidgets/jqxsplitter.js"></script>
-	<script type="text/javascript" src="resources/jqwidgets/jqxwindow.js"></script>
-
-	<script type="text/javascript" src="resources/js/md5.js"></script>
-	<script type="text/javascript" src="resources/js/datagrid.js"></script>
-	<script type="text/javascript" src="resources/js/jqxlanguage.js"></script>
-	<script type="text/javascript" src="resources/js/popuputil.js"></script>
-	<script type="text/javascript" src="resources/js/CfgDBTableDef.js"></script>
-
-	<!--<script type="text/javascript" src="include.js"></script>  -->
-	<!-- <include file="include.html" /> -->
-	<!-- <script type="text/javascript">function include(url){$.get(url,function(data){document.write(data);})};include('include.html');</script> -->
-
-	<script type="text/javascript" src="index.js"></script>
-	<script type="text/javascript" src="guicfg.js"></script>
-	<script type="text/javascript">
-		var nowProcess = 0;//当前初始化文件加载进度
-        //在IE情况下，地图和master给出提示使用chrome或360极速版
-        window.onload = function(){
-            var Sys = {};
-            var ua = navigator.userAgent.toLowerCase();//取得浏览器的userAgent字符串
-            var s;
-            (s = ua.match(/msie ([\d.]+)/)) ? Sys.ie = s[1]  : 0;//判断是否IE浏览器
-            if ((!!window.ActiveXObject || "ActiveXObject" in window)&&Sys.ie){
-                //当IE版本过低时，弹出弹窗提示
-                alert("您的IE浏览器版本低，建议您使用更高的版本或者选择Chrome、360极速版等其他浏览器！");
-            }
-        }
-        window.onbeforeunload=function(){
-            try{SaveUSActionInfo("exit","");}catch(e){}
-        };
-        var timeLater=0;
-        ///////////////////////////////初始化页面布局/////////////////////////////////////////
-        var gLoadComplete=false;  //标志页面是否加载完成，
-        document.onreadystatechange = function()
-        {
-            //页面加载完成时gLoadConplete=true
-            if(document.readyState =="complete"){
-                gLoadComplete=true;
-            }
-        }
-
-        var gLocationIP="";
-        var gLocationCity="";
-
-        //监听页面消息
-        //主要和e2e对接
-        window.addEventListener('message', function(event){
-            var strParam=decodeURI(event.data);
-            var param=getNoPwdLoginWay(strParam);
-            gChildIndex=param.RequestParam.childIndex;
-            selectView(param.RequestParam.viewIndex*1,param.RequestParam.viewText);
-            updateData();
-        }, false);
-        var gurlparameter=decodeURI(decodeURIComponent(location.search));//获取url中？后的参数
-        var gAllUrl=location.href.substr(0,location.href.indexOf("/evqmaster",7));  //获取整个url字符串
-
-        var mLoginWay=-1; //登录方式
-        var mRequestParam=new Object();
-
-        function validateSession(sParam){
-            $.ajax({
-                url : "./configaction!validateSession.action",
-                type : "post",
-                dataType : "json",
-                data : "paramData="+mRequestParam.sessionid,
-                contentType : "application/x-www-form-urlencoded;charset=utf-8",
-                success : function(data) {
-                    if(data.resultData!="true"){
-                        //验证失败显示登录页面
-                        location.href="./login.html";
-                    }else{
-                        //认证成功 加载数据
-                        getUserInfo();
-                    }
-                }
-            });
-        }
-        function getSessionInfo(){
-            getModeOfMaster();
-            $.ajax({complete:gComplete,
-                url : "configaction!checkUser.action",
-                async: false,
-                type : "post",
-                dataType : "json",
-                contentType : "application/x-www-form-urlencoded;chartset=utf-8",
-                success : function(data) {
-                    if(data.resultData){
-                        //成功加载数据
-                        gSessionInfo= $.parseJSON(data.resultData);
-                        if(gSessionInfo.userinfo!=null){
-                        	gUserInfo= $.parseJSON(gSessionInfo.userinfo);
-	                        gsAuthority=gUserInfo.authority;
-	                        gsUserName=gUserInfo.userName;
-                        }
-                        if(gUserInfo.sessionid){
-                        	if(gUserInfo.sessionid){
-                                if(gUserInfo.operator&&typeof(gUserInfo.province)!="undefined"&&typeof(gUserInfo.node)!="undefined")
-                                    mLoginWay=2;
-                            }else if(gUserInfo.DeviceID&&gUserInfo.KPIUTCSec&&gUserInfo.SampleInterval)
-                                mLoginWay=3;
-                            else if(gUserInfo.operator&&typeof(gUserInfo.province)!="undefined"&&typeof(gUserInfo.node)!="undefined")
-                                mLoginWay=1;
-                            gObjResult["FreeLogWay"]=mLoginWay;  //免密码登录方式
-                        	gObjResult["RequestParam"]=gUserInfo;
-                            setUNameAndAuthor();   //设置用户名和权限
-                        	getUserInfo();
-                        	return;
-                        }
-                        preInitIns();
-                        initIns();
-                        if(gUserInfo){
-                            var timer=setInterval(function() {
-                                if(mprogressvalue==100&&gLoadComplete==true){
-                                    getIDByCode(gUserInfo.province,gUserInfo.city);
-                                    setSupperPageConfig(gUserInfo.pageConfig);
-                                    setPageConfig(gUserInfo.pageConfig);
-                                    confirmCusRep(gUserInfo.customReport,gUserInfo.pbGridExport);
-                                    loginSucc(gUserInfo.probeGridCols);
-                                    clearInterval(timer);
-                                }
-                            }, 60);
-                        }else{
-                            var timer=setInterval(function() {
-                                timeLater+=60;
-                                if((mprogressvalue==100&&gtop.gLoadComplete==true)||timeLater>20000){
-                                    var sParam=gObjResult.RequestParam;
-                                    setSupperPageConfig("");
-                                    setPageConfig("");
-                                    getIDByCode(sParam.province,sParam.node,"");
-                                    mCityCode=sParam.node;
-                                    confirmCusRep(0,1);
-                                    loginSucc("",sParam.viewIndex,sParam.viewText,sParam.childIndex);
-                                    clearInterval(timer);
-                                }
-                            }, 60);
-                        }
-                    }else{
-                        location.href="./login.html"+gurlparameter;
-                    }
-                }
-            });
-        }
-
-
-        function LoadingBar(id){
-            this.loadbar = $("#" + id);
-            this.percentEle = $(".percent", this.loadbar);
-            this.percentNumEle = $(".percentNum", this.loadbar);
-            this.max = 100;
-            this.currentProgress = 0;
-        }
-        LoadingBar.prototype = {
-            constructor: LoadingBar,
-            setProgress: function (val)
-            {
-                this.currentProgress = val + "%";
-                this.percentEle.width(this.currentProgress);
-                this.percentNumEle.text(this.currentProgress);
-            }
-        };
-
-        function updateProcess(nProcess){
-            nowProcess = nProcess;
-            if(nProcess>=100)
-                nProcess=99;
-            new LoadingBar("divProcess").setProgress(nProcess);
-            new LoadingBar("divProcess1").setProgress(nProcess);
-        }
-
-
-        function forLogin(){
-            switch(mLoginWay){
-                //http://localhost:8088/evqmaster/?evqmParam=DeviceID:3c09ed5a||KPIUTCSec:1466352000||SampleInterval:86400
-                case 3:
-// 				gtop.selectKPIUTCSec=new Date(gObjResult.RequestParam.KPIUTCSec*1000).format("yyyy-MM-dd hh:mm:ss");
-// 				gtop.selectDeviceID=gObjResult.RequestParam.DeviceID;
-// 				if(mprogressvalue==100&&gLoadComplete==true){
-// 					setPageConfig("");
-// 					if(gObjResult.RequestParam.viewText&&gObjResult.RequestParam.viewIndex){
-// 						gtop.loginSucc("",gObjResult.RequestParam.viewIndex,gObjResult.RequestParam.viewText,gObjResult.RequestParam.childIndex);
-// 					}
-// 					else
-// 						loginSucc();
-// 					clearInterval(timer);
-// 				}
-                    break;
-                //http://localhost:8088/evqmaster/?evqmParam=operator:user||province:23||node:all
-                //http://localhost:8088/evqmaster/?evqmParam=username:Admin||operator:admin||province:||node:||sessionid:9A91E2616921BAE06B260A173D04911B"
-                //http://localhost:8088/evqmaster/?evqmParam=username:Admin||operator:admin||province:||node:||sessionid:979B0031625EC4EEAEDB16809A181DD6||viewIndex:3||viewText:一键诊断||childIndex:5"
-                case 1:
-                    getUserInfo();
-                    break
-//                 case 2:
-//                     validateSession();
-//                     break;
-                //直接登录
-                default:
-                    getSessionInfo();
-                    break;
-            }
-            ///////////////////////////////////////////////////
-            // 直接登录调试
-			/*
-			 gsUserName="admin_test";
-			 gsAuthority="admin";
-			 var timer=setInterval(function() {
-			 if(mprogressvalue==100&&gLoadComplete==true){
-			 setPageConfig("");
-			 confirmCusRep(1,1);
-			 loginSucc();
-			 clearInterval(timer);
-			 }
-			 }, 60);
-			 */
-        }
-        var mbIsTop=true;
-
-
-        function initElement(){
-            $("#divTime").jqxDateTimeInput({
-                width : 170,
-                height : 25,
-                disabled : true,
-                formatString : "yyyy-MM-dd HH:mm:ss",
-                animationType : "fade",
-                theme : 'dekscom'
-            });
-            $("#divTime").jqxDateTimeInput("disabled", gbRunning);
-            $('#topContainer').jqxSplitter({
-                height : '99.9%',
-                width : '99.92%',
-                resizable : false,
-                showSplitBar : false,
-                splitBarSize : 0,
-                orientation : 'horizontal',
-                panels : [ {
-                    size : 60
-                }, {
-                    size : '100%'
-                } ]
-            });
-            $('#topContainer1').jqxSplitter({
-                height : '100%',
-                width : '100%',
-                resizable : false,
-                showSplitBar : false,
-                splitBarSize : 0,
-                orientation : 'vertical',
-                panels : [ {
-                    size : 25
-                }, {
-                    size : '100%'
-                } ]
-            });
-            $('#gMainFrm').jqxSplitter({
-                height : '100%',
-                width : '100%',
-                resizable : false,
-                showSplitBar : true,
-                splitBarSize : 1,
-                orientation : "horizontal",
-                panels : [ {
-                    size : 28
-                }, {
-                    size : '100%'
-                } ]
-            });
-        }
-
-        //获取master模式，省模式还是、全国模式
-        function getModeOfMaster(){
-            $.ajax({complete:gComplete,
-                url : "areaaction!returnDefProvinceID.action",
-                async: false,
-                type : "get",
-                dataType : "json",
-                contentType : "application/x-www-form-urlencoded;chartset=utf-8",
-                success : function(data) {
-                    DefProvinceID=data.resultData;
-                    DefProvinceIDCode=data.resultData;
-                    if(DefProvinceID=="2"||DefProvinceID=="1")
-                        DefProvinceID=parseInt(DefProvinceID);
-                    else
-                        DefProvinceID=parseInt(DefProvinceID)+2;
+        function areaMigu(pData) {
+            $('#areaMiguName').combobox({
+                data:pData,
+                valueField:'id',
+                textField:'name',
+                editable:false,
+                multiple:true,
+                formatter: function (row) {
+                    var opts = $(this).combobox('options');
+                    return '<input type="checkbox" class="combobox-checkbox" id="' + row[opts.valueField] + '">' + row[opts.textField]
                 },
-            });
-        }
+                onShowPanel: function () {
+                    var opts = $(this).combobox('options');
+                    var target = this;
+                    var values = $(target).combobox('getValues');
+                    $.map(values, function (value) {
+                        var el = opts.finder.getEl(target, value);
+                        el.find('input.combobox-checkbox')._propAttr('checked', true);
+                    })
+                },
+                onLoadSuccess: function () {
+                    var opts = $(this).combobox('options');
+                    var target = this;
+                    var values = $(target).combobox('getValues');
+                    $.map(values, function (value) {
+                        var el = opts.finder.getEl(target, value);
+                        el.find('input.combobox-checkbox')._propAttr('checked', true);
+                    })
+                },
 
-
-
-
-        $(document).ready(function() {
-            initElement();
-        });
-        function setUNameAndAuthor(){
-            if(gObjResult.FreeLogWay==3){
-                gsAuthority="services";
-                return;
-            }
-            gsUserName=gObjResult.RequestParam.operator;
-            gsAuthority="user"; //默认设置权限为user
-            if(gObjResult.FreeLogWay==1){
-                if(gObjResult.RequestParam.operator=="services")
-                    gsAuthority="services";
-
-            }else{
-                if(gsUserName=="admin"||gsUserName=="user"||gsUserName=="services")
-                    gsAuthority=gsUserName;
-                else{
-                    var sAuthor=returnAuthority(gsUserName);
-                    if(sAuthor)
-                        gsAuthotity=sAuthor;
-                }
-            }
-        }
-        //获取用户名对应的权限
-        function returnAuthority(userName){
-            var result="";
-            $.ajax({complete:gComplete,
-                url : "./configaction!returnAuthority.action",
-                async : false,
-                type : "post",
-                dataType : "json",
-                data : "paramData="+userName,
-                contentType : "application/x-www-form-urlencoded;charset=utf-8",
-                success : function(data) {
-                    result=data.resultData;
-                }
-            });
-            return result;
-        }
-
-        function getUserInfo(){
-            getModeOfMaster();
-            $.ajax({complete:gComplete,
-                url:"configaction!returnUserInfo.action",
-                type:"POST",
-                data:"paramData="+gsUserName,
-                dataType:"json",
-                success: function (data) {
-                    mbDirect=true;
-                    preInitIns();
-                    initIns();
-                    if(data.resultData){
-                        var result=$.parseJSON(data.resultData);
-                        if(result!=null&&result[0]&&(result[0].Province!=""||result[0].City!="")){
-                            mCityCode=result[0].City;
-                            userAuthority=result[0].Authority;
-                            getIDByCode(result[0].Province,result[0].City);
-                        }
-                        loginByValidUser(result);
-                    }
-                    else{
-                        var timer=setInterval(function() {
-                            timeLater+=60;
-                            if((mprogressvalue==100&&gtop.gLoadComplete==true)||timeLater>20000){
-                                var sParam=gObjResult.RequestParam;
-                                var userAuthority="";
-                                if(gtop.gpCompanyCfg[gtop.gsCompany]&&gtop.gpCompanyCfg[gtop.gsCompany]["userAuthority"]){
-                                    userAuthority=gtop.gpCompanyCfg[gtop.gsCompany]["userAuthority"];
-                                }else{
-                                    userAuthority=gtop.gpCompanyCfg["general"]["userAuthority"];
-                                }
-                                setSupperPageConfig(userAuthority);
-                                setPageConfig(userAuthority);
-                                getIDByCode(sParam.province,sParam.node,"");
-                                mCityCode=sParam.node;
-                                confirmCusRep(0,1);
-                                loginSucc("",sParam.viewIndex,sParam.viewText,sParam.childIndex);
-                                clearInterval(timer);
-                            }
-                        }, 60);
-                    }
-                }
-            });
-        }
-        function loginByValidUser(result){
-            var timer=setInterval(function() {
-                timeLater+=60;
-                if((mprogressvalue==100&&gLoadComplete==true)||timeLater>30000){
-// 				setPageConfig("");
-                    setSupperPageConfig(result[0].PageConfig);
-                    setPageConfig(result[0].PageConfig);
-                    var sParam=gObjResult.RequestParam;
-                    if(result)
-                        confirmCusRep(result[0].CustomReport,result[0].PbGridExport);
-                    else
-                        confirmCusRep(0,1);
-                    loginSucc(result[0].ProbeGridCols,sParam.viewIndex,sParam.viewText,sParam.childIndex);
-                    clearInterval(timer);
-                }
-            }, 60);
-        }
-
-        function getNoPwdLoginWay(sUrl) {
-            //http://localhost:8088/evqmaster/?evqmParam=operator:user||province:23||node:all
-            //http://localhost:8088/evqmaster/?evqmParam=DeviceID:3c09ed5a||KPIUTCSec:1466352000||SampleInterval:86400
-            //http://localhost:8088/evqmaster/?evqmParam=username:Admin||operator:admin||province:||node:||sessionid:9A91E2616921BAE06B260A173D04911B"
-            //http://localhost:8088/evqmaster/?evqmParam=operator:admin||province:||node:||sessionid:9A91E2616921BAE06B260A173D04911B"
-            var arr=new Array();
-            if (sUrl.indexOf("?") != -1) {
-                var str=sUrl.split("?")[1];
-                strs = str.split("=");
-                if(strs[0]!="evqmParam")
-                    return null;
-                arr=strs[1].split("||");
-                for(var i=0;i<arr.length;i++){
-                    var tmparr=arr[i].split(":");
-                    mRequestParam[tmparr[0]]=tmparr[1];
-                }
-            }
-            /**
-             免密码登录 三大类：
-             1.免认证登录：1）显示全部页面（除配置）
-             2）显示指定的某个页面
-             2.认证登录（sessionid）  用于e2e跳转
-
-             3.单个机顶盒面密码登录
-             */
-            //认证方式 针对e2e
-            if(mRequestParam.sessionid){
-                if(mRequestParam.operator&&typeof(mRequestParam.province)!="undefined"&&typeof(mRequestParam.node)!="undefined")
-                    mLoginWay=2;
-            }else if(mRequestParam.DeviceID&&mRequestParam.KPIUTCSec&&mRequestParam.SampleInterval)
-                mLoginWay=3;
-            else if(mRequestParam.operator&&typeof(mRequestParam.province)!="undefined"&&typeof(mRequestParam.node)!="undefined")
-                mLoginWay=1;
-            var obj=new Object();
-            obj["FreeLogWay"]=mLoginWay;  //免密码登录方式
-            obj["RequestParam"]=mRequestParam;  //参数
-            return obj;
-        }
-
-        var userAuthority="";
-
-
-        function getIDByCode(province,city,probrGridCol){
-            var code="";
-            if(city=="")
-                code=province;
-            else
-                code=city;
-            mCityCode=city;
-            $.ajax({complete:gComplete,
-                url:"configaction!returnIDByCode.action",
-                type:"POST",
-                data:"paramData={'code':'"+code+"'}",
-                dataType:"json",
-                async:false,
-                success: function (data) {
-                    var sdata=$.parseJSON(data.resultData);
-                    if(sdata.length!=0){
-                        if(sdata[0].ID>33)
-                            mcityID=sdata[0].ID;
-                        var b=true;
-                        for(var i=0;i<gpArea.areaList.length;i++){
-                            if(gpArea.areaList[i].id==sdata[0].ID){
-                                DefProvinceID=gpArea.areaList[i].id;
-                                b=false;
-                                break;
-                            }
-                        }
-                        for(var i=0;i<gpArea.areaList.length;i++){
-                            if(gpArea.areaList[i].location==sdata[0].Province){
-                                DefProvinceID=gpArea.areaList[i].id;
-                                break;
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        //据账号信息来确定其要显示的页面
-        function setPageConfig(sPageConfig){
-            //NetWork@Failure@Probe@Server@Report@Config   or   NetMonitor#NetTrend@Failure@Probe@Server@Report@Config
-            var mpPageShow=gpPageView;
-            var firstBtns = gtop.superPageConfigSet.firstBtns;
-            var secondBtns = superPageConfigSet.secondBtns;
-            var firPageObj,secPageObj;
-            if(typeof(sPageConfig)=="undefined"||sPageConfig==null||sPageConfig.length<=0){
-                if(gpCompanyCfg[gsCompany]&&gpCompanyCfg[gsCompany].pageViews)
-                    sPageConfig=gpCompanyCfg[gsCompany].pageViews;
-                else
-                    sPageConfig=gpCompanyCfg.general.pageViews;
-            }
-
-            var firstArr = sPageConfig.split("@");
-            var sKey,sFirstKey,sSecondKey;
-            var secondArr;
-            var bExit=false,bSecExit=false;
-            for(var i=0;i<firstArr.length;i++){
-                sFirstKey=firstArr[i];
-                secondArr=sFirstKey.split("#");
-                bExit=false;
-                var boolOfShowAll=false;
-                for(var k=0;k<secondArr.length;k++){
-                    for(var p in mpPageShow){
-                        if(mpPageShow[p].key==secondArr[k]){//用户权限直接写的是一级权限
-                            if($.inArray(secondArr[k],firstBtns) != -1){
-                                mpPageShow[p]["show"]="true";
-                            }
-                            for(var q in mpPageShow[p].element){
-                                if($.inArray(mpPageShow[p].element[q].key,secondBtns) != -1){//判断该二级页面 是不是包括在pageViews中
-                                    mpPageShow[p].element[q]["show"]="true";
-                                    mpPageShow[p]["show"]="true";
-                                }
-                            }
-                            break;
-                        }
-                        for(var q in mpPageShow[p].element)
-                            if(mpPageShow[p].element[q].key==secondArr[k]){
-                                if($.inArray(mpPageShow[p].element[q].key,secondBtns) != -1){
-                                    mpPageShow[p].element[q]["show"]="true";
-                                    mpPageShow[p]["show"]="true";
-                                }
-                            }
-                    }
-                }
-            }
-        }
-
-        /**
-         *
-         * @param pageConfig
-         * 			数据库中存储的用户权限
-         * @return
-         * 			用户最多能显示哪些页面
-         */
-        function setSupperPageConfig(pageConfig){
-            var pageViews=gpCompanyCfg.general.pageViews;//默认pageViews是general的pageViws值
-            if(gpCompanyCfg[gsCompany]&&gpCompanyCfg[gsCompany].pageViews){//如果该用户自己配置了pageViews使用客户自己的pageViews
-                pageViews=gpCompanyCfg[gsCompany].pageViews;
-            }
-
-            if(!userAuthority){
-                userAuthority=gsAuthority;
-            }
-            var userViews=gpCompanyCfg.general[userAuthority+"Authority"]; // 获取用户对应权限。
-            if(gpCompanyCfg[gsCompany]&&gpCompanyCfg[gsCompany][userAuthority+"Authority"]){
-                userViews=gpCompanyCfg[gsCompany][userAuthority+"Authority"];
-            }
-
-            superPageConfigSet = {
-                "firstBtns":[],//一级页面最多能显示的按钮
-                "secondBtns":[]//二级页面最多能显示的按钮
-            };
-
-            var mpPageShow=gpPageView;
-
-            var firstArr = pageViews.split("@");
-            var sFirstKey;
-            var secondArr;
-            var userAuthrityPages = userAuthorityPage(userViews);
-            var userDbPages = userDbPage(pageConfig);
-            for(var i=0;i<firstArr.length;i++){
-                sFirstKey=firstArr[i];
-                secondArr=sFirstKey.split("#");
-                for(var k=0;k<secondArr.length;k++){
-                    for(var firstItem in mpPageShow){
-                        if(mpPageShow[firstItem].key==secondArr[k]){//判读配置的是否是一个大类
-                            var firstBtn = mpPageShow[firstItem].key;
-                            //判断用户是否有权限显示该一级页面
-                            if ($.inArray(firstBtn,userAuthrityPages.firstBtns)!=-1 && $.inArray(firstBtn,userDbPages.firstBtns)!=-1){
-                                superPageConfigSet.firstBtns.push(firstBtn);//放入一级按钮
-                            }
-                            for(var secondItem in mpPageShow[firstItem].element){
-                                var secondBtn = mpPageShow[firstItem].element[secondItem].key;
-                                if ($.inArray(secondBtn,userAuthrityPages.secondBtns)!=-1 && $.inArray(secondBtn,userDbPages.secondBtns) != -1){
-                                    superPageConfigSet.secondBtns.push(secondBtn);//放入二级按钮
-                                }
-                            }
-                            break;
-                        }
-                        for(var secondItem in mpPageShow[firstItem].element){
-                            if(mpPageShow[firstItem].element[secondItem].key==secondArr[k]){
-                                var firstBtn = mpPageShow[firstItem].key;
-                                var firstBtns = superPageConfigSet.firstBtns;
-                                //判断用户有权限显示该一级页面，且当前用户数据库数据说明他可以访问该页面, 且需要避免加入多次
-                                if($.inArray(firstBtn,userAuthrityPages.firstBtns)!=-1 && $.inArray(firstBtn,userDbPages.firstBtns)!=-1 && $.inArray(firstBtn,firstBtns) == -1){
-                                    superPageConfigSet.firstBtns.push(firstBtn);//放入一级按钮
-                                }
-                                var secondBtn = mpPageShow[firstItem].element[secondItem].key;
-                                //判断用户有权限显示该二级页面
-                                if($.inArray(secondBtn,userAuthrityPages.secondBtns) != -1 && $.inArray(secondBtn,userDbPages.secondBtns)!=-1){
-                                    superPageConfigSet.secondBtns.push(secondBtn);//放入二级按钮
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-        }
-
-        /**
-         * 用户有权限显示哪些页面(这里的权限指的是adminAuthority、userAuthority等表示能显示哪些页面)
-         */
-        function userAuthorityPage(userViews){
-            var mpPageShow=gpPageView;
-            var firstArr = userViews.split("@");
-            var sFirstKey;
-            var secondArr;
-            var userAuthorityPage = {
-                "firstBtns":[],//一级页面最多能显示的按钮
-                "secondBtns":[]//二级页面最多能显示的按钮
-            };
-            for(var i=0;i<firstArr.length;i++) {
-                sFirstKey = firstArr[i];
-                secondArr = sFirstKey.split("#");
-                for (var k = 0; k < secondArr.length; k++) {
-                    for (var firstItem in mpPageShow) {
-                        if (mpPageShow[firstItem].key == secondArr[k]) {//判读配置的是否是一个大类
-                            var firstBtn = mpPageShow[firstItem].key;
-                            userAuthorityPage.firstBtns.push(firstBtn);//放入一级按钮
-                            for (var secondItem in mpPageShow[firstItem].element) {
-                                var secondBtn = mpPageShow[firstItem].element[secondItem].key;
-                                userAuthorityPage.secondBtns.push(secondBtn);//放入二级按钮
-                            }
-                            break;
-                        }
-                        for (var secondItem in mpPageShow[firstItem].element) {
-                            if (mpPageShow[firstItem].element[secondItem].key == secondArr[k]) {
-                                var firstBtn = mpPageShow[firstItem].key;
-                                var firstBtns = userAuthorityPage.firstBtns;
-                                if ($.inArray(firstBtn, firstBtns) == -1) {//避免加入多次
-                                    userAuthorityPage.firstBtns.push(firstBtn);//放入一级按钮
-                                }
-                                var secondBtn = mpPageShow[firstItem].element[secondItem].key;
-                                userAuthorityPage.secondBtns.push(secondBtn);//放入二级按钮
-                            }
-                        }
-                    }
-                }
-            }
-            return userAuthorityPage;
-        }
-
-
-        /**
-         * 用户存储在数据库中的,表示当前用户能够显示哪些页面
-         * @param pageConfig
-         */
-        function userDbPage(pageConfig){
-            var mpPageShow=gpPageView;
-            var firstArr = pageConfig.split("@");
-            var sFirstKey;
-            var secondArr;
-            var userDbPages = {
-                "firstBtns":[],//一级页面最多能显示的按钮
-                "secondBtns":[]//二级页面最多能显示的按钮
-            };
-            for(var i=0;i<firstArr.length;i++) {
-                sFirstKey = firstArr[i];
-                secondArr = sFirstKey.split("#");
-                for (var k = 0; k < secondArr.length; k++) {
-                    for (var firstItem in mpPageShow) {
-                        if (mpPageShow[firstItem].key == secondArr[k]) {//判读配置的是否是一个大类
-                            var firstBtn = mpPageShow[firstItem].key;
-                            userDbPages.firstBtns.push(firstBtn);//放入一级按钮
-                            for (var secondItem in mpPageShow[firstItem].element) {
-                                var secondBtn = mpPageShow[firstItem].element[secondItem].key;
-                                userDbPages.secondBtns.push(secondBtn);//放入二级按钮
-                            }
-                            break;
-                        }
-                        for (var secondItem in mpPageShow[firstItem].element) {
-                            if (mpPageShow[firstItem].element[secondItem].key == secondArr[k]) {
-                                var firstBtn = mpPageShow[firstItem].key;
-                                var firstBtns = userDbPages.firstBtns;
-                                if ($.inArray(firstBtn, firstBtns) == -1) {//避免加入多次
-                                    userDbPages.firstBtns.push(firstBtn);//放入一级按钮
-                                }
-                                var secondBtn = mpPageShow[firstItem].element[secondItem].key;
-                                userDbPages.secondBtns.push(secondBtn);//放入二级按钮
-                            }
-                        }
-                    }
-                }
-            }
-            return userDbPages;
-        }
-
-        //判断登录用户的部分功能权限
-        function confirmCusRep(nCusRep,nPbGExport){
-            //是否能创建自定义报表
-            if(nCusRep==1)
-                report.general.gpReport.mbUserCusRep=true;
-// 		else
-// 			report.gpReport.mbUserCusRep=false;
-            //是否能导出终端列表信息
-            if(nPbGExport==1)
-                terminal.mbPbGridExport=true;
-// 		else
-// 			terminal.mbPbGridExport=false;
-        }
-
-        //终端明细一览表
-        function goSTBState(){
-            var indexSID=$.parseJSON(gpI18n.prop("login"));
-            var position={"width":900,"height":600,"left":250,"top":20};
-            mTitle_id_Div="div"+new Date().getTime();
-            pop=popupWindow(position,"<div id='"+mTitle_id_Div+"'></div>", "terminal/probe/terminal_STBState.html");
-        }
-        function showExpertDetail(rowData){
-            var h=document.documentElement.clientHeight;
-            var w=document.documentElement.clientWidth;
-            var position={"width":550,"height":400,"left":w/2-220,"top":h/2-200};
-            pop=popupWindow(position,"故障详细信息", "terminal/detail/showExpertDetail.html",rowData);
-        }
-        function showTask(){
-            var h=document.documentElement.clientHeight;
-            var w=document.documentElement.clientWidth;
-            var position={"width":0.6*w,"height":0.7*h,"left":w/10,"top":0.15*h};
-            mTitle_id_Div="div"+new Date().getTime();
-            mselect_Type="type"+new Date().getTime();
-            pop=popupWindow(position,"<div id=\""+mTitle_id_Div+"\"></div>", "task.html");
-        }
-
-        var mTitle_id_Div;
-        //添加用户命令
-        //命令查询结果页 会针对多个盒子下发命令！！type用来标识 终端状态页 还是命令查询页
-        //1 终端状态页 0 命令查询页
-        function sendcmd(rowData,type){
-            var indexSID=$.parseJSON(gpI18n.prop("login"));
-            if(rowData.State==0){  //关机的盒子不可发送命令
-                alert(indexSID.alert_index)
-                return;
-            }
-            if(rowData==""&&type=="NetTest"){
-                var position={"width":650,"height":550,"left":450,"top":150};
-                pop=popupWindow(position,indexSID.addusercmd, "terminal/probe/terminal_CmdTestAndConfig.html",rowData);
-            }else if(rowData==""&&type=="STBConfig"){
-                var position={"width":650,"height":520,"left":450,"top":150};
-                pop=popupWindow(position,indexSID.addusercmd, "terminal/command/cmdSTBParamSet.html",rowData);
-            }else if(type=="STBRemake"){
-                var position={"width":290,"height":520,"left":450,"top":150};
-                pop=popupWindow(position,"添加机顶盒备注信息", "terminal/probe/terminal_SetManagerName.html",rowData);
-            }else if(type=="ResultShow"){
-                if(rowData.Mode=="traceroute"){
-                    var position={"width":400,"height":410,"left":450,"top":150};
-                    pop=popupWindow(position,indexSID.traceroute, "terminal/command/cmdResultShow.html",rowData);
-                }else{
-                    var position={"width":550,"height":400,"left":450,"top":150};
-                    if(rowData.Mode=="ping")
-                        pop=popupWindow(position,indexSID.ping, "terminal/command/cmdResultShow.html",rowData);
-                    else if(rowData.Mode=="TestNetRate")
-                        pop=popupWindow(position,indexSID.TestNetRate, "terminal/command/cmdResultShow.html",rowData);
-                    else
-                        pop=popupWindow(position,rowData.Mode.toUpperCase()+indexSID.shell, "terminal/command/cmdResultShow.html",rowData);
-                }
-            }
-            if(type=="Diagnosis"){
-                var position={"width":450,"height":350,"left":500,"top":200};
-                pop=popupWindow(position,indexSID.selectSTB,"terminal/diagnosis/diagnosisShow.html",rowData);
-            }
-
-            if(type=="STBGDDial"){
-                var position={"width":650,"height":520,"left":450,"top":150};
-                pop=popupWindow(position,indexSID.selectSTB,"terminal/probe/terminal_SendGDDialtest.html",rowData);
-            }
-            if(type=="STBDial"){
-                var position={"width":650,"height":520,"left":450,"top":150};
-                pop=popupWindow(position,indexSID.selectSTB,"terminal/probe/terminal_SendDialtest.html",rowData);
-            }
-
-            if(type=="showFaultList"){
-                var position={"width":600,"height":350,"left":500,"top":200};
-                pop=popupWindow(position,indexSID.showFaultList,"terminal/diagnosis/showFaultList.html",rowData);
-            }
-            if(rowData.Mode=="Daily"||rowData.Mode==1){
-                var position={"width":500,"height":600,"left":450,"top":100};
-                mTitle_id_Div="div"+new Date().getTime();
-                pop=popupWindow(position,"<div id=\""+mTitle_id_Div+"\"></div>", "terminal/probe/terminal_SendCmd.html",rowData);
-            }
-            if(rowData.Mode=="Debug"||rowData.Mode==2||rowData.Mode==3){
-                var position={"width":500,"height":600,"left":450,"top":100};
-                rowData.mIfHavePopClose=true;
-                mTitle_id_Div="div"+new Date().getTime();
-                pop=popupWindow(position,"<div id=\""+mTitle_id_Div+"\"></div>", "terminal/probe/terminal_SendCmd.html",rowData);
-            }
-        }
-        //修改上报模式
-        function tochangemode(params, onReceiveSTBMode){
-            var indexSID=$.parseJSON(gpI18n.prop("login"));
-            var position={"width":350,"height":250,"left":550,"top":220};
-            pop=popupWindow(position,indexSID.changemode, "terminal/probe/terminal_ChangeMode.html",params,onReceiveSTBMode);
-        }
-
-        //故障、事件数详细信息展示
-        function showEventCount(sTitle,params){
-            var position={"width":770,"height":530,"left":450,"top":110};
-            pop=popupWindow(position, sTitle, "terminal/probe/terminal_FaultShow.html",params)
-        }
-
-        //网元信息Bras、OLT详细信息展示
-        function showNetEle(sTitle,params){
-            var position={"width":670,"height":330,"left":450,"top":220};
-            pop=popupWindow(position, sTitle, "terminal/probe/terminal_NetEle.html",params);
-        }
-
-        function resize(){
-            login.resize();
-        }
-
-        function changeDayOrHour(){
-            updateData();
-        }
-
-        var CallMethod;
-        var CallType=0;
-        var isCall=false;
-        //显示弹窗                               标题         提示内容      判断是否自动隐藏      判断是否有取消按钮 1为没有 2有  (3，4特殊的弹框)    确定的点击事件
-        function showHint(title,content,isHide,mtype,_method){
-            var hintdata=$.parseJSON(gpI18n.prop("misc"));
-            CallMethod=_method;
-            CallType=0;
-            if(title!=null){
-                $("#title_msg").text(title);
-            }
-            if(mtype!=4){
-                $("#content_div").css("display","block");
-                $("#content_reset").css("display","none");
-                $("#content_msg").html(content);
-            }else{
-                CallType=mtype;
-                $("#content_div").css("display","none");
-                $("#content_reset").css("display","block");
-                $("#content_old").html(content.split(",")[0]);
-                $("#content_new").html(content.split(",")[1]);
-                $("#content_pwd").html(content.split(",")[2]);
-            }
-            $("#hint_ensure").text(hintdata.btn_ensure);
-            $("#hint_cancel").text(hintdata.btn_cancel);
-            $("#content_div").css("margin","0px");
-            if(mtype==1){
-                $(".div_hint").css("width","200px");
-                $(".div_hint").css("height","120px");
-                $("#hint_cancel").css("display","none");
-                $("#content_info").css("display","none");
-                isCall=false;
-            }else if(mtype==2){
-                $(".div_hint").css("width","260px");
-                $(".div_hint").css("height","110px");
-                $("#hint_cancel").css("display","inline-block");
-                $("#content_info").css("display","none");
-                isCall=true;
-            }else if(mtype==3){
-                $(".div_hint").css("width","350px");
-                $(".div_hint").css("height","140px");
-                $("#hint_cancel").css("display","inline-block");
-                $("#content_info").css("display","inline-block");
-                $("#content_div").css("margin-top","15px");
-                $("#content_div").css("margin-bottom","12px");
-                isCall=true;
-            }else if(mtype==4){
-                $(".div_hint").css("width","370px");
-                $(".div_hint").css("height","180px");
-                $("#content_pwdtext").css("margin-left","13px");
-                isCall=true;
-            }
-
-            $(".showhint").show();
-            if(mtype==3)
-                $("#content_info").focus();
-            if(isHide)
-                setTimeout(function(){$(".showhint").hide();},1000);
-        }
-        function onEnsure(){
-            if(CallType!=4){
-                var contentInfo=$("#content_info").val();
-                if(isCall==true){
-                    CallMethod(contentInfo);
-                }
-                $("#content_info").val("");
-                $(".showhint").hide();
-                return;
-            }
-            $.ajax({complete:gComplete,
-                url : "./useraction!returnUserByName.action",
-                type : "post",
-                dataType : "json",
-                data : 	"paramData={'userName':'" + gsUserName + "'}",
-                contentType : "application/x-www-form-urlencoded; charset=utf-8",
-                success : function(data) {
-                    var userData = data.resultData;
-                    if(userData==null)
+                onSelect: function (row) {
+                    if(!bClick) {
                         return;
-                    tmpData=$.parseJSON(userData);
-                    var isHide=false;
-                    var clearOldPwd = false;
-                    var contentInfo=$("#content_info").val();
-                    if(isCall==true){
-                        if(CallType==4){
-                            var reset_old=$("#content_oldtext").val();
-                            var reset_new=$("#content_newtext").val();
-                            var reset_pwd=$("#content_pwdtext").val();
-                            changePassword = hex_md5("nts-" + reset_old).toUpperCase();
-                            if(reset_old==""||reset_new==""||reset_pwd=="")
-                                showHint1("提示信息","信息输入不完整!");
-                            else if(reset_new!=reset_pwd)
-                                showHint1("提示信息","两次输入密码不一致!");
-                            else if(reset_new.length<8)
-                                showHint1("提示信息","密码长度至少要8位!");
-                            else if(!onCheck(reset_pwd)){
-                                showHint1("提示信息","密码至少包含两种字符(1:大写字母 2:小写字母 3:数字 4:特殊符号)!");
-                            }else if(!(tmpData[0].PassWord==changePassword)){
-                                showHint1("提示信息","原密码不正确!");
-                                clearOldPwd=true;
-                            }else if(reset_pwd==reset_old)
-                                showHint1("提示信息","密码不能与原密码相同!");
-                            else
-                                isHide=true;
-                            contentInfo=hex_md5("nts-" + reset_pwd).toUpperCase();
-                        }else
-                            isHide=true;
-                        if(isHide)
-                            CallMethod(contentInfo);
                     }
-                    if(clearOldPwd)
-                        $("#content_oldtext").val("");
-                    else{
-                        $("#content_info").val("");
-                        //				$("#content_oldtext").val("");
-                        $("#content_newtext").val("");
-                        $("#content_pwdtext").val("");
+                    bClick = false;
+                    var opts = $(this).combobox('options');
+                    if(row.name==noticeInfos[5]){
+                        var a= $("#areaMiguName").combobox('getData');
+                        for(var i=0;i<a.length;i++){
+                            $('#areaMiguName').combobox('select', a[i].id);
+                            var el = opts.finder.getEl(this, a[i].id);
+                            el.find('input.combobox-checkbox')._propAttr('checked', true);
+                        }
                     }
-                    if(isHide)
-                        $(".showhint").hide();
-                }
-            });
-        }
-        function onCancel(){
-            $("#content_info").val("");
-            $(".showhint").hide();
-        }
-        //另一弹窗			标题,内容,是否自动隐藏
-        function showHint1(title,content,isHide){
-            $("#title_msg1").html(title);
-            $("#content_msg1").html(content);
-            $("#hint_ensure1").text("确定");
-            $(".div_hint1").css("width","200px");
-            $(".div_hint1").css("height","120px");
-            $(".showhint1").show();
-            if(isHide)
-                setTimeout(function(){$(".showhint1").hide();},1000);
-        }
-        function onEnsure1(){
-            $(".showhint1").hide();
-        }
-        //遍历输入的密码是否至少包含两种字符
-        function onCheck(data) {
-            var tmpstr=data.split("");
-            var maxCount=tmpstr.length;
-            //   数字  	小写字母	大写字母	 特殊字符
-            var type_A=0,type_B=0,type_C=0,type_D=0;
-            for (var i= 0; i< tmpstr.length; i++) {
-                if(/^\d+$/.test(tmpstr[i]))
-                    type_A++;
-                else if(/^[a-z]+$/.test(tmpstr[i]))
-                    type_B++;
-                else if(/^[A-Z]+$/.test(tmpstr[i]))
-                    type_C++;
-                else
-                    type_D++;
-            }
-            if(type_A==maxCount||type_B==maxCount||type_C==maxCount||type_D==maxCount)
-                return false;
-            else
-                return true;
-        }
-        function getDataSource(){
-            return $("#selectDBFrom").get(0).selectedIndex;
-        }
-        function changeSelectDB(){
-            //var str=$("#selectDBFrom option:selected").val();
-            var str =$("#selectDBFrom").get(0).selectedIndex;
-            var sinterval =$("#divType").get(0).selectedIndex;
-            var interval=sinterval==0?3600:86400;
-            var cTime=$("#divTime").val();
-            var curSec=Date.parse(cTime)/1000;
-            $.ajax({complete:gComplete,
-                url : "./configaction!changeDataSource.action",
-                type : "post",
-                dataType : "json",
-                data : 	"paramData={'dataSource':'" + str + "'}",
-                contentType : "application/x-www-form-urlencoded; charset=utf-8",
-                success : function(data) {
-                    //如果切换数据源成功，重新获取数据
-                    if(data.resultData=="success"){
-                        network.chinaevqmap.resetMapDB(true,curSec,interval);
-                        updateData();
-                    }
+                    //设置选中值所对应的复选框为选中状态
+                    var el = opts.finder.getEl(this, row[opts.valueField]);
+                    el.find('input.combobox-checkbox')._propAttr('checked', true);
+                    mpReportMigu.getDimenIDs();
                 },
-                failed:function(data){
-                    network.chinaevqmap.resetMapDB(false,curSec,interval);
+                onUnselect: function (row) {
+                    if(!bClick) {
+                        return;
+                    }
+                    bClick = false;
+                    var opts = $(this).combobox('options');
+                    if(row.name==noticeInfos[5]){
+                        var a= $("#areaMiguName").combobox('getData');
+                        for(var i=0;i<a.length;i++){
+                            $('#areaMiguName').combobox('unselect', a[i].id);
+                            var el = opts.finder.getEl(this, a[i].id);
+                            el.find('input.combobox-checkbox')._propAttr('checked', false);
+                        }
+                    }
+                    var el = opts.finder.getEl(this, row[opts.valueField]);
+                    el.find('input.combobox-checkbox')._propAttr('checked', false);
+                    mpReportMigu.getDimenIDs();
                 }
             });
         }
-        var gObjResult={};
-        var mTaskNum; //存放故障分析下载任务信息
-        //无名称匿名函数
-        //在声行且执行一次
-        var mRequestParam =new Object();
-        (function(){
-            var arr=new Array();
-            var sUrl=gurlparameter;
-            if (sUrl.indexOf("?") != -1) {
-                var str=sUrl.split("?")[1];
-                strs = str.split("=");
-                if(strs[0]!="evqmParam")
-                    return null;
-                arr=strs[1].split("||");
-                for(var i=0;i<arr.length;i++){
-                    var tmparr=arr[i].split(":");
-                    mRequestParam[tmparr[0]]=tmparr[1];
-                }
+        var  bClick=false;
+        function whichButton(e) {
+            // var  a=e;
+            bClick=true;
+        }
+    	//document.getElementById("id_body").style.height='670px';
+    	$(window).resize(onResize);
+
+    	function onResize(){
+    		var h=document.documentElement.clientHeight; //获取页面可见高度
+    		document.getElementById("id_body").style.height=(h-30)+'px';
+    	}
+
+    	function ReportMigu(){
+    		var mFinalData=null;
+    		var mDownFilName="";
+    		var mpParam={
+    			secFrom:'',secTo:'',location:'',dimension:'platform',platform:''
+    		};
+
+    		////////////////////////////////////////////////////
+
+    		var mpGridCol=[
+    		               //area,OnlineSucPlay,Latency,timeProprot,
+                {dataField:'area',text:'',width:'200px'},
+                {dataField:'Latency',text:'',width:'150px'},
+                {dataField:'DownSpeed',text:'',width:'150px'},
+                {dataField:'EPGLoadSuc',text:'',width:'150px'},
+
+    		   {dataField:'OnlineSucPlay',text:'',width:'200px'}, 	//在线播放成功率=成功播放次数/总的播放次数
+
+    		   {dataField:'timeProprot',text:'',width:'150px'},
+
+    		   {dataField:'wifiAcount',text:'',width:'150px'},
+    		   {dataField:'UnitTCaton',text:'',width:'150px'},	//
+    		   {dataField:'CatonAcount',text:'',width:'150px'},
+    		   {dataField:'EPGLoadDelay',text:'',width:'150px'},
+
+    		   {dataField:'EPGRequests',text:'',width:'150px'},
+    		   {dataField:'EPGReponses',text:'',width:'150px'},
+    		   {dataField:'LoginSuc',text:'',width:'150px'},
+    		];
+    		//document.getElementById("id_body").style.height=670;
+			var mpReportGrid=new ReportGrid($("#id_body"),"area");
+    		var date = new Date();
+    		var sec=date.getTime()/1000-86400;
+    		date = new Date(sec*1000);
+			var mouth=date.getMonth()+1;
+			var day=date.getDate();
+    		var curDate=date.getFullYear()+"-"+(mouth>=10?mouth:("0"+mouth))+"-"+(day>=10?day:("0"+day));
+			date = new Date((sec-6*86400)*1000);
+			mouth=date.getMonth()+1;
+			day=date.getDate();
+    		preDate=date.getFullYear()+"-"+(mouth>=10?mouth:("0"+mouth))+"-"+(day>=10?day:("0"+day));
+
+    		document.getElementById("id_dateFrom").value=preDate;
+    		document.getElementById("id_dateTo").value=curDate;
+
+    		var dimenVals=[noticeInfos[2],noticeInfos[3],noticeInfos[4]];
+    		////////////////////////////////////////////////////
+    		function initpage(){
+    			reportSID=$.parseJSON(gtop.getSIDText("report")).reportMain;
+    			var miscSID=$.parseJSON(gtop.getSIDText("misc"));
+    			reportMiguSID=$.parseJSON(gtop.getSIDText("report")).reportMigu;
+    			var id_datetype=reportSID.dateSelect.split(",");
+
+    			$("#id_curweek").text(id_datetype[0]);
+    			$("#id_preweek").text(id_datetype[1]);
+    			$("#id_curmonth").text(id_datetype[2]);
+    			$("#id_premonth").text(id_datetype[3]);
+                $(".la_hour").text(noticeInfos[7]);
+    			if(gtop.gpCompanyCfg[gtop.gsCompany]&&gtop.gpCompanyCfg[gtop.gsCompany].hoursOfGranularity && gtop.gpCompanyCfg[gtop.gsCompany].hoursOfGranularity=="true"){
+                    $("#id_curhour").css("display","block");
+                    $("#id_curhour").text(id_datetype[5]);
+                }else{
+                    $("#id_curhour").css("display","none");
+				}
+    			if(gtop.gsCompany=="sihua_cmvideo"&&gtop.DefProvinceID==15)
+    				$("#id_label_dateTo").text(noticeInfos[4]);
+    			else
+    				$("#id_label_dateTo").text(reportMiguSID.dateTo);
+//     			for(var i=0;i<dimenVals.length;i++){
+// 	    			$("#dimenType").append(new Option(dimenVals[i]),i);
+//     			}
+    			$("#id_label_area").text(reportMiguSID.area);
+    			$("#id_platform_area").text(reportMiguSID.platform);
+    			$("#id_programtype_area").text(reportMiguSID.programtype);
+    			$("#id_deviceprovider_area").text(noticeInfos[3]);
+    			$("#id_operator").text(noticeInfos[4]);
+    			$("#id_create").text(miscSID.btn_create);
+    			$("#btn_export").text(miscSID.btn_export);
+    			//设置报表中列的名称
+
+  				if(gtop.gsCompany==gtop.gpQingHai){
+                    var mpGridCol_text=reportMiguSID.qhmpGridCol_text.split(",");
+
+				}else if(gtop.gsCompany==gtop.gpSichuan){
+                    var mpGridCol_text=reportMiguSID.sichuanGridCol_text.split(",");
+				}
+				else{
+                    var mpGridCol_text=reportMiguSID.mpGridCol_text.split(",");
+				}
+  				for(var i=0;i<mpGridCol_text.length;i++){
+  					mpGridCol[i].text=mpGridCol_text[i];
+  				}
+  				mpReportGrid.initColumn(mpGridCol, true);
+    		}
+
+    		this.updateSID = function(){
+    			initpage();
+    			setAreaList();
+//     			setPlatform();
+    			this.getDimenIDs();
+    		}
+
+    		function setAreaList(){
+//     			if(gtop.DefProvinceID*1==1){
+//     				$("#id_area").append(new Option(gtop.gpArea.location,gtop.gtop.DefProvinceID));
+//     			}
+//     			for(var i=0;i<gtop.gpArea.areaList.length;i++){
+//     				if(gtop.gpArea.areaList[i].id==2)
+//     					continue;
+//     				if(gtop.DefProvinceID*1>1){ //省模式
+//     					if(gtop.gpArea.areaList[i].id==gtop.DefProvinceID*1){
+//     						$("#id_area").append(new Option(gtop.gpArea.areaList[i].location,gtop.gpArea.areaList[i].id));
+//     					}
+//     				}else{ //全国模式
+//     					$("#id_area").append(new Option(gtop.gpArea.areaList[i].location,gtop.gpArea.areaList[i].id));
+//     				}
+//     			}
+    			var pData=[];
+    			var item;
+    			var index=1;
+    			pData[0]={id:-1,name:noticeInfos[5]};
+    			if(gtop.DefProvinceID==1)
+    				pData[index]={id:gtop.gpArea.id,name:gtop.gpArea.location};
+    			index++;
+    			for(var i=0;i<gtop.gpArea.areaList.length;i++){
+    				item=gtop.gpArea.areaList[i];
+    				if(item.id==2)//china,unknow
+    					continue;
+
+    				if(gtop.DefProvinceID>1){//省模式
+    					if(item.id==gtop.DefProvinceID){
+    						pData[1]={id:item.id,name:item.location};
+							break;
+    					}
+    					continue;
+    				}else{
+						var flag=false;
+    					if(gtop.gpCompanyCfg[gtop.gsCompany].provinceFiltration && gtop.gpCompanyCfg[gtop.gsCompany].provinceFiltration!=""){
+							var nFProvinces=gtop.gpCompanyCfg[gtop.gsCompany].provinceFiltration.split("@");
+							for(var p in nFProvinces){
+								if(nFProvinces[p]==item.id){
+									flag=true;
+									break;
+								}
+							}
+    					}
+						if(flag){
+							continue;
+						}
+   						pData[index]={id:item.id,name:item.location};
+    				}
+    				index++;
+    			}
+    			if(gtop.DefProvinceID>1){
+    				var tmpArea=gtop.generalGetArea(gtop.gpArea,gtop.DefProvinceID);
+    				for(var i=0;i<tmpArea.areaList.length;i++){
+    					var tmp=tmpArea.areaList[i];
+    					pData.push({id:tmp.id,name:tmp.location});
+    				}
+    			}
+    			var source={
+    				datatype:'json',
+            		datafields:[
+            			{name:'id'},
+            			{name:'name'}
+            		],
+            		localdata:pData
+            	};
+
+            	// var dataAdapter = new $.jqx.dataAdapter(source);
+            	// $("#id_area").jqxComboBox({
+            	//     source: dataAdapter,
+            	//     theme:'dekscom',
+            	//     width: '100px',
+            	//     height: '25px',
+            	//     displayMember: "name",
+            	//     valueMember: "id",
+            	// 	checkboxes:true
+            	// });
+            	// $('#id_area').on('checkChange', function (event) {
+            	// 	if(event.args.checked&&event.args.value==-1){
+        			// 	   $("#id_area").jqxComboBox('checkAll');
+         		// 	}else if(!event.args.checked&&event.args.value==-1){
+        			// 	   $("#id_area").jqxComboBox('uncheckAll');
+         		// 	}
+            	// 	mpReportMigu.getDimenIDs();
+      		    //  });
+                areaMigu(pData);
+    		}
+    		var source={
+        			datatype:'json',
+        		    datafields:[
+        		        {name:'id'},
+        				{name:'name'}
+        		    ],
+        			localdata:[]
+        		};
+    		function setDevPro(){
+    			if(!mDimenIDs){
+    				updateJqxComBox([]);
+    				return;
+    			}
+    			var arr_Ids=mDimenIDs.split(",");
+    			var index=0;
+    			var pData=[],item,obj;
+    			pData[0]={id:-1,name:noticeInfos[5]};
+    			for(var i=0;i<arr_Ids.length;i++){
+    				for(var j=0;j<gtop.gpDevicePro.length;j++){
+    					if(gtop.gpDevicePro[j].id*1==arr_Ids[i]*1){
+    						if(gtop.gpDevicePro[j].name==noticeInfos[6])
+    							continue;
+    						index++;
+    						pData[index]={id:arr_Ids[i]*1,name:gtop.gpDevicePro[j].name};
+    					}
+    				}
+    			}
+    			updateJqxComBox(pData);
+
+    		}
+    		function setPlatform(){
+    			if(!mDimenIDs){
+    				updateJqxComBox([]);
+    				return;
+    			}
+    			var arr_Ids=mDimenIDs.split(",");
+    			var index=0;
+    			var pData=[],item,obj;
+    			pData[0]={id:-1,name:noticeInfos[5]};
+    			for(var i=0;i<arr_Ids.length;i++){
+    				index++;
+    				pData[index]={id:arr_Ids[i]*1,name:gtop.gpPlatform[parseInt(arr_Ids[i])].name};
+    			}
+    			updateJqxComBox(pData);
+    		}
+    		function setOperators(){
+    			if(!mDimenIDs){
+    				updateJqxComBox([]);
+    				return;
+    			}
+    			var arr_Ids=mDimenIDs.split(",");
+    			var index=0;
+    			var pData=[],item,obj;
+    			pData[0]={id:-1,name:noticeInfos[5]};
+    			if(gtop.gsCompany==gtop.gpSiHua){
+    				pData[1]={id:1,name:noticeInfos[1]};
+    				pData[2]={id:2,name:noticeInfos[0]};
+    			}else{
+	    			for(var i=0;i<arr_Ids.length;i++){
+	    				index++;
+	    				pData[index]={id:arr_Ids[i]*1,name:gtop.gpNetwork.Operators[arr_Ids[i].trim()]};
+	    			}
+    			}
+    			updateJqxComBox(pData);
+    		}
+    		//待做  根据选择设定DimenIDs
+            function updateJqxComBox(data) {
+                $('#platMiguForm').combobox({
+                    data:data,
+                    valueField:'id',
+                    textField:'name',
+                    editable:false,
+                    multiple:true,
+                    formatter: function (row) {
+                        var opts = $(this).combobox('options');
+                        return '<input type="checkbox" class="combobox-checkbox" id="' + row[opts.valueField] + '">' + row[opts.textField]
+                    },
+                    onShowPanel: function () {
+                        var opts = $(this).combobox('options');
+                        var target = this;
+                        var values = $(target).combobox('getValues');
+                        $.map(values, function (value) {
+                            var el = opts.finder.getEl(target, value);
+                            el.find('input.combobox-checkbox')._propAttr('checked', true);
+                        })
+                    },
+                    onLoadSuccess: function () {
+                        var opts = $(this).combobox('options');
+                        var target = this;
+                        var values = $(target).combobox('getValues');
+                        $.map(values, function (value) {
+                            var el = opts.finder.getEl(target, value);
+                            el.find('input.combobox-checkbox')._propAttr('checked', true);
+                        })
+                    },
+
+                    onSelect: function (row) {
+                        if(!bClick) {
+                            return;
+                        }
+                        bClick = false;
+                        var opts = $(this).combobox('options');
+                        if(row.name==noticeInfos[5]){
+                            var a= $("#platMiguForm").combobox('getData');
+                            for(var i=0;i<a.length;i++){
+                                $('#platMiguForm').combobox('select', a[i].id);
+                                var el = opts.finder.getEl(this, a[i].id);
+                                el.find('input.combobox-checkbox')._propAttr('checked', true);
+                            }
+                        }
+                        //设置选中值所对应的复选框为选中状态
+                        var el = opts.finder.getEl(this, row[opts.valueField]);
+                        el.find('input.combobox-checkbox')._propAttr('checked', true);
+                    },
+                    onUnselect: function (row) {
+                        if(!bClick) {
+                            return;
+                        }
+                        bClick = false;
+                        var opts = $(this).combobox('options');
+                        if(row.name==noticeInfos[5]){
+                            var a= $("#platMiguForm").combobox('getData');
+                            for(var i=0;i<a.length;i++){
+                                $('#platMiguForm').combobox('unselect', a[i].id);
+                                var el = opts.finder.getEl(this, a[i].id);
+                                el.find('input.combobox-checkbox')._propAttr('checked', false);
+                            }
+                        }
+                        var el = opts.finder.getEl(this, row[opts.valueField]);
+                        el.find('input.combobox-checkbox')._propAttr('checked', false);
+                    }
+                });
             }
-            if(mRequestParam.sessionid){
-                if(mRequestParam.operator&&typeof(mRequestParam.province)!="undefined"&&typeof(mRequestParam.node)!="undefined")
-                    mLoginWay=2;
-            }else if(mRequestParam.DeviceID&&mRequestParam.KPIUTCSec&&mRequestParam.SampleInterval)
-                mLoginWay=3;
-            else if(mRequestParam.operator&&typeof(mRequestParam.province)!="undefined"&&typeof(mRequestParam.node)!="undefined")
-                mLoginWay=1;
-            gObjResult["FreeLogWay"]=mLoginWay;  //免密码登录方式
-            gObjResult["RequestParam"]=mRequestParam;  //参数
-            setUNameAndAuthor();   //设置用户名和权限
-            forLogin();
-        })();
-	</script>
+
+    		var bMerge=false;
+
+    		//针对青海 展示市级信息
+    		function ifGetCityInfo(location){
+    			if(!location||location==""||typeof(location)!="string"){
+    				return false;
+    			}
+    			var arr=location.split(",");
+    			for(var i=0;i<arr.length;i++){
+					if(arr[i]*1>34){
+						return true;
+					}
+    			}
+			 	return false;
+    		}
+    		function isMiguShanxi(){
+    			if(gtop.gsCompany==gtop.gpSiHua&&gtop.DefProvinceID==8){
+    				return true;
+    			}
+    			return false;
+    		}
+    		this.onGenerate = function(){
+                var secFrom;
+                var secTo;
+    		    if(mIndex==1){
+                    secFrom=document.getElementById("id_dateFrom").value+" "+$('#num1 option:selected').val()+":00:00";
+                    secTo=document.getElementById("id_dateTo").value+" "+$('#num2 option:selected').val()+":00:00";
+                    mpParam.secFrom=secFrom;
+                    mpParam.secTo=secTo;
+				}else{
+                    secFrom=document.getElementById("id_dateFrom").value;
+                    secTo=document.getElementById("id_dateTo").value;
+                    mpParam.secFrom=secFrom+" 00:00:00";
+                    mpParam.secTo=secTo+" 00:00:00";
+                }
+                if(secFrom==null||secTo==null){
+                    alert($.parseJSON(gtop.getSIDText("misc")).timeError2);
+                    return;
+                }
+                mpParam["tType"]=mIndex;		//查询时间间隔类型：1->小时;2:->其它
+				mpParam.location=setSelectLocation();
+    			setSelectPlatform();
+    			if(mpParam.location=="")
+					mpParam.location=gtop.DefProvinceID;
+    			mpParam["isMigu"]=gtop.gsCompany==gtop.gpSiHua?true:false;
+    			//是不是咪咕的山西省份登录
+    			mpParam["isMiguShanxi"]=isMiguShanxi();
+    			mpParam["bIncludeShanxi"]=mbIncludeShanXi;
+    			if(mpParam["isMiguShanxi"]==true){
+    				mpParam["bIncludeShanxi"]=false;
+    			}
+    			/* var data=[
+    				{area:'shanghai',row:[{key:'live',a:2,b:5,c:23},{key:'vod',a:5,b:7,c:14}]},
+    				{area:'beijing', row:[{key:'live',a:12,b:15,c:23},{key:'vod',a:15,b:17,c:14}]},
+    				{area:'zhejiang',row:[{key:'live',a:22,b:25,c:23},{key:'vod',a:25,b:27,c:14}]},
+    			];
+    			mpReportGrid.updateData(data); */
+
+    			$.ajax({complete:gComplete,
+    				url:"reportaction!returnMiguData.action",
+    				type:"post",
+    				data:"paramData="+JSON.stringify(mpParam),
+    				datatype:"json",
+    				success:(function(data){
+
+    					if(data.resultData){
+    					    var nIdex=1;
+    						var data=$.parseJSON(data.resultData);
+    						//处理VodSum取来的数据  主要有：  下载速率，单位时间卡顿次数、卡顿次数占比、在线播放成功率、首帧响应时延、卡顿时间占比
+    						var vodData=handleVodData(data.vod,mpParam);
+    						//处理qnetwork表来的数据   :wifi接入占比
+    						var netData=handleNetdata(data.net,mpParam);
+    						//处理Epgsum表来的数据 主要有：EPG加载成功率、EPG加载时延
+    						var epgData=handleEpgData(data.epg,mpParam,nIdex);
+                            //处理Epgsum表来的数据：登录成功率
+							nIdex=2;
+    						var epgSucData=handleEpgData(data.epgSuc,mpParam,nIdex);
+
+    						//整合以上数据
+    						mFinalData=mergeVodAndEpgAndNet(vodData,epgData,epgSucData,netData,mpParam);
+
+	    					//var test="{\"area\":\"shanghai\",\"row\":{\"key\":\"live\",\"a\":2,\"b\":5,\"c\":23},\"row\":{\"key\":\"vod\",\"a\":5,\"b\":7,\"c\":14}}";
+	    					//var tetst1=$.parseJSON(test);
+// 	    					mFinalData=handleData(sData);  //处理数据获取最终数据
+	    					if(!mpParam.platform){   //节目
+	    						bMerge=false;
+	    						mpReportGrid.setColSpan(false);  //不合并
+	    					}
+	   						else{
+	   							bMerge=true;
+	   							mpReportGrid.setColSpan(true);  //合并
+	   						}
+	    					mpReportGrid.updateData(mFinalData);
+    					}else{
+    						mpReportGrid.updateData([]);
+    					}
+    				})
+    			});
+    		}
+
+    		function handleNetdata(rsdata,param){
+    			var objLoc=new Object();
+    			for(var i=0;i<rsdata.length;i++){
+	    			var sKpi=new Date(rsdata[i].KPIUTCSec.time).format("yyyy-MM-dd");
+    				if(typeof(objLoc[rsdata[i].LocationID])=="undefined"){
+    					objLoc[rsdata[i].LocationID]=calWifiData(rsdata[i]);
+    				}else{
+    					var tmp=calWifiData(rsdata[i]);
+    					objLoc[rsdata[i].LocationID]=addWifi(objLoc[rsdata[i].LocationID],tmp);
+    				}
+    			}
+    			var result=new Object();
+    			for(var p in objLoc){
+    				if(objLoc[p].Total==0)
+    					result[p]=0;
+    				else
+    					result[p]=(objLoc[p].wifiCount*100/objLoc[p].Total).toFixed(2);
+    			}
+    			return result;
+    		}
+    		function addWifi(base,data){
+    			base.wifiCount+=data.wifiCount;
+    			base.Total+=data.Total;
+    			return base;
+    		}
+    		function calWifiData(data){
+    			var obj=new Object();
+				obj["wifiCount"]=gtop.getDistTotal("2",data.DistStreamDevice);
+				obj["Total"]=gtop.getDistTotal("",data.DistStreamDevice);
+    			return obj;
+    		}
+    		function getName(id,param){
+    			if(id*1==-1){
+    				return id;
+    			}else if(id*1==-2){
+    				return noticeInfos[0];
+    			}else if(id*1==-3)
+    				return noticeInfos[1];
+    			if(param.dimension=="platform"){
+    				return gtop.gpPlatform[id*1].name;
+    			}else if(param.dimension=="devProtype"){
+    				if(id*1==100){
+    					return  gtop.gpDevicePro[0].name;
+    				}else
+	    				return	gtop.gpDevicePro[id*1].name;
+    			}else if(param.dimension=="platform"){
+    				return gtop.gpNetwork.Operators[id];
+    			}
+    		}
+    		function mergeVodAndEpgAndNet(vodData,epgData,epgSucData,netData,param){
+    			var arr=new Array();
+    			for(var p in vodData){
+    			    if(mbIncludeShanXi && gtop.gsCompany==gtop.gpSiHua && mLocationNum==1 && p==1){ //单选山西省时，过滤掉全国
+    			        continue;
+					}
+   					var obj=new Object();
+   					obj["area"]=gtop.generalGetArea(gtop.gpArea,p*1).location;
+   					obj["row"]=new Array();
+    				for(var q in vodData[p]){
+    					var tmpObj=new Object();
+    					tmpObj["area"]=getName(q,param);
+    					for(var k in vodData[p][q]){
+    						tmpObj[k]=vodData[p][q][k];
+    					}
+    					if(epgSucData[p]&&epgSucData[p][q]){
+    					    for(var k in epgSucData[p][q]){
+                                tmpObj[k]=epgSucData[p][q][k];
+							}
+						}
+    					if(epgData[p]&&epgData[p][q]){
+    						for(var k in epgData[p][q]){
+        						tmpObj[k]=epgData[p][q][k];
+        					}
+    					}
+    					if(netData[p]){
+    						tmpObj["wifiAcount"]=netData[p];
+    					}
+    					obj["row"].push(tmpObj);
+    				}
+	    			arr.push(obj);
+    			}
+    			return arr;
+    		}
+    		function mergeEpgData(data,bByDimen,param){
+    			var result=new Object();
+   				var tmp=new Object();
+   				if(bByDimen&&!param.isMigu){
+   					return data;
+   				}
+   				//不根据维度展示，计算所有维度的总数
+    			if(!bByDimen){
+	    			for(var p in data){
+	    				for(var q in data[p]){
+	    					if(typeof(data[p][q])=="Object")
+	    						continue;
+	    					if(typeof(tmp[q])=="undefined"){
+	    						tmp[q]=data[p][q]*1;
+	    					}else{
+	    						tmp[q]+=data[p][q]*1;
+	    					}
+	    				}
+	    			}
+	    			result[-1]=tmp;
+    			}
+    			var bNetObj=new Object();
+    			var yNetObj=new Object();
+    			//咪咕  本网异网
+    			if(bByDimen&&param.dimension=="operator"&&param.isMigu){
+    				for(var p in data){
+    					for(var q in data[p]){
+	    					if(p*1==2){
+	    						if(typeof(data[p][q])=="Object")
+		    						continue;
+	    						if(typeof(bNetObj[q])=="undefined"){
+	    							bNetObj[q]=data[p][q]*1;
+		    					}else{
+		    						bNetObj[q]+=data[p][q]*1;
+		    					}
+	    					}else{
+	    						if(typeof(yNetObj[q])=="undefined"){
+	    							yNetObj[q]=data[p][q]*1;
+		    					}else{
+		    						yNetObj[q]+=data[p][q]*1;
+		    					}
+	    					}
+    					}
+    				}
+	    			tmp[-2]=yNetObj;  //异网
+	    			tmp[-3]=bNetObj; //本网
+	    			result=tmp;
+    			}
+    			return result;
+    		}
+
+    		function handleEpgData(rsdata,mpParam,nIndex){
+    			var kpiObj=new Object();
+    			var bByDimenVal=false  //是否根据维度值汇总;
+    			if(mpParam.platform!=""){
+    				bByDimenVal=true;
+    			}
+    			//根据天 分类
+//     			2017-04-19 00:00:00:Object
+// 					23:Object                  locationid
+// 						1:Object               Dimensionality
+// 							0:Object           Faultid
+// 								Pages:0
+// 								Requests:749594
+// 								Responses:733573
+// 								SucPages:0
+// 								TotEpgRspTime:2114596529
+    			for(var i=0;i<rsdata.length;i++){
+    				var sKpi=new Date(rsdata[i].KPIUTCSec.time).format("yyyy-MM-dd");
+    				if(typeof(kpiObj[sKpi])=="undefined"){
+    					kpiObj[sKpi]=new Object();
+    				}
+    				if(typeof(kpiObj[sKpi][rsdata[i].LocationID])=="undefined")
+    					kpiObj[sKpi][rsdata[i].LocationID]=new Object();
+   					kpiObj[sKpi][rsdata[i].LocationID][rsdata[i].Dimensionality]=rsdata[i];
+    			}
+
+    			var size=0;
+    			for(var p in kpiObj)
+    				size++;
+   				for(var p in kpiObj){
+   					for(var q in kpiObj[p]){
+   						kpiObj[p][q]=mergeEpgData(kpiObj[p][q],bByDimenVal,mpParam);
+   					}
+   				}
+
+
+    			var totalObj=new Object();
+   				for(var p in kpiObj){
+   					for(q in kpiObj[p]){
+   						for(var k in kpiObj[p][q]){
+	   						if(typeof(totalObj[q])=='undefined'){
+	   							totalObj[q]=new Object();
+	   							totalObj[q][k]=calEpg(kpiObj[p][q][k],nIndex);
+	   						}else if(typeof(totalObj[q][k])=='undefined'){
+	   							totalObj[q][k]=calEpg(kpiObj[p][q][k],nIndex);
+	   						}else{
+	   							var tmpData=calEpg(kpiObj[p][q][k],nIndex);
+	   							totalObj[q][k]=addEpg(totalObj[q][k],tmpData);
+	   						}
+   						}
+   					}
+   				}
+
+   				for(var p in totalObj){
+   					for(q in totalObj[p]){
+   						for(var k in totalObj[p][q]){
+	   						totalObj[p][q][k]=(totalObj[p][q][k]*1/size).toFixed(2);
+   						}
+   					}
+   				}
+   				return totalObj;
+
+    		}
+    		function calEpg(baseData,nIndex){
+    			var result=new Object();
+    			result["EPGRequests"]=baseData.Requests;
+    			result["EPGReponses"]=baseData.Responses;
+    			if(baseData.Requests && nIndex==1){
+    			    if(baseData.Requests!=0){
+                        result["EPGLoadSuc"]=(baseData.Responses*100/baseData.Requests).toFixed(2)*1;
+                    }else{
+                        result["EPGLoadSuc"]=0;
+                    }
+                }
+    			if(baseData.Requests && nIndex==2){
+    			    if(baseData.Requests!=0){
+                        result["LoginSuc"]=(baseData.Responses*100/baseData.Requests).toFixed(2)*1;
+                    }else{
+                        result["LoginSuc"]=0;
+                    }
+                }
+                if(baseData.CntEpgRspTime && nIndex==1){
+    			    if(baseData.CntEpgRspTime!=0){
+                          result["EPGLoadDelay"]=baseData.TotEpgRspTime/baseData.CntEpgRspTime/1000;
+                    }else{
+                        result["EPGLoadDelay"]=0;
+                    }
+                }
+
+    			return result;
+    		}
+
+    		function addEpg(baseData,data){
+    			if(baseData.EPGLoadSuc || baseData.EPGLoadSuc==0){
+                    baseData.EPGLoadSuc+=data.EPGLoadSuc;
+                }
+                if(baseData.LoginSuc || baseData.LoginSuc==0){
+                    baseData.LoginSuc+=data.LoginSuc;
+                }
+                if(baseData.EPGLoadDelay || baseData.EPGLoadDelay==0){
+                    baseData.EPGLoadDelay+=data.EPGLoadDelay;
+                }
+                baseData.EPGRequests+=data.EPGRequests;
+                baseData.EPGReponses+=data.EPGReponses;
+    			return baseData;
+    		}
+
+    		function handleVodData(rsdata,mpParam){
+    			var bByDimenVal=false  //是否根据维度值汇总;
+    			if(mpParam.platform!=""){
+    				bByDimenVal=true;
+    			}
+
+    			//根据天 分类
+//     			2017-04-19 00:00:00:Object
+// 					23:Object                  locationid
+// 						1:Object               Dimensionality
+// 							0:Object           Faultid
+// 								Count:5
+// 								Dimensionality:1
+// 								FaultID:0
+// 								KPIUTCSec:Object
+// 								LocationID:23
+// 								Total:5
+    			var kpiObj=new Object();
+    			for(var i=0;i<rsdata.length;i++){
+    				var sKpi=new Date(rsdata[i].KPIUTCSec.time).format("yyyy-MM-dd");
+    				if(typeof(kpiObj[sKpi])=="undefined"){
+    					kpiObj[sKpi]=new Object();
+    				}
+    				if(typeof(kpiObj[sKpi][rsdata[i].LocationID])=="undefined")
+    					kpiObj[sKpi][rsdata[i].LocationID]=new Object();
+    				if(typeof(kpiObj[sKpi][rsdata[i].LocationID][rsdata[i].Dimensionality])=="undefined")
+    					kpiObj[sKpi][rsdata[i].LocationID][rsdata[i].Dimensionality]=new Object();
+    				kpiObj[sKpi][rsdata[i].LocationID][rsdata[i].Dimensionality][rsdata[i].FaultID]=rsdata[i];
+    			}
+
+    			//计算有几天的数据
+    			var size=0;
+    			for(var p in kpiObj){
+    				size++;
+    			}
+
+    			//根据维度统计信息
+//     			2017-04-19 00:00:00:Object
+//  					23:Object                  locationid
+//  						1:Object               Dimensionality
+	// 			    			CatonAcount:0
+	// 							DownSpeed:0
+	// 							Latency:1906.7473333333332O
+	// 							nlineSucPlay:100
+	// 							UnitTCaton:0
+	// 							timeProprot:0
+   				for(var sK in kpiObj){
+   					for(var sL in kpiObj[sK]){
+   						kpiObj[sK][sL]=mergeData(kpiObj[sK][sL],bByDimenVal,mpParam);
+   					}
+   				}
+
+
+    		//求这么多天的数据之和
+   				var totalObj=new Object();
+   				for(var p in kpiObj){
+   					for(q in kpiObj[p]){
+   						for(var k in kpiObj[p][q]){
+	   						if(typeof(totalObj[q])=='undefined'){
+	   							totalObj[q]=new Object();
+	   							totalObj[q][k]=kpiObj[p][q][k];
+	   						}else if(typeof(totalObj[q][k])=='undefined'){
+	   							totalObj[q][k]=kpiObj[p][q][k];
+	   						}else
+	   							totalObj[q][k]=addVod(totalObj[q][k],kpiObj[p][q][k]);
+   						}
+
+   					}
+   				}
+
+   				//求平均  除以天数
+//    				23:Object                  locationid
+//  					1:Object               Dimensionality （大于0：表示正常的维度值 -1：所有维度数据的总和数据，-2，-3：分别对应咪咕的：本网，异网数据）
+// 			    			CatonAcount:0
+// 							DownSpeed:0
+// 							Latency:1906.7473333333332O
+// 							nlineSucPlay:100
+// 							UnitTCaton:0
+// 							timeProprot:0
+   				for(var p in totalObj){
+   					for(q in totalObj[p]){
+   						for(var k in totalObj[p][q]){
+	   						totalObj[p][q][k]=(totalObj[p][q][k]/size).toFixed(2);
+   						}
+   					}
+   				}
+
+
+   				return totalObj;
+
+    		}
+
+    		function addVod(baseData,data){
+    			baseData.OnlineSucPlay+=data.OnlineSucPlay;
+    			baseData.Latency+=data.Latency;
+    			baseData.timeProprot+=data.timeProprot;
+    			baseData.DownSpeed+=data.DownSpeed;
+    			baseData.UnitTCaton+=data.UnitTCaton;
+    			baseData.CatonAcount+=data.CatonAcount;
+
+    			return baseData;
+    		}
+    		function mergeData(sData,b,param){
+    			var tmp=new Object;
+    			var obj=new Object();
+
+    			if(!b){
+	    			for(var p in sData){
+	    				for(var q in sData[p]){
+	    					if(typeof(obj[q])=="undefined"){
+	    						obj[q]=new Object();
+	    						obj[q]["Total"]=sData[p][q].Total;
+	    						obj[q]["Count"]=sData[p][q].Count;
+	    					}else{
+	    						obj[q]["Count"]+=sData[p][q].Count;
+	    						obj[q]["Total"]+=sData[p][q].Total;
+	    					}
+	    				}
+	    			}
+	    			tmp[-1]=obj;
+	    			sData=tmp;
+    			}
+    			var bNetObj=new Object();
+    			var yNetObj=new Object();
+    			//区分本网异网
+    			if(param.dimension=="operator"&&b&&param.isMigu){
+    				for(var p in sData){
+	    				for(var q in sData[p]){
+	    					if(p*1==2){
+	    						if(typeof(bNetObj[q])=="undefined"){
+	    							bNetObj[q]=new Object();
+	    							bNetObj[q]["Total"]=sData[p][q].Total;
+	    							bNetObj[q]["Count"]=sData[p][q].Count;
+		    					}else{
+		    						bNetObj[q]["Count"]+=sData[p][q].Count;
+		    						bNetObj[q]["Total"]+=sData[p][q].Total;
+		    					}
+	    					}else{
+		    					if(typeof(yNetObj[q])=="undefined"){
+		    						yNetObj[q]=new Object();
+		    						yNetObj[q]["Total"]=sData[p][q].Total;
+		    						yNetObj[q]["Count"]=sData[p][q].Count;
+		    					}else{
+		    						yNetObj[q]["Count"]+=sData[p][q].Count;
+		    						yNetObj[q]["Total"]+=sData[p][q].Total;
+		    					}
+	    					}
+	    				}
+	    			}
+	    			tmp[-2]=yNetObj;  //异网
+	    			tmp[-3]=bNetObj; //本网
+	    			sData=tmp;
+    			}
+    			var result=new Object();
+    			for(var p in sData){ //Dimen
+    				var handObj=new Object();
+      		   		if(sData[p][7]&&sData[p][7].Total&&sData[p][8]&&sData[p][8].Total)
+      		   			handObj["OnlineSucPlay"]=sData[p][8].Total*100/sData[p][7].Total;
+      		   		else
+      		   			handObj["OnlineSucPlay"]=0;
+	      		  	if(sData[p][4]&&sData[p][4].Total)
+	  		   			handObj["Latency"]=(sData[p][4].Total/sData[p][4].Count)/1000;
+	  		   		else
+	  		   			handObj["Latency"]=0;
+	      			if(sData[p][6]&&sData[p][6].Total&&sData[p][2]&&sData[p][2].Total)
+      		   			handObj["timeProprot"]=(sData[p][2].Total*100/sData[p][6].Total)/1000000;
+      		   		else
+      		   			handObj["timeProprot"]=0;
+	      			if(sData[p][6]&&sData[p][6].Total&&sData[p][14]&&sData[p][14].Total)
+	      			    if(gtop.gsCompany==gtop.gpQingHai){
+                            handObj["DownSpeed"]=(sData[p][14].Total*8/sData[p][6].Total)/(1024);
+						}else{
+                            handObj["DownSpeed"]=(sData[p][14].Total*8/sData[p][6].Total)/(1024*1024);
+						}
+
+      		   		else
+      		   			handObj["DownSpeed"]=0;
+
+	      			if(sData[p][6]&&sData[p][6].Total&&sData[p][3]&&sData[p][3].Total)
+      		   			handObj["UnitTCaton"]=sData[p][3].Total*60/sData[p][6].Total;
+      		   		else
+      		   			handObj["UnitTCaton"]=0;
+	      			if(sData[p][6]&&sData[p][6].Total&&sData[p][15]&&sData[p][15].Total)
+      		   			handObj["CatonAcount"]=sData[p][15].Total*100/sData[p][7].Total;
+      		   		else
+      		   			handObj["CatonAcount"]=0;
+	      			result[p]=handObj;
+      		   	}
+
+    			return result;
+    		}
+
+    		function handleData(sData){
+    			//area,OnlineSucPlay,Latency,timeProprot,
+    			var arr=new Array();
+    			for(var i=0;i<sData.length;i++){
+    				var objData=new Object();
+    				if(sData[i].area==1){
+    					if(gtop.DefProvinceID==1)
+    						objData["area"]=gtop.gpArea.location;
+    					else
+    						continue;
+    				}else if(sData[i].area==2){
+						// 未知区域,暂不显示
+    					continue;
+    				}else{
+						var pos=sData[i].area-2;
+						if(gtop.gpArea.areaList[pos].id==sData[i].area){
+							objData["area"]=gtop.gpArea.areaList[pos].location;
+						}else{
+							for(pos=0;pos<gtop.gpArea.areaList.length;pos++)
+								if(gtop.gpArea.areaList[pos].id==sData[i].area){
+									objData["area"]=gtop.gpArea.areaList[pos].location;
+									break;
+								}
+						}
+    				}
+    				var arrsingle=new Array();
+    				var tests=gtop.gpPlatform;
+    				for(var j=0;j<sData[i].row.length;j++){
+    					var objSingle=new Object();
+    					if(mType==4){
+// 	    					if(sData[i].row[j].key=="live"){
+// 	    						objSingle["area"]="直播";
+// 	    					}else if(sData[i].row[j].key=="vod"){
+// 	    						continue;
+// 	//     						objSingle["area"]="点播";
+// 	    					}
+    					}else if(mType==2){
+    						if(sData[i].row[j].key=="-1")
+    							objSingle["area"]="-1";
+    						else{
+    							if(!gtop.getPlatform(sData[i].row[j].key))
+	    							continue;
+	    						objSingle["area"]=gtop.gpPlatform[sData[i].row[j].key].name;
+    						}
+    					}else if(mType==3){
+    						if(sData[i].row[j].key=="-1")
+    							objSingle["area"]="-1";
+    						else{
+	    						for(var k=0;k<gtop.gpDevicePro.length;k++){
+	    							if(sData[i].row[j].key==gtop.gpDevicePro[k].id){
+	    								objSingle["area"]=gtop.gpDevicePro[k].name;
+	    								break;
+	    							}
+	    						}
+    						}
+    					}else if(mType==mOperatorVal){
+    						if(sData[i].row[j].key=="-1")
+    							objSingle["area"]="-1";
+    						else if(gtop.gsCompany!=gtop.gpSiHua){
+   								objSingle["area"]=gtop.gpNetwork.Operators[sData[i].row[j].key];
+    						}else{
+    							objSingle["area"]=mOperatorCols[sData[i].row[j].key];
+    						}
+    					}
+    					if(sData[i].row[j].SucProgCnt!=-1&&sData[i].row[j].TotProgCnt!=0){
+    						objSingle["OnlineSucPlay"]=((sData[i].row[j].SucProgCnt/sData[i].row[j].TotProgCnt)*100).toFixed(2);
+        				}else{
+        					objSingle["OnlineSucPlay"]=0;
+        				}
+        				if(sData[i].row[j].Latency!=-1)
+        					objSingle["Latency"]=(sData[i].row[j].Latency/1000).toFixed(0);
+        				else
+        					objSingle["Latency"]=0;
+						//卡顿时间单位us 下载时间单位s
+        				if(sData[i].row[j].TotDownSecs!=0){
+        					var timeProprot=parseInt(sData[i].row[j].TotFreezeUs)/(parseInt(sData[i].row[j].TotDownSecs)*1000000)*100;
+	        				objSingle["timeProprot"]=Math.abs(timeProprot.toFixed(2));
+        				}
+						if(objSingle.area!=noticeInfos[6]&&objSingle.area)
+        					arrsingle.push(objSingle);
+    				}
+   					objData["row"]=arrsingle;
+    				arr.push(objData);
+    			}
+    			return arr;
+    		}
+    		var mbIncludeShanXi=false;
+    		var mLocationNum=0;
+    		function setSelectLocation(){
+    			mbIncludeShanXi=false;
+    			//selected location
+                var items = $("#areaMiguName").combobox('getValues');
+                var str = "";
+                for (var i = 0; i < items.length; i++) {
+                    //如果
+                    if(items[i]==8&&gtop.gsCompany==gtop.gpSiHua){
+                        mbIncludeShanXi=true;
+                        // continue;
+                    }
+                    str += items[i];
+                    if(i<items.length-1) str += ",";
+                }
+                return str;
+// 		      	mpParam.location=$("#id_area").val();
+
+    		}
+
+    		function setSelectPlatform(){
+    			//selected location
+                var items = $("#platMiguForm").combobox('getValues');
+		      	var str = "";
+		      	for (var i = 0; i < items.length; i++) {
+		          str += items[i];
+		          if(i<items.length-1) str += ",";
+		      	}
+		      	if(gtop.gsCompany==gtop.gpSiHua&&mpParam.dimension=="operator"){
+		      		if(str.indexOf("2",0)!=-1&&str.indexOf("1",0)==-1)
+		      			str="2";
+		      		else if(str.indexOf("1",0)!=-1&&str.indexOf("2",0)==-1)
+		      			str="1";
+		      	}
+		      	mpParam.platform=str;
+    		}
+
+    		function setTime(start,end){
+    			var date = new Date();
+                var hour=date.getHours();
+        		var sec=date.getTime()/1000-86400;
+        		var curDate,preDate;
+
+    			date = new Date((sec - start * 86400) * 1000);
+				curDate = date.format("yyyy-MM-dd");
+				date = new Date((sec - end * 86400) * 1000);
+				preDate = date.format("yyyy-MM-dd");
+        		document.getElementById("id_dateFrom").value = preDate;
+				document.getElementById("id_dateTo").value = curDate;
+
+				if(mIndex==1){
+                    for(var i=0;i<24;i++){
+                        if(i<10){
+                            $("#num1").append(new Option("0"+i,i));
+                            $("#num2").append(new Option("0"+i,i));
+                        }else{
+                            $("#num1").append(new Option(i,i));
+                            $("#num2").append(new Option(i,i));
+                        }
+                    }
+                    document.getElementById("num1").value=00;
+                    document.getElementById("num2").value=hour;
+				}
+    	    }
+
+            function changeType(index) {
+				if(index==1){
+                    $("#num1").css("display","inline");
+                    $("#num2").css("display","inline");
+                    $(".la_hour").css("display","inline");
+                    $("#id_label_dateTo")[0].style.left="465px";
+                    $("#id_area")[0].style.left="500px";
+                    $("#id_label_area")[0].style.left="605px";
+                    $("#dimenType")[0].style.left="635px";
+                    $("#id_platform")[0].style.left="740px";
+                    $("#id_create")[0].style.left="870px";
+                    $("#id_export")[0].style.left="960px";
+				}else{
+                    $("#num1").css("display","none");
+                    $("#num2").css("display","none");
+                    $(".la_hour").css("display","none");
+                    $("#id_label_dateTo")[0].style.left="365px";
+                    $("#id_area")[0].style.left="395px";
+                    $("#id_label_area")[0].style.left="500px";
+                    $("#dimenType")[0].style.left="535px";
+                    $("#id_platform")[0].style.left="630px";
+                    $("#id_create")[0].style.left="765px";
+                    $("#id_export")[0].style.left="850px";
+				}
+            }
+
+            var mIndex=2;
+    		this.onChangeDate = function(event){
+        		var index=event.currentTarget.selectedIndex;
+        		if(index<0)
+        			return;
+        		var selKey=event.currentTarget.selectedOptions[0].value;
+
+        		switch(selKey){
+	        		case "curweek":{
+	        		    if(mIndex==1){
+                            mIndex=2;
+                            changeType(mIndex);
+						}
+						setTime(0,6);
+						break;
+					}
+					case "preweek":{
+                        if(mIndex==1){
+                            mIndex=2;
+                            changeType(mIndex);
+                        }
+						setTime(7,13);
+						break;
+					}
+					case "curmonth":{
+                        if(mIndex==1){
+                            mIndex=2;
+                            changeType(mIndex);
+                        }
+						setTime(0,29);
+						break;
+					}
+					case "premonth":{
+                        if(mIndex==1){
+                            mIndex=2;
+                            changeType(mIndex);
+                        }
+						setTime(30,59);
+						break;
+					}
+					case "curhour":{
+                        mIndex=1;
+                        changeType(mIndex);
+                        setTime(-1,-1);
+						break;
+					}
+        		}
+    		}
+    		//获取导出的数据
+    		function getFileData(){
+    			var strData="";
+    			for(var i=0;i<mFinalData.length;i++){
+    				var tmpdata=mFinalData[i];
+    				for(var j=0;j<tmpdata.row.length;j++){
+    					strData+=tmpdata.area+"#";
+    					if(tmpdata.row[j].area!="-1")
+    						strData+=tmpdata.row[j].area+"#";
+                        if(typeof(tmpdata.row[j].Latency)!="undefined"){
+                            strData+=tmpdata.row[j].Latency+"#";
+                        }else{
+                            strData+="#";
+                        }
+                        if(typeof(tmpdata.row[j].DownSpeed)!="undefined"){
+                            strData+=tmpdata.row[j].DownSpeed+"#";
+                        }else{
+                            strData+="#";
+                        }
+                        if(typeof(tmpdata.row[j].EPGLoadSuc)!="undefined"){
+                            strData+=tmpdata.row[j].EPGLoadSuc+"#";
+                        }else{
+                            strData+="#";
+                        }
+
+
+
+    					if(typeof(tmpdata.row[j].OnlineSucPlay)!="undefined"){
+    						strData+=tmpdata.row[j].OnlineSucPlay+"#";
+    					}else{
+    						strData+="#";
+    					}
+
+    					if(typeof(tmpdata.row[j].timeProprot)!="undefined"){
+    						strData+=tmpdata.row[j].timeProprot+"#";
+    					}else{
+    						strData+="#";
+    					}
+
+    					if(typeof(tmpdata.row[j].wifiAcount)!="undefined"){
+    						strData+=tmpdata.row[j].wifiAcount+"#";
+    					}else{
+    						strData+="#";
+    					}
+    					if(typeof(tmpdata.row[j].UnitTCaton)!="undefined"){
+    						strData+=tmpdata.row[j].UnitTCaton+"#";
+    					}else{
+    						strData+="#";
+    					}
+    					if(typeof(tmpdata.row[j].CatonAcount)!="undefined"){
+    						strData+=tmpdata.row[j].CatonAcount+"#";
+    					}else{
+    						strData+="#";
+    					}
+    					if(typeof(tmpdata.row[j].EPGLoadDelay)!="undefined"){
+    						strData+=tmpdata.row[j].EPGLoadDelay+"#";
+    					}else{
+    						strData+="#";
+    					}
+
+                        if(typeof(tmpdata.row[j].EPGRequests)!="undefined"){
+                            strData+=tmpdata.row[j].EPGRequests+"#";
+                        }else{
+                            strData+="#";
+                        }
+                        if(typeof(tmpdata.row[j].EPGReponses)!="undefined"){
+                            strData+=tmpdata.row[j].EPGReponses+"#";
+                        }else{
+                            strData+="#";
+                        }
+
+    					if(typeof(tmpdata.row[j].LoginSuc)!="undefined"){
+    						strData+=tmpdata.row[j].LoginSuc+"@";
+    					}else{
+    						strData+="@";
+    					}
+    				}
+    			}
+    			return strData.substring(0,strData.length-1);
+    		}
+    		//导出报表
+    		this.exportData=function(){
+    		//	document.execCommand('SaveAs');  //命令的效果，只是这个命令只能在IE内核下运行。
+    		/* 	var fileInput = document.getElementById("SaveFile");//隐藏的file文本框ID
+    			fileInput.click(); */
+    		//	var test=window.open("../output.csv");
+    			var obj=new Object();
+    			var type=reportSID.reportTitle.split(",");
+    			obj["tabledata"]=getFileData();
+    			obj["title"]=reportMiguSID.mpGridCol_text;
+    			obj["tableType"]="MiGu";
+    			//添加变量用以判断导出的Excel表前两列是否需要合并
+    			obj["platform"]=bMerge;
+    			var param=JSON.stringify(obj);
+    			param=param.replace(/%/g,"%25");
+    			$.ajax({complete:gComplete,
+    				url:"reportaction!SaveMiguFile.action",
+    				type:"post",
+    				data:"paramData="+param,
+    				datatype:"json",
+    				success:(function(data){
+    					mDownFilName=data.resultData;
+    					downFile();
+    				})
+    			});
+    		}
+    		function downFile(){
+    			var sTime = new Date().format("yyyyMMdd");
+    			window.open("../temp/"+sTime+"/"+mDownFilName);
+    		}
+    		var mDimenIDs;
+    		//根据当前省份，取出当前省份对一个的Dimensionality值
+    		this.getDimenIDs=function(){
+                var mpParam=new Object();
+    		    var secFrom;
+    		    var secTo;
+                if(mIndex==1){
+                    secFrom=document.getElementById("id_dateFrom").value+" "+$('#num1 option:selected').val()+":00:00";
+                    secTo=document.getElementById("id_dateTo").value+" "+$('#num2 option:selected').val()+":00:00";
+                    mpParam.secFrom=secFrom;
+                    mpParam.secTo=secTo;
+                }else{
+                    secFrom=document.getElementById("id_dateFrom").value;
+                    secTo=document.getElementById("id_dateTo").value;
+                    mpParam.secFrom=secFrom+" 00:00:00";
+                    mpParam.secTo=secTo+" 00:00:00";
+                }
+				if(secFrom==null||secTo==null){
+					alert($.parseJSON(gtop.getSIDText("misc")).timeError2);
+					return;
+				}
+				mpParam.locId=setSelectLocation();//$('#id_area option:selected').val();
+				mpParam.type=mType;
+                mpParam.tablename="qvodsum";
+    			$.ajax({complete:gComplete,
+    				url:"reportaction!returnDimenIDs.action",
+    				type:"post",
+    				data:"paramData="+JSON.stringify(mpParam),
+    				datatype:"json",
+    				success:(function(data){
+   						mDimenIDs=data.resultData;
+						setDimenVals();
+    				})
+    			});
+    		}
+    		function setDimenVals(){
+    			if(mType==2){
+    				setPlatform();
+    			}else if(mType==3){
+    				setDevPro();
+    			}else if(mType==mOperatorVal){
+    				setOperators();
+    			}
+    		}
+    		//维度切换
+    		var mType=2;
+    		this.onChangeType = function(event){
+    			var index=event.currentTarget.selectedIndex;
+        		if(index<0)
+        			return;
+        		var selKey=event.currentTarget.selectedOptions[0].value;
+        		mpParam.dimension=selKey;
+        		switch(selKey){
+        			case "platform":{
+        				mType=2;
+        				break;
+        			}
+//         			case "programtype":{
+//         				mType=4;
+//         				$("#id_platform").jqxComboBox({disabled: true});
+//         				break;
+//         			}
+        			case "devProtype":
+        				mType=3;
+        				break;
+        			case "operator":
+        				mType=5;
+        		}
+        		this.getDimenIDs();
+    		}
+    	}
+
+    </script>
+
 	<style type="text/css">
-		body,html{
-			overflow: hidden;
-			overflow-x: hidden;
-			overflow-y: hidden;
-			border: none;
-			margin: 0px;
-			padding: 0px;
-			width: 100%;
-			height: 100%;
-			background-color: #0096cb;
+		table.altrowstable {
+			font-family: verdana,arial,sans-serif;
+			font-size:11px;
+			color:#333333;
+			border-width: 1px;
+			border-color: #CCCCCC;
+			border-collapse: collapse;
 		}
-
-		#gMainFrm,#topContainer1 {
-			margin: 0px;
-			overflow: hidden;
-			overflow-x: hidden;
-			overflow-y: hidden;
-		}
-
-		#gToolbar {
-			height: 27px;
-			list-style-type: none;
-			margin: 0;
-			padding: 0px;
-			font-weight: normal;
-			text-align: left;
-			vertical-align:middle;
-			background-repeat: no-repeat;
-			width: 100%;
-			background-size:100% 100%;
-			background-image: url("asset/ico/toolbar.png");
-		}
-
-		#div_views {
-			margin-top: 0px;
-			height: 100%;
-			width: 100%;
-			overflow: hidden;
-			overflow-x: hidden;
-			overflow-y: hidden;
-		}
-
-		#navigation {
-			float: left;
-			padding-left: 5px;
-			color: #fff;
-		}
-
-		#imgUpdate {
-			vertical-align: middle;
-			width: 23px;
+		table.altrowstable th {
+			background:#b5cfd2 url('../resources/css/images/table_header.png');
+			font-weight:normal;
+			border-width: 1px;
+			border-style: solid;
+			border-color: #CCCCCC;
+			border-left-color: #CCCCCC;
 			height: 23px;
-			cursor: pointer;
 		}
-
-		#refresh {
-			vertical-align: middle;
-			/* 	box-shadow:10px 10px 5px #000000; */
-			width: 23px;
+		table.altrowstable td {
+			border-width: 1px;
+			border-style: solid;
+			border-top-color:#ffffff;
+			border-bottom-color:#ffffff;
+			border-right-color:#CCCCCC;
+			border-left-color: #CCCCCC;
 			height: 23px;
-			cursor: pointer;
+		}
+		table.altrowstable thead{
+			font-weight:normal;
+			background-color: #DDEBF4;
+		}
+		.oddrowcolor{
+			background-color:#FFFFFF;
+		}
+		.evenrowcolor{
+			background-color:#F7F7F7;
+		}
+		.advanced{
+			background-color:#DDEBF4;
+		}
+        .checkBox{
+            margin-left: 380px;
+            margin-top: -23px;
+        }
+		.checkBox2{
+			margin-left: 635px;
+			margin-top: -23px;
 		}
 
-		#div_net,#div_terminal,#div_dig,#div_conf,#div_report,#div_server,#div_program {
-			width: 100%;
-			height: 100%;
-		}
-
-		li {
-			list-style-type: none;
-			float:right;
-			padding-right:5px;
-		}
-
-		.showhint,.showhint1{
-			position:fixed;
-			top:0;
-			left:0;
-			width:100%;
-			height:100%;
-			display:none;
-			z-index:999999;
-			background:rgba(238,238,238,0.6);
-		}
-
-		.div_hint{
-			position:fixed;
-			border: solid 0.5px #bdb8b8;
-			top:45%;
-			left:45%;
-			margin:-60px 0 0 -100px;
-			width:200px;
-			z-index:999;
-			background:#fff;
-		}
-		.div_hint1{
-			position:fixed;
-			border: solid 0.5px #bdb8b8;
-			top:50%;
-			left:51%;
-			margin:-60px 0 0 -100px;
-			width:200px;
-			z-index:999;
-			background:#fff;
-		}
-		.hint_title,.hint_title1{
-			padding-left:10px;
-			height:27px;
-			line-height:27px;
-			background:#82c1e2;
-			font-size:12px;
-			color:#fff;
-			border-top:1px solid #529dc4;
-		}
-
-		.hint_content,.hint_content1{
-			padding:12px 0;
-			text-align:center;
-			font-size:12px;
-			line-height:1.5;
-		}
-
-		.reset_label{
-			margin-left:50px;
-		}
-
-		.reset_input{
-			margin-left:25px;
-		}
-
-		.hint_btn,.hint_btn1{
-			padding:3px 0;
-			text-align:center;
-			margin-bottom:10px;
-		}
-		.topView{
-			position: absolute !important;
-			top: 0 !important;
-			left: 0 !important;
-			width: 100% !important;
-			height: 100% !important;
-		}
-
-		#hint_cancel{
-			margin-left: 15px;
-		}
-
-		.CmdWinTitle{
-			width: 472px;
-			height: 30px;
-			margin-top: -8px;
-			margin-left: -10px;
-		}
-		.ProDetailWin{
-			width: 870px;
-			height: 30px;
-			margin-top: -8px;
-			margin-left: -10px;
-		}
-		/* 进度条 */
-		.loadBar {
-			width: 250px;
-			height: 7px;
-			border: 3px solid #212121;
-			border-radius: 20px;
-			position: relative;
-			margin-top: 60px;
-		}
-
-		.loadBar div {
-			width: 100%;
-			height: 100%;
-			position: absolute;
-			top: 0;
-			left: 0;
-		}
-
-		.loadBar div span,.loadBar div i {
-			box-shadow: inset 0 -2px 6px rgba(0, 0, 0, .4);
-			width: 0%;
-			display: block;
-			height: 100%;
-			position: absolute;
-			top: 0;
-			left: 0;
-			border-radius: 20px;
-		}
-
-		.loadBar div i {
-			width: 100%;
-			-webkit-animation: move .8s linear infinite;
-			background: -webkit-linear-gradient(left top, #7ed047 0%, #7ed047 25%, #4ea018 25%,#4ea018 50%, #7ed047 50%, #7ed047 75%, #4ea018 75%, #4ea018 100%);
-			background-size: 40px 40px;
-		}
-		.loadBar .percentNum {
-			position: absolute;
-			top: 100%;
-			right: 0%;
-			padding: 1px 15px;
-			border-bottom-left-radius: 16px;
-			border-bottom-right-radius: 16px;
-			border: 1px solid #222;
-			background-color: #222;
-			color: #fff;
-		}
-		#div_login{
-			position: relative;
-			width: 100%;
-			height: 100%;
-			border: 1px solid #000;
-		}
-		.middle,#divProcess1{
-			position: absolute;
-			top: 42%;
-			left: 48%;
-			transform: translate(-50%,-50%);
-		}
-		#divProcess1{
-			position: absolute;
-			margin-top:160px;
-			left:51%;
-			transform: translate(-50%,-50%);
-		}
 	</style>
 </head>
-<body>
-<div id="div_login" style="display: block;">
-	<div id="div_noPwd" class="middle" style="display: block;">
-		<div style="position: absolute;">
-			<div style="text-align: center;"><img alt="icon" src="asset/ico/evqmaster.png" /></div>
-		</div>
-	</div>
-	<div id="divProcess1" class="loadBar" style="display: block;">
-		<div><span class="percent"><i></i></span></div>
-		<span class="percentNum">0%</span>
-	</div>
-</div>
-<div id="topContainer" style="display: none;">
-	<div id="gHeader">
-		<iframe id="header" name="header" src="header.html"></iframe>
-	</div>
-	<div>
-		<div id="topContainer1">
-			<div id="div_indexLeft" style="width: 20px; height: 100%">
-				<iframe style="z-index: 10;" src="index_frame.html"
-						id="indexLeft" name="indexLeft"></iframe>
-			</div>
-			<div>
-				<div id="gMainFrm" style="margin-top: 0px">
-					<div id="gToolbar">
-						<!-- iframe id="maintoolbar" name="maintoolbar" width="100%" height="100%" style="z-index: 20;" src="maintoolbar.html"></iframe> -->
+<body onmousedown="whichButton(event)">
+<div style="height:100%">
+	<div class="css_search_bar" style="color: #242424;">
+		<select id="id_datetype" onchange="mpReportMigu.onChangeDate(event);">
+			<option id="id_curweek" value="curweek"></option>
+			<option id="id_preweek" value="preweek"></option>
+			<option id="id_curmonth" value="curmonth"></option>
+			<option id="id_premonth" value="premonth"></option>
+			<option id="id_curhour" value="curhour"></option>
+		</select>
+		<input id="id_dateFrom" type="date" value="2016-05-18" width="100" onchange="mpReportMigu.getDimenIDs()" />
+		<select id="num1" style="display: none"></select>
+		<label class="la_hour" style="display: none"></label>
+		<label> ~ </label>
+		<input id="id_dateTo" type="date" value="2016-05-19" width="100" onchange="mpReportMigu.getDimenIDs()" />
+		<select id="num2" style="display: none"></select>
+		<label class="la_hour" style="display: none"></label>
+		<label id="id_label_dateTo" style="position: fixed; left: 350px;top: 4px;"></label>
 
-						<ul id="myul" style="margin-top: 4px; padding-left: 0px">
-							<li id="navigation"><span id="id_title"></span></li>
-							<li><img
-									id="refresh" src="asset/ico/refresh.png" alt="刷新"
-									width="25" height="25" onClick="changeUpDate(true);" /></li>
-							<li><img
-									id="imgUpdate" alt="update" src="asset/ico/connect.png"
-									width="25" height="25" onClick="changeUpDate(false);" /></li>
-							<li>
-								<div>
-									<div id="divTime"></div>
-								</div>
-							</li>
-							<li>
-								<div>
-									<select id="divType" style="width:70px;background-image:url(./asset/btn-bg-hover.png);background-size:cover;" onchange="changeDayOrHour();"></select>
-								</div>
-							</li>
-							<li>
-								<div>
-									<select id="selectDBFrom" style="display:none;width:70px;background-image:url(./asset/btn-bg-hover.png);background-size:cover;" onchange="changeSelectDB();">
-										<option>分省</option>
-										<option>基地</option>
-										<option>混合</option>
-									</select>
-								</div>
-							</li>
+		<!--<div id="id_area" style="width:100px;position: fixed; left: 385px;top: 0px;"></div>-->
+<!-- 		<select id="id_area" style="margin-left:35px" onchange="mpReportMigu.getDimenIDs()"></select> -->
 
-						</ul>
+        <div class="checkBox">
+            <input style="width:100px;position: fixed; left: 385pxpx;top: 0px;" class="easyui-combobox" name="areaMiguName"
+                   id="areaMiguName"/>
+        </div>
 
-					</div>
-					<!-- 便于调试 <-- 搜索   -->
-					<div id="div_views">
-						<div id="div_net" style="display: block;">
-							<iframe id="iframe_network" name="network" style="z-index: 10;"
-									src="network/network.html"></iframe>
-						</div>
-						<div id="div_terminal" style="display: none;">
-							<iframe id="iframe_terminal" name="terminal" style="z-index: 10;"
-									src="terminal/terminalView.html"></iframe>
-						</div>
-						<div id="div_dig" style="display: none;">
-							<iframe id="iframe_dig" name="failure" style="z-index: 10;"
-									src="failureDig/failureManage.html"></iframe>
-						</div>
-						<div id="div_server" style="display: none;">
-							<iframe id="iframe_server" name="server" style="z-index: 10;"
-									src="server/serverManage.html"></iframe>
-						</div>
-						<div id="div_program" style="display: none;">
-							<iframe id="iframe_program" name="program" style="z-index: 10;"
-									src="program/programManage.html"></iframe>
-						</div>
-						<div id="div_report" style="display: none;">
-							<iframe id="iframe_report" name="report" style="z-index: 10;"
-									src="report/reportMain.html"></iframe>
-						</div>
-						<div id="div_conf" style="display: none;">
-							<iframe id="iframe_conf" name="config" style="z-index: 10;"
-									src="configview/config.html"></iframe>
-						</div>
-					</div>
-				</div>
-			</div>
+
+		<label id="id_label_area" style="position: fixed; left: 490px;top: 4px;"></label>
+		<select id="dimenType" style="width:100px;position: fixed; left: 525px;top: 0px;"
+			onchange="mpReportMigu.onChangeType(event);">
+			<option id="id_platform_area" value="platform"></option>
+<!-- 			<option id="id_programtype_area" value="programtype"></option> -->
+			<option id="id_deviceprovider_area" value="devProtype"></option>
+			<option id="id_operator" value="operator"></option>
+		</select>
+		<!--<div id="id_platform" style="width:120px;position: fixed; left: 635px;top: 0px;"></div>-->
+
+		<div class="checkBox2">
+			<input style="width:120px;position: fixed; left: 635pxpx;top: 0px;" class="easyui-combobox" name="platMiguForm"
+				   id="platMiguForm"/>
 		</div>
+
+		<button id="id_create" class="buttonStyle" style="width:80px;position: fixed; left: 760px;top: 0px;"
+			onclick="mpReportMigu.onGenerate()"></button>
+		<button id="id_export" class="buttonStyle" onclick="mpReportMigu.exportData()" style="width:80px;position: fixed; left: 845px;top: 0px;">
+			<img alt="export" src="../asset/ico/export.png" width="14" height="14"><label id="btn_export" ></label>
+		</button>
 	</div>
+	<div id="id_body" style="overflow:auto;"></div>
 </div>
-<div class="showhint">
-	<div class="div_hint">
-		<div class="hint_title"><label id="title_msg"></label></div>
-		<div class="hint_content" id='content_div'>
-			<label id="content_msg"></label>
-			<input type="text" id="content_info">
-		</div>
-		<div class="hint_reset" id="content_reset">
-			<div style="margin-top:15px;">
-				<label class="reset_label" id="content_old"></label>
-				<input class="reset_input" type="password" id="content_oldtext">
-			</div>
-			<div style="margin-top:10px;">
-				<label class="reset_label" id="content_new"></label>
-				<input class="reset_input" type="password" id="content_newtext">
-			</div>
-			<div style="margin-top:10px;margin-bottom:12px;">
-				<label class="reset_label" id="content_pwd"></label>
-				<input class="reset_input" type="password" id="content_pwdtext">
-			</div>
-		</div>
-		<div class="hint_btn">
-			<button id="hint_ensure" class="buttonStyle" onclick="onEnsure();"></button>
-			<button id="hint_cancel" class="buttonStyle" onclick="onCancel();"></button>
-		</div>
-	</div>
-</div>
-<div class="showhint1">
-	<div class="div_hint1">
-		<div class="hint_title1"><label id="title_msg1"></label></div>
-		<div class="hint_content1" id='content_div1'><label id="content_msg1" style="margin:10px;"></label></div>
-		<div class="hint_btn1">
-			<button id="hint_ensure1" class="buttonStyle" onclick="onEnsure1();"></button>
-		</div>
-	</div>
-</div>
-<div id="showTips" style="position: absolute; background-color:#F0E68C;font-size:12px"></div>
 </body>
+</html>
