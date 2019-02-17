@@ -390,7 +390,7 @@ email_content = '<br>OTT峰值时间段: ' + ott_peak_period + \
                 + '</br><br>IPTV峰值时间段: ' + iptv_peak_period +\
                 '; IPTV峰值流用户数: {:.2f}万人; IPTV峰值流速: {:.2f}Gbps; IPTV利用率: {:.2f}%。'\
                     .format(max_user/10000, max_rate, max_rate/IPTV_total_capacity*100) + '</br>'
-email_content = '(' + startTime + ')' + email_content
+# email_content = '(' + startTime + ')' + email_content
 # 邮件表格
 table_content = """<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <table border="" style="border-collapse: collapse; text-align: center">
