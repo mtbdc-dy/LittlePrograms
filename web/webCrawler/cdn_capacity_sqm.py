@@ -33,14 +33,17 @@ def sqm_nei(cookie):
 
 
     f = ww.post_web_page(url, form, cookie)
-    print(f)
+    # print(f)
     nei_json = json.loads(f)
 
-    print(nei_json)
-    print(nei_json.keys())
-    print(nei_json['resultData'])
-    print(type(nei_json['resultData']))
-    nei_json = json.loads(f)
+    # print(nei_json)
+    # print(nei_json.keys())
+    # print(nei_json['resultData'])
+    # print(type(nei_json['resultData']))
+    data_json = json.loads(nei_json['resultData'])
+    # print(nei_json)
+    print(data_json['vod'])
+
 
     # EPG响应时长
     return
