@@ -1,6 +1,6 @@
 import json
 
-# 卡顿时长占比 = 卡顿时长 / 下载时长
+# 卡顿时长占比 = 卡顿时长 / 下载时长 ???
 # 电视卡顿用户占比 Done Above
 # 卡顿次数占比 = lag_times/(total_times-lag_times)
 # 首帧缓冲时长
