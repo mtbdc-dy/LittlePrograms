@@ -405,7 +405,7 @@ max_user = float(max_user)                          # IPTV人数
 # 邮件正文
 title = 'DoNotReply 互联网电视指标' + date
 email_content = '<br>OTT峰值时间段: ' + ott_peak_period + \
-                '; OTT峰值流用户数: {:.2f}万人; OTT峰值流速: {:.2f}Gbps; OTT利用率: {:.2f}%;'\
+                '; OTT峰值流用户数: {:.2f}万人; OTT峰值流速: {:.2f}Gbps; OTT利用率: {:.2f}%。'\
                 .format(maxStreamSTBs/10000, ott_max_rate, ott_max_rate/OTT_total_capacity*100) \
                 + '</br><br>IPTV峰值时间段: ' + iptv_peak_period +\
                 '; IPTV峰值流用户数: {:.2f}万人; IPTV峰值流速: {:.2f}Gbps; IPTV利用率: {:.2f}%。'\
