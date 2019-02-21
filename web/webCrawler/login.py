@@ -1,4 +1,4 @@
-# keep this file local, please!!!
+# keep this file local, please!
 
 import web.webCrawler.webcrawler as ww
 import random
@@ -372,7 +372,7 @@ def fonsview_mean(nd, ndb):
 
 if __name__ == '__main__':
 
-    print(fonsview_mean(7, 8))
+    print(utm())
     print()
 
 
