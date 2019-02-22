@@ -45,28 +45,25 @@ def login_wangluoquanjingkeshihua():
     return cookie
 
 
-def zte_anyservice_uniportal():
+def zte_cdn_omc():
     cookie = 'ERROR'
-    url = 'https://117.135.56.61:8443/frame/loginOut.action'
+    url = 'https://39.134.88.198:8443/frame/loginOut.action'
     cj = ww.get_cookie_without_form(url)  # 这个函数默认输出结果
     for item in cj:
         cookie = item.name + '=' + item.value
     print(cookie)
 
     # cookie = 'JSESSIONID=4CD5A39212EAA84F77E3BE9817B6AC09'
-    url = 'https://117.135.56.61:8443/authimg'
+    url = 'https://39.134.88.198:8443/authimg'
     ww.get_validate_code(url, cookie)
 
-    url = 'https://117.135.56.61:8443/frame/login.action'
+    url = 'https://39.134.88.198:8443/frame/login.action'
 
     pwd = input('输入验证码，谢谢')
-    # 字段没匹配
-    # 字段没匹配
-    # 字段没匹配
 
     form = {
         'authCodeable': 'false',
-        'password': 'tgNxV4VE9BlKZXt1G6f9CQ==',
+        'password': 'uhwKs+gkcar7DaaGuXAiW59bly4=',
         'userName': 'super',
         'validateCode': pwd
     }
@@ -372,7 +369,7 @@ def fonsview_mean(nd, ndb):
 
 if __name__ == '__main__':
 
-    print(utm())
+    print(zte_cdn_omc())
     print()
 
 

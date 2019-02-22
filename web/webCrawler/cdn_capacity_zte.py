@@ -70,6 +70,8 @@ writer_zte = csv.writer(g_zte)
 n_days = int(input('想取多少天数据？: '))
 print(len(NODE_DICT) * n_days, 'requests will be sent.')
 
+cookie = wl.zte_anyservice_uniportal_v2()
+
 for i in range(n_days):
     now = datetime.datetime.now()
     delta = datetime.timedelta(days=n_days-i)
@@ -79,7 +81,6 @@ for i in range(n_days):
     startTime = ts.strftime('%Y-%m-%d')  # 调整时间格式
     endTime = te.strftime('%Y-%m-%d')  # 调整时间格式
 
-    cookie = wl.zte_anyservice_uniportal_v2()
     max_rate = list()
     mean_rate = list()
     max_user = list()
