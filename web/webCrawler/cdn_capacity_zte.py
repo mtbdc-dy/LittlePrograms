@@ -44,16 +44,20 @@ def query_ottnode_zte(n, cookie):
     f = ww.post_web_page_ssl(url, form, cookie)
     encodedjson = json.loads(f)
     # unit单位 upstreamband回源带宽
+    # print(encodedjson.keys())
+    # for item in encodedjson.keys():
+    #     print(max(encodedjson[item]))
+    # exit()
     upstreamband = max(encodedjson['upstreamband'])
     concurrent = max(encodedjson['concurrent'])
-    bandwidth = max(encodedjson['bandwidth'])
+    bandwidth = max(encodedjson['bandwidth'])   # date rate
     mean = sum(encodedjson['bandwidth'])/len(encodedjson['bandwidth'])
 
     # 数值小的时候 传过来的单位会变
     if encodedjson['unit'] == 'Mbps':
-        return round(float(bandwidth) / 1024, 2), round(mean / 1024, 2)
+        return round(float(bandwidth) / 1024, 2), round(mean / 1024, 2), concurrent
     else:
-        return float(bandwidth), round(mean, 2)
+        return float(bandwidth), round(mean, 2), concurrent
     # 数值小的时候 传过来的单位会变
     # if encodedjson['unit'] == 'Mbps':
     #     return concurrent, round(float(bandwidth)/1024, 2), round(mean/1024, 2), upstreamband/1024
@@ -61,7 +65,7 @@ def query_ottnode_zte(n, cookie):
     #     return concurrent, float(bandwidth), mean, upstreamband
 
 
-g_zte = open('cdn_rate_zte.csv', 'a', newline='')
+g_zte = open('cdn_rate_zte.csv', 'a', newline='', encoding='gbk')
 writer_zte = csv.writer(g_zte)
 n_days = int(input('想取多少天数据？: '))
 print(len(NODE_DICT) * n_days, 'requests will be sent.')
@@ -78,14 +82,16 @@ for i in range(n_days):
     cookie = wl.zte_anyservice_uniportal_v2()
     max_rate = list()
     mean_rate = list()
+    max_user = list()
     for j in NODE_DICT.keys():
-        max_rate_tmp, mean_rate_tmp = query_ottnode_zte(j, cookie)
+        max_rate_tmp, mean_rate_tmp, max_user_tmp = query_ottnode_zte(j, cookie)
         max_rate.append(max_rate_tmp)
         mean_rate.append(mean_rate_tmp)
-
+        max_user.append(max_user_tmp)
     csv_content_zte = [startTime]
     csv_content_zte.extend(max_rate)
     csv_content_zte.extend(mean_rate)
+    csv_content_zte.extend(max_user)
     writer_zte.writerow(csv_content_zte)
     print(i)
     print(csv_content_zte)
