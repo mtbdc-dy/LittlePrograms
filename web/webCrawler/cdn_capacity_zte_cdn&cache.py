@@ -13,9 +13,12 @@ import myPackages.mailtools
 import csv
 import json
 
+# servicebandwidthArray.push(linearray[i].servicevolume * 1.024 * 1.024 * 8 / 300);
+
 NODE_DICT = {
-        'Cache': '1',
-        'CDN': '2',
+        'bcs': 'BIGCACHE',
+        'scs': 'SMALLcache',
+        'CDN': 'QQcache'
     }
 
 
@@ -26,9 +29,10 @@ def query_ottnode_zte(n, cookie):
         'beginDate': startTime + ' 00:00:00',
         'endDate': endTime + ' 00:00:00',
         'areaid': '',
+        'nodeid': NODE_DICT[n],
         'deviceid': '',
         'apptype': '',
-        'servicemode': NODE_DICT[n],
+        'servicemode': '',
         'cachetype': '',
         'domaintype': '1',
         'domain': '',
@@ -42,8 +46,8 @@ def query_ottnode_zte(n, cookie):
     for item in encodedjson['message']['linearray']:
         # print(item['servicevolume'])
         service_rate.append(item['servicevolume'])
-
-    return round(max(service_rate) / 1024 / 1024 / 1024, 2)
+    print(max(service_rate))
+    return round(max(service_rate) / 1000 / 1000 / 1000 / 300 * 8, 2)
 
 
 g_zte = open('cdn_rate_zte_cdn.csv', 'a', newline='', encoding='gbk')
