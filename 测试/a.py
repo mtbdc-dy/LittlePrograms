@@ -11,11 +11,14 @@ picture_path = 'validateCode.jpeg'
 
 def part1():
     img = plt.imread(picture_path)
+    plt.ion()
     plt.imshow(img)
+    plt.ioff()
     plt.show()
-    print(img)
-    # plt.ion()
+    # print(img)
+
     print(1)
+
     return
 
 
