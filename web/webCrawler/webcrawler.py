@@ -12,8 +12,8 @@ import ssl
 import datetime
 from PIL import Image   # 这个包叫pillow就很奇怪
 import socket
-
-
+import threading
+import matplotlib.pyplot as plt
 # print('from the webcrawler.py')
 
 
@@ -144,8 +144,19 @@ def get_validate_code(*url):
         g = open(filename, 'wb')
         g.write(f)
         g.close()
-        im = Image.open("validateCode0.jpeg")
-        im.show()
+
+        def part1():
+            img = plt.imread("validateCode0.jpeg")      # 用pyplot会快很多呀
+            plt.imshow(img)
+            plt.show()
+            # im = Image.open("validateCode0.jpeg")
+            # im.show()
+
+        # 单开一个线程打开图片
+        t = threading.Thread(target=part1)
+        t.setDaemon(True)  # 设置为后台线程，这里默认是False，设置为True之后则主线程不用等待子线程
+        t.start()
+
 
 
 # return validate code

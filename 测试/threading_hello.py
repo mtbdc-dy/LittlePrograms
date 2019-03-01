@@ -1,10 +1,9 @@
 import matplotlib.pyplot as plt
 from PIL import Image
 import threading
-
 import myPackages.process_txt as mp
 import os
-import sys
+
 
 picture_path = 'validateCode.jpeg'
 
@@ -16,9 +15,7 @@ def part1():
     plt.ioff()
     plt.show()
     # print(img)
-
     print(1)
-
     return
 
 
@@ -26,10 +23,6 @@ def part2():
     a = Image.open(picture_path)
     a.show()
     return
-
-
-# Part1 plt
-# Part2 Image
 
 
 part1()
@@ -40,6 +33,7 @@ print('111')
 t.setDaemon(True)   # 设置为后台线程，这里默认是False，设置为True之后则主线程不用等待子线程
 t.start()
 exit()
+
 
 # 当前文件绝对路径
 print(os.path.dirname(os.path.abspath(__file__)))

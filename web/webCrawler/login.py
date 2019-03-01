@@ -253,7 +253,7 @@ def utm():
             cookie = 'JSESSIONID=' + item['value']
     # print(cookie)
 
-    driver.close()
+    driver.quit()
     return cookie
 
 
