@@ -252,7 +252,7 @@ def utm():
         if item['name'] == 'JSESSIONID':
             cookie = 'JSESSIONID=' + item['value']
     # print(cookie)
-
+    driver.close()
     driver.quit()
     return cookie
 
@@ -301,9 +301,11 @@ def fonsview():
     pw = driver.find_element_by_xpath('//*[@id="panel-16"]/div/plugin-component/panel-plugin-graph/grafana-panel/div/div[2]/ng-transclude/div/div[2]/div/div[1]/tbody/div[1]/div[4]')
     fh_mean_hz = pw.text.split(' ')[0]
 
-    driver.close()
+    # driver.close()
     print('峰值:', fh_hz)
     print('均值:', fh_mean_hz)
+    driver.close()
+    # driver.quit()
     return float(fx), float(yp), float(fh_hz), float(fh_mean_hz)
 
 
@@ -369,7 +371,7 @@ def fonsview_mean(nd, ndb):
 
 if __name__ == '__main__':
 
-    print(zte_cdn_omc())
+    print(fonsview())
     print()
 
 
