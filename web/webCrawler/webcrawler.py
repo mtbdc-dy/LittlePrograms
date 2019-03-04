@@ -447,3 +447,20 @@ def get_res_headers_ssl(url, cookie):
     print(response.url)
     f = response.read().decode("utf8")
     return f
+
+
+def test_without_proxy(url):
+    header = {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) '
+                      'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36',
+    }
+    # 伪装浏览器申请
+    request = urllib.request.Request(url, headers=header)
+    # 读取页面
+    response = urllib.request.urlopen(request)  # context=context
+    f = response.read().decode("utf8")
+    return f
+
+
+if __name__ == '__main__':
+    print(test_without_proxy('https://www.baidu.com/s?ie=UTF-8&wd=asd'))
