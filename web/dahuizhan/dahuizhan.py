@@ -136,7 +136,7 @@ if __name__ == '__main__':
     pre_update_day = datetime.datetime.strptime(table.col_values(0)[-1], '%Y-%m-%d')
     delta = now - pre_update_day - datetime.timedelta(days=1)       # 要查多少天
     if delta.days == 0:
-        print("Date is up-to-date.")
+        print("All data is up-to-date.")
         exit()
     elif delta.days < 0:
         print("Date Error")
