@@ -7,6 +7,7 @@ def bar():
 
 
 # 函数都是对象，所以既可以有属性，又可以作为属性
+# 函数的属性可以像对象一样任意赋值
 # 下面bar被定义为foo的属性
 foo.bar = bar
 foo.bar()
@@ -47,6 +48,7 @@ def print_msg(msg):
     return printer
 
 # Now let's try calling this function.
+# 返回值是一个函数
 # Output: Hello
 another = print_msg("Hello")
 another()
@@ -55,4 +57,8 @@ another()
 def a():
 
     return max(r for r in range(5))
+
+
+print(a())
+
 
