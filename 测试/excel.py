@@ -1,5 +1,6 @@
 import xlrd  # 读excel
 import xlwt  # 写excel
+from xlutils.copy import copy
 
 # '''写 excel start'''
 # filename = 'desc.xlsx'
@@ -26,10 +27,15 @@ import xlwt  # 写excel
 
 
 if __name__ == '__main__':
-    filename = 'Bras地址整理.xlsx'    # 文件名
+    filename = 'desc.xlsx'    # 文件名
 
-    f = xlrd.open_workbook(filename)    # 打开excel
-    table = f.sheet_by_name("Sheet1")   # 打开sheet
+    f = xlrd.open_workbook(filename, formatting_info=True)    # 打开excel
+    wb = copy(f)
+    table = wb.get_sheet(0)
+    ws = wb.get_sheet(0)
+    wb.save('excel_copy_hello.xls')
+    exit()
+    # table = f.sheet_by_name("Sheet1")   # 打开sheet
     nrows = table.nrows     # sheet的行数
     print(nrows)
 

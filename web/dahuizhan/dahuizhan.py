@@ -6,7 +6,7 @@
 
 
 """
-大会战指标统计
+大会战 采集部分
 从dahuizhan.xlsx上次记录至昨日。
 三部分：
     1、SQM
@@ -27,7 +27,7 @@ import web.webCrawler.login as wl
 
 
 # Constant
-filename = 'dahuizhan.xlsx'         # 文件名
+filename = 'dahuizhan.xls'         # 文件名
 
 companies = ['huawei', 'hy']        # 平面
 query_curl = {                          # elk_search query中语句
@@ -120,16 +120,20 @@ def elk_query(day_elk):
     return tmp_content
 
 
+def putian_query():
+    return
+
+
 if __name__ == '__main__':
     # 读excel
-    oldWb = xlrd.open_workbook(filename)
+    oldWb = xlrd.open_workbook(filename, formatting_info=True)
     table = oldWb.sheet_by_name("Sheet1")
     n_rows = table.nrows  # number of rows
     if n_rows == 1 or n_rows == 0:
         print("Error: NO EXCEL FOUND.")
         exit()
     newWb = copy(oldWb)  # 复制
-    newWs = newWb.get_sheet(0)  # 取sheet表
+    newWs = newWb.get_sheet(0)  # 取sheet1
 
     # 日期
     now = datetime.datetime.now()
