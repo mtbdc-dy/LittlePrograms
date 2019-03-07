@@ -34,6 +34,7 @@ query_curl = {                          # elk_search query中语句
     "2xx": {"wildcard": {"httpstatus": "2??"}},
     "3xx": {"wildcard": {"httpstatus": "3??"}},
     "4xx": {"wildcard": {"httpstatus": "4??"}},
+    # "text": {"wildcard": {"httpstatus": "text*"}},
     "all": {"match_all": {}}
 }
 
