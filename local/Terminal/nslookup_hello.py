@@ -6,7 +6,7 @@
 
 
 import os
-address = 'iphone.cmvideo.cn'
+address = 'hlsmgzblive.miguvideo.com'
 cmd = 'nslookup {} 211.136.150.66'.format(address)
 os.system(cmd)
 
