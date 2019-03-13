@@ -28,7 +28,7 @@ query_curl = {                          # elk_search query中语句
     "2xx": {"wildcard": {"httpstatus": "2??"}},
     "3xx": {"wildcard": {"httpstatus": "3??"}},
     "4xx": {"wildcard": {"httpstatus": "4??"}},
-    "all": {"match_all": {}}
+    "all": {"wildcard": {"httpstatus": "???"}}
 }
 
 # 日期相关
@@ -61,6 +61,7 @@ for cj in companies:
         my_form = {
             "query": query_curl[status]
         }
+        print(url, my_form)
         dict_tmp = requ_post(url, my_form)
         csv_content.append(dict_tmp['count'])
 
