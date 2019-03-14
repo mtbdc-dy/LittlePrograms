@@ -141,12 +141,7 @@ def sqm_117():
         'checkcode': pwd
     }
 
-    f = ww.post_web_page(url, form, cookie)
-    # print(f)
-    # url = 'http://117.144.107.165:8088/evqmaster/index.html'
-    # f = ww.get_web_page(url, cookie)
-    # print(f)
-    # http://117.144.107.165:8088/evqmaster/configaction!logout.action
+    ww.post_web_page(url, form, cookie)
     return cookie
 
 

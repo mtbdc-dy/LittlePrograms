@@ -21,6 +21,7 @@ import matplotlib.pyplot as plt
 
 
 def get_web_page(url, cookie=''):
+    print(cookie)
     header = {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) '
                       'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36',
@@ -111,13 +112,13 @@ def get_img_ssl(*url):
         'Cookie': url[1]
 
     }
-    proxy = {
-        'http': 'http://cmnet:cmnet@211.136.113.69:808'
-    }
-    # 挂代理Handler
-    proxy_support = urllib.request.ProxyHandler(proxy)
-    opener = urllib.request.build_opener(proxy_support)
-    urllib.request.install_opener(opener)
+    # proxy = {
+    #     'http': 'http://cmnet:cmnet@211.136.113.69:808'
+    # }
+    # # 挂代理Handler
+    # proxy_support = urllib.request.ProxyHandler(proxy)
+    # opener = urllib.request.build_opener(proxy_support)
+    # urllib.request.install_opener(opener)
     # 伪装浏览器申请
     request = urllib.request.Request(url[0], headers=header)
     # 读取页面
@@ -277,15 +278,6 @@ def post_web_page(url, my_form, cookie):
                       'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36',
         'Cookie': cookie
     }
-
-    # proxy = {
-    #     'http': 'http://cmnet:cmnet@211.136.113.69:808'
-    # }
-    # # 挂代理Handler
-    # proxy_support = urllib.request.ProxyHandler(proxy)
-    # opener = urllib.request.build_opener(proxy_support)
-    # urllib.request.install_opener(opener)
-    # 伪装浏览器申请
     request = urllib.request.Request(url, headers=header)
     # 编码
     form_data = urllib.parse.urlencode(my_form).encode('utf8')

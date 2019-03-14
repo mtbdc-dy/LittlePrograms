@@ -20,7 +20,7 @@ from bs4 import BeautifulSoup
 
 
 url = 'http://10.221.17.131:9091/report/bizman/common/report.jsp?timename=jiakuandahuizhan&reportType=&cac=5614146&iam=15614135&timename=jiakuandahuizhan&change=true&sid=null&reportFileName=1552455614217&iam=15614135&page=null&pageSizeCus=null&timetype=day&datefromto=2019-03-11~2019-03-12&bar=true'
-
+url = 'http://10.221.17.131:9091/report/bizman/common/report.jsp?timename=jiakuandahuizhan&reportType=&cac=5614146&iam=15614135&timename=jiakuandahuizhan&change=true&sid=null&reportFileName=1552455614217&iam=15614135&page=null&pageSizeCus=null&timetype=day&datefromto=2019-03-10~2019-03-11&bar=true'
 f = ww.get_web_page(url)
 soup = BeautifulSoup(f, "html.parser")
 avg_1st_screen_delay_web = soup.find(attrs={'id': 'td_jiakuandahuizhan_2_3'}).find(attrs={'style': 'cursor:text;'}).get_text()

@@ -34,8 +34,7 @@ query_curl = {                          # elk_search query中语句
     "2xx": {"wildcard": {"httpstatus": "2??"}},
     "3xx": {"wildcard": {"httpstatus": "3??"}},
     "4xx": {"wildcard": {"httpstatus": "4??"}},
-    # "text": {"wildcard": {"httpstatus": "text*"}},
-    "all": {"match_all": {}}
+    "all": {"wildcard": {"httpstatus": "???"}}
 }
 
 
@@ -116,6 +115,7 @@ def elk_query(day_elk):
             my_form = {
                 "query": query_curl[status]
             }
+            print(url, my_form)
             dict_tmp = requ_post(url, my_form)
             tmp_content.append(dict_tmp['count'])
     return tmp_content
@@ -124,9 +124,11 @@ def elk_query(day_elk):
 def putian_query(day_putian):
     startTime = day_putian.strftime('%Y-%m-%d')
     endTime = (day_putian + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+
     url = 'http://10.221.17.131:9091/report/bizman/common/report.jsp?timename=jiakuandahuizhan&reportType=&cac=56141' \
           '46&iam=15614135&timename=jiakuandahuizhan&change=true&sid=null&reportFileName=1552455614217&iam=15614135&' \
           'page=null&pageSizeCus=null&timetype=day&datefromto={}~{}&bar=true'.format(startTime, endTime)
+    print(url)
     f = ww.get_web_page(url)
     soup = BeautifulSoup(f, "html.parser")
     avg_1st_screen_delay_web = soup.find(attrs={'id': 'td_jiakuandahuizhan_2_3'}).find(
@@ -167,6 +169,7 @@ if __name__ == '__main__':
     # 日期
     now = datetime.datetime.now()
     pre_update_day = datetime.datetime.strptime(table.col_values(0)[-1], '%Y-%m-%d')
+    print(pre_update_day)
     delta = now - pre_update_day - datetime.timedelta(days=1)       # 要查多少天
     if delta.days == 0:
         print("All data is up-to-date.")

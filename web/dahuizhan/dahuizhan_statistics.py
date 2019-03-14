@@ -43,7 +43,6 @@ if __name__ == '__main__':
     now = datetime.datetime.now()
     if now.strftime("%w") != '3':
         print("Error: 不是礼拜三")
-        exit()
 
     first_day_of_the_month = now.strftime("%Y-%m") + "-01"
     # print(first_day_of_the_month)
