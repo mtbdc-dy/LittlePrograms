@@ -124,7 +124,7 @@ def get_img_ssl(*url):
     response = urllib.request.urlopen(request, context=context)
 
     f = response.read()
-    time.sleep(random.randint(2,3))
+    time.sleep(random.randint(1, 2))
     return f
 
 
@@ -225,14 +225,14 @@ def get_cookie_without_form(url):
         # 'Cookie': 'JSESSIONID=3276F5B76C95383468C71976890DF58C'     # 还不知是不是需要一个过期的cookie
         # 加了Cookie sqm第二次登录会有问题，暂不知是何原因
     }
-
-    proxy = {
-        'http': 'http://cmnet:cmnet@211.136.113.69:808'
-    }
-    # 挂代理Handler
-    proxy_support = urllib.request.ProxyHandler(proxy)
-    opener = urllib.request.build_opener(proxy_support)
-    urllib.request.install_opener(opener)
+    # [WinError 10061] 由于目标计算机积极拒绝，无法连接。>
+    # proxy = {
+    #     'http': 'http://cmnet:cmnet@211.136.113.69:808'
+    # }
+    # # 挂代理Handler
+    # proxy_support = urllib.request.ProxyHandler(proxy)
+    # opener = urllib.request.build_opener(proxy_support)
+    # urllib.request.install_opener(opener)
     # 伪装浏览器申请
     request = urllib.request.Request(url, headers=header)
     # 获取Cookie
@@ -241,6 +241,7 @@ def get_cookie_without_form(url):
     opener_cookie.open(request)
     # print(r.read().decode('utf-8'))
     # print(cj)
+    time.sleep(random.randint(1, 2))
     return cj
 
 
@@ -276,13 +277,14 @@ def post_web_page(url, my_form, cookie):
                       'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36',
         'Cookie': cookie
     }
-    proxy = {
-        'http': 'http://cmnet:cmnet@211.136.113.69:808'
-    }
-    # 挂代理Handler
-    proxy_support = urllib.request.ProxyHandler(proxy)
-    opener = urllib.request.build_opener(proxy_support)
-    urllib.request.install_opener(opener)
+
+    # proxy = {
+    #     'http': 'http://cmnet:cmnet@211.136.113.69:808'
+    # }
+    # # 挂代理Handler
+    # proxy_support = urllib.request.ProxyHandler(proxy)
+    # opener = urllib.request.build_opener(proxy_support)
+    # urllib.request.install_opener(opener)
     # 伪装浏览器申请
     request = urllib.request.Request(url, headers=header)
     # 编码

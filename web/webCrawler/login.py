@@ -6,6 +6,7 @@ import myPackages.number_base_conversion
 import myPackages.pic_processing as mp
 import myPackages.getime as md
 import time
+import requests
 import datetime
 import json  # eoms用json传了RSA公钥
 import rsa
@@ -121,13 +122,14 @@ def sqm_117():
     # 获取cookie
     url = 'http://117.144.107.165:8088/evqmaster/CheckCode'
     cj = ww.get_cookie_without_form(url)
+    cookie = ''
     for item in cj:
         cookie = item.name + '=' + item.value
-    # print(cookie)
+    print(cookie)
     # cookie = 'JSESSIONID=859D1BE9728F46E71C2B765186B593A1'
 
     # 获取验证码 加random 是为了改一下请求 那样就不会去缓存中获取这张图片了
-    url = 'http://117.144.107.165:8088/evqmaster/CheckCode'  # ?' + str(random.random())
+    url = 'http://117.144.107.165:8088/evqmaster/CheckCode?' + str(random.random())
     ww.get_validate_code(url, cookie)
     pwd = input('输入验证码，谢谢')
 
@@ -372,7 +374,7 @@ def fonsview_mean(nd, ndb):
 
 if __name__ == '__main__':
 
-    print(fonsview())
+    print(sqm_117())
     print()
 
 
