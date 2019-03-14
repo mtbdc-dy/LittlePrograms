@@ -7,7 +7,7 @@
 
 import csv
 
-filename = 'STB_JMMX_20190312050000_1.CSV'
+filename = 'STB_JMMX_20190311210000_4.CSV'
 filename_output = 'output_cname' + '.csv'
 
 f = open(filename, 'r')  # utf8   gb2312
