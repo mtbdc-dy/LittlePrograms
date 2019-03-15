@@ -1,6 +1,10 @@
 import myPackages.process_txt as pt
 
-"""IMPORTANT"""
+"""
+曾几何时，我看我自己写的代码都感觉有点高级了。竟没有一行注释...
+不能有冒号哦
+而且这个脚本是针对firefox的开发者工具
+"""
 mode = 1  # 1 for pc. 0 for mac
 
 if mode == 0:
@@ -21,16 +25,25 @@ else:
 
     print('{')
     for item in lines:
-        # print(item)
-        # print(item.split('\t'))
-        a = item.split('\t')
-        print('\'' + a[0] + '\': ', end='')
-        if len(a) == 1:
-            print('\'\',')
-        elif a[1] == '':
-            print('\'\',')
+        if '\t' in item:
+            # print(item.split('\t'))
+            a = item.split('\t')
+            print('\'' + a[0] + '\': ', end='')
+            if len(a) == 1:
+                print('\'\',')
+            elif a[1] == '':
+                print('\'\',')
+            else:
+                print('\'' + a[1] + '\',')
         else:
-            print('\'' + a[1] + '\',')
+            a = item.split(' ')
+            print('\'' + a[0] + '\': ', end='')
+            if len(a) == 1:
+                print('\'\',')
+            elif a[1] == '':
+                print('\'\',')
+            else:
+                print('\'' + a[1] + '\',')
 
     print('}')
 

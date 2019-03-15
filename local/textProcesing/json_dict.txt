@@ -1,42 +1,12 @@
-complaintType1ChoiceExpression	
-customPhoneStringExpression	like
-link.operateDeptId	10223
-link.operateRoleId
-link.operateUserId
-main.complaintType
-main.complaintType1
-main.complaintType2
-main.complaintType4
-main.complaintType5
-main.complaintType6
-main.complaintType7
-main.customPhone
-main.parentCorrelation
-main.sendDeptId
-main.sendRoleId
-main.sendTime
-main.sendUserId
-main.sheetId
-main.status
-main.title
-main.toDeptId
-method.save	提交
-operateDeptIdStringExpression	in
-operateRoleIdStringExpression	in
-operateUserIdStringExpression	in
-parentCorrelationStringExpression	like
-queryType	record
-sendDeptIdStringExpression	in
-sendRoleIdStringExpression	in
-sendTimeEndDate	2018-11-14+00:29:35
-sendTimeEndDateExpression	<=
-sendTimeLogicExpression	and
-sendTimeStartDate	2017-11-01+00:00:00
-sendTimeStartDateExpression	>=
-sendUserIdStringExpression	in
-sheetIdStringExpression	like
-showArea	
-statusChoiceExpression	
-task.taskName	
-titleStringExpression	like
-toDeptIdStringExpression	in
+offset 8
+beginDate 2019-03-15 00:00:00
+endDate 2019-03-15 15:46:30
+areaid
+nodeid SMALLcache
+deviceid
+servicemode
+cachetype
+inserttypeid
+terminalid
+ratetype
+domain
