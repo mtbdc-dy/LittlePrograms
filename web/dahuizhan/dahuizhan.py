@@ -24,6 +24,7 @@ import datetime
 from xlutils.copy import copy
 import time
 import web.webCrawler.login as wl
+import sys
 
 
 # Constant
@@ -160,7 +161,8 @@ if __name__ == '__main__':
     n_rows = table.nrows  # number of rows
     if n_rows == 1 or n_rows == 0:
         print("Error: NO EXCEL FOUND.")
-        exit()
+        input('Press any key to exit.')
+        sys.exit()
     newWb = copy(oldWb)  # 复制
     newWs = newWb.get_sheet(0)  # 取sheet1
 
@@ -171,10 +173,11 @@ if __name__ == '__main__':
     delta = now - pre_update_day - datetime.timedelta(days=1)       # 要查多少天
     if delta.days == 0:
         print("All data is up-to-date.")
-        exit()
+        input('Press any key to exit.')
+        sys.exit('Goodbye!')
     elif delta.days < 0:
         print("Date Error")
-        exit()
+        sys.exit()
     print('待查询的天数：', delta.days)
 
     # 查询准备
@@ -207,6 +210,8 @@ if __name__ == '__main__':
             newWs.write(n_rows + i, j, item)
         print()
     newWb.save(filename)  # 保存至result路径
+
+    input('Press any key to exit.')
 
 
 
