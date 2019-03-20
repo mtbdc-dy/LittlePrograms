@@ -31,9 +31,7 @@ filename = 'dahuizhan.xls'         # 文件名
 
 companies = ['huawei', 'hy']        # 平面
 query_curl = {                          # elk_search query中语句
-    "2xx": {"wildcard": {"httpstatus": "2??"}},
-    "3xx": {"wildcard": {"httpstatus": "3??"}},
-    "4xx": {"wildcard": {"httpstatus": "4??"}},
+    "5xx": {"wildcard": {"httpstatus": "5??"}},
     "all": {"wildcard": {"httpstatus": "???"}}
 }
 
