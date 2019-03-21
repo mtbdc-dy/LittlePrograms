@@ -15,6 +15,8 @@ from selenium.webdriver import Chrome
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver import ActionChains
 from selenium.common.exceptions import TimeoutException
+import ssl
+import urllib
 """
 """
 
@@ -265,37 +267,29 @@ def fonsview():
     pw = driver.find_element_by_xpath("//*[@id=\"inputPassword\"]")
     pw.send_keys("ShangHai!23+")
     pw.send_keys(Keys.ENTER)
+    time.sleep(2)
 
-    # 点击做上面的栏目
-    pw = driver.find_element_by_xpath('/html/body/grafana-app/div[2]/div/div/div/dashnav/div/div[1]/a')
+    # 地市入流量
+    driver.find_element_by_xpath("/html").send_keys('s', 'o')
+    pw = driver.find_element_by_xpath('/html/body/grafana-app/dashboard-search/div[2]/div[2]/div[1]/div/div[1]/dashboard-search-results/div[1]/div[3]/a/span[2]/div')
     pw.click()
 
-    # pw = driver.find_element_by_xpath('/html/body/grafana-app/div[2]/div/div/div/dashnav/dashboard-search/div[2]/div[2]/div[1]/div/div[1]/dashboard-search-results/div[8]/div[1]/span')
-    # print(pw.text)
-    # exit()
-
-    # 点击栏目下的网络监控
-    pw = driver.find_element_by_xpath('/html/body/grafana-app/div[2]/div/div/div/dashnav/dashboard-search/div[2]/div[2]/div[1]/div/div[1]/dashboard-search-results/div[7]/div[1]/span')
+    # 点击时间面板
+    pw = driver.find_element_by_xpath('/html/body/grafana-app/div/div/div/react-container/div/div[1]/div[5]/gf-time-picker/div/button[1]/span[1]')
     pw.click()
-    # 点击地市节点总量
-    pw = driver.find_element_by_xpath('/html/body/grafana-app/div[2]/div/div/div/dashnav/dashboard-search/div[2]/div[2]/div[1]/div/div[1]/dashboard-search-results/div[7]/div[3]/a[2]/span[2]')
-    pw.click()
-
-    # pw = driver.find_element_by_xpath('/html/body/grafana-app/div[2]/div/div/div/dashnav/dashboard-search/div[2]/div[2]/div[1]/div/div[1]/dashboard-search-results/div[8]/div[3]/a[2]/span[2]')
-    # pw.click()
-
-    pw = driver.find_element_by_xpath('/html/body/grafana-app/div[2]/div/div/div/dashnav/div/gf-time-picker/div/button[1]')
-    pw.click()
-    pw = driver.find_element_by_xpath('/html/body/grafana-app/div[2]/div/div/div/dashnav/div/gf-time-picker/div[2]/div/ul[2]/li[1]/a')
+    # 点击昨天
+    pw = driver.find_element_by_xpath('/html/body/grafana-app/div/div/div/react-container/div/div[1]/div[5]/gf-time-picker/div[2]/div[1]/div[2]/ul[2]/li[1]/a')
     pw.click()
     time.sleep(1)
-    pw = driver.find_element_by_xpath('//*[@id="panel-1"]/div/plugin-component/panel-plugin-graph/grafana-panel/div/div[2]/ng-transclude/div/div[2]/div/div[1]/tbody/div[1]/div[3]')
+
+    # 取数据
+    pw = driver.find_element_by_xpath('//*[@id="panel-1"]/div/div/div/plugin-component/panel-plugin-graph/grafana-panel/div/div[2]/ng-transclude/div/div[2]/div/div[1]/div/table/tbody/tr[1]/td[3]')
     fx = pw.text.split(' ')[0]
-    pw = driver.find_element_by_xpath('//*[@id="panel-17"]/div/plugin-component/panel-plugin-graph/grafana-panel/div/div[2]/ng-transclude/div/div[2]/div/div[1]/tbody/div[1]/div[3]')
+    pw = driver.find_element_by_xpath('//*[@id="panel-17"]/div/div/div/plugin-component/panel-plugin-graph/grafana-panel/div/div[2]/ng-transclude/div/div[2]/div/div[1]/div/table/tbody/tr[1]/td[3]')
     yp = pw.text.split(' ')[0]
-    pw = driver.find_element_by_xpath('//*[@id="panel-16"]/div/plugin-component/panel-plugin-graph/grafana-panel/div/div[2]/ng-transclude/div/div[2]/div/div[1]/tbody/div[1]/div[3]')
+    pw = driver.find_element_by_xpath('//*[@id="panel-16"]/div/div/div/plugin-component/panel-plugin-graph/grafana-panel/div/div[2]/ng-transclude/div/div[2]/div/div[1]/div/table/tbody/tr[1]/td[3]')
     fh_hz = pw.text.split(' ')[0]
-    pw = driver.find_element_by_xpath('//*[@id="panel-16"]/div/plugin-component/panel-plugin-graph/grafana-panel/div/div[2]/ng-transclude/div/div[2]/div/div[1]/tbody/div[1]/div[4]')
+    pw = driver.find_element_by_xpath('//*[@id="panel-16"]/div/div/div/plugin-component/panel-plugin-graph/grafana-panel/div/div[2]/ng-transclude/div/div[2]/div/div[1]/div/table/tbody/tr[1]/td[4]')
     fh_mean_hz = pw.text.split(' ')[0]
 
     print('峰值:', fh_hz)
@@ -307,6 +301,7 @@ def fonsview():
     return float(fx), float(yp), float(fh_hz), float(fh_mean_hz)
 
 
+# 这个废了
 def fonsview_mean(nd, ndb):
     driver = Chrome()
     driver.implicitly_wait(5)
@@ -367,9 +362,53 @@ def fonsview_mean(nd, ndb):
     return sum(fh_hz_mean)/len(fh_hz_mean)
 
 
+# 太烦了懒得写
+def fonsview_demo():
+    url = 'https://sh.csk.rhel.cc:3000/api/token'
+    context = ssl._create_unverified_context()
+    header = {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) '
+                      'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36',
+        'secret': 'pby7izcdgr'
+    }
+    proxy = {
+        'http': 'http://cmnet:cmnet@211.136.113.69:808'
+    }
+    # 挂代理Handler
+    proxy_support = urllib.request.ProxyHandler(proxy)
+    opener = urllib.request.build_opener(proxy_support)
+    urllib.request.install_opener(opener)
+    # 伪装浏览器申请
+    request = urllib.request.Request(url[0], headers=header)
+    # 读取页面
+    response = urllib.request.urlopen(request, context=context)
+    f = response.read().decode("utf8")
+    time.sleep(random.randint(0, 1))
+
+
+
+    url = 'https://sh.csk.rhel.cc:3000/login'
+    form = {
+        "password": "da9ffe54b2df76cf-fc441c7bec2bee8c4041da7e-1b42ecb96ff1eec4bb2ef085246ce09d5e985ab6fc60ce5ffe96c39d",
+        "email": "",
+        "user": "fonsview"
+    }
+    cj = ww.get_cookie(form, url, '')
+    print(cj)
+    exit()
+
+    url = 'https://sh.csk.rhel.cc:3000/api/datasources/proxy/1/api/v1/query_range?query=sum(irate(node_network_transmit_bytes_total%7Bdevice%3D~%22e.*%22%7D%5B5m%5D))%20%20*%208&start=1552838400&end=1553154300&step=300'
+
+
+    f = ww.get_web_page_ssl(url, 'grafana_session=dcd02f6093d59dc24866378ef57b32aa')
+    print(f)
+
+    return
+
+
 if __name__ == '__main__':
 
-    print(sqm_117())
+    print(fonsview_demo())
     print()
 
 
