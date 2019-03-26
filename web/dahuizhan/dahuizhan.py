@@ -30,7 +30,7 @@ import sys
 # Constant
 filename = 'dahuizhan.xls'         # 文件名
 
-companies = ['huawei', 'hy']        # 平面
+companies = ['huawei', 'hy', 'fonsview', 'zte']        # 平面
 query_curl = {                          # elk_search query中语句
     "5xx": {"wildcard": {"httpstatus": "5??"}},
     "all": {"wildcard": {"httpstatus": "???"}}
