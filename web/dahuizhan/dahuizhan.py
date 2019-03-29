@@ -125,6 +125,7 @@ def putian_query(day_putian):
     startTime = day_putian.strftime('%Y-%m-%d')
     endTime = (day_putian + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
 
+    # http://10.221.17.131:9091/report/bizman/common/result.jsp?timename=jiakuandahuizhan
     url = 'http://10.221.17.131:9091/report/bizman/common/report.jsp?timename=jiakuandahuizhan&reportType=&cac=56141' \
           '46&iam=15614135&timename=jiakuandahuizhan&change=true&sid=null&reportFileName=1552455614217&iam=15614135&' \
           'page=null&pageSizeCus=null&timetype=day&datefromto={}~{}&bar=true'.format(startTime, endTime)
