@@ -126,10 +126,12 @@ def putian_query(day_putian):
     endTime = (day_putian + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
 
     # http://10.221.17.131:9091/report/bizman/common/result.jsp?timename=jiakuandahuizhan
+    # http://10.221.17.131:9091/report/bizman/common/report.jsp?timename=jiakuandahuizhan&reportType=&cac=5614146&iam=15614135&timename=jiakuandahuizhan&change=true&sid=null&reportFileName=1552455614217&iam=15614135&page=null&pageSizeCus=null&timetype=day&datefromto=2019-04-03~2019-04-04&bar=true
     url = 'http://10.221.17.131:9091/report/bizman/common/report.jsp?timename=jiakuandahuizhan&reportType=&cac=56141' \
           '46&iam=15614135&timename=jiakuandahuizhan&change=true&sid=null&reportFileName=1552455614217&iam=15614135&' \
           'page=null&pageSizeCus=null&timetype=day&datefromto={}~{}&bar=true'.format(startTime, endTime)
     print(url)
+
     f = ww.get_web_page(url)
     soup = BeautifulSoup(f, "html.parser")
     avg_1st_screen_delay_web = soup.find(attrs={'id': 'td_jiakuandahuizhan_2_3'}).find(
