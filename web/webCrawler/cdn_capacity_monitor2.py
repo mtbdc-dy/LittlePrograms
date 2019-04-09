@@ -1,7 +1,7 @@
 ﻿import time
 import xlrd
 import random
-import urllib.error
+import urllib.error     # 这个检查inspection 只是说这个Code在Python 2.7(你系统默认的Python环境)上不会运行
 import urllib.request
 import urllib.parse
 import ssl
@@ -451,13 +451,12 @@ user = [
     'xuyuan2@sh.chinamobile.com', 'bianningyan@sh.chinamobile.com', 'chenlei5@sh.chinamobile.com',
     'huanglinling@sh.chinamobile.com', 'lilin2@sh.chinamobile.com', 'liujinlin@sh.chinamobile.com',
     'wuzhouhao@sh.chinamobile.com', 'xulingxia@sh.chinamobile.com', 'yanmin@sh.chinamobile.com',
-    'yuxf@sh.chinamobile.com', 'zhenj@sh.chinamobile.com', 'wangyinchao@sh.chinamobile.com'
+    'yuxf@sh.chinamobile.com', 'zhenj@sh.chinamobile.com', 'wangyinchao@sh.chinamobile.com',
     'zhangcheng2@sh.chinamobile.com', 'yushu@sh.chinamobile.com', 'zhengsen@sh.chinamobile.com',
     'zhouqihui@sh.chinamobile.com', 'chenhuanmin@sh.chinamobile.com', 'wuqian@sh.chinamobile.com',
     'yangjie@sh.chinamobile.com', 'xiongyt@sh.chinamobile.com', 'tanmiaomiao@sh.chinamobile.com',
     'wucaili@sh.chinamobile.com', 'dingy@sh.chinamobile.com', 'fenghongyu@sh.chinamobile.com',
-    'xuzicheng@sh.chinamobile.com', 'zhanghe@sh.chinamobile.com', 'sufeng@sh.chinamobile.com',
-    'zhangcheng2@sh.chinamobile.com'
+    'xuzicheng@sh.chinamobile.com', 'zhanghe@sh.chinamobile.com', 'sufeng@sh.chinamobile.com'
 ]
 # user = ['xuyuan2@sh.chinamobile.com'] # 调试用
 
