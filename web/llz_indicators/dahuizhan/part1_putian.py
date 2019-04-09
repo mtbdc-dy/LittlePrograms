@@ -21,7 +21,7 @@ from bs4 import BeautifulSoup
 
 url = 'http://10.221.17.131:9091/report/bizman/common/report.jsp?timename=jiakuandahuizhan&reportType=&cac=5614146&iam=15614135&timename=jiakuandahuizhan&change=true&sid=null&reportFileName=1552455614217&iam=15614135&page=null&pageSizeCus=null&timetype=day&datefromto=2019-03-11~2019-03-12&bar=true'
 url = 'http://10.221.17.131:9091/report/bizman/common/report.jsp?timename=jiakuandahuizhan&reportType=&cac=5614146&iam=15614135&timename=jiakuandahuizhan&change=true&sid=null&reportFileName=1552455614217&iam=15614135&page=null&pageSizeCus=null&timetype=day&datefromto=2019-03-10~2019-03-11&bar=true'
-
+url = 'http://10.221.17.131:9091/report/bizman/common/report.jsp?timename=jiakuandahuizhan&reportType=&cac=2762197&iam=12675442&timename=jiakuandahuizhan&change=true&sid=null&reportFileName=1554792716199&u=r&page=null&pageSizeCus=null&timetype=customday&datefromto=2019-04-02~2019-04-02'
 f = ww.get_web_page(url)
 soup = BeautifulSoup(f, "html.parser")
 # print(soup.prettify())  # 这很beautiful
