@@ -40,6 +40,8 @@ query_curl = {                          # elk_search query中语句
 
 def sqm_nei(cookie, day_sqm):
     startTime = day_sqm.strftime('%Y-%m-%d')
+    # 业务关键指标（首缓冲时延(ms)，EPG响应成功率(%)，在线播放成功率(%)，卡顿时间占比(%)，wifi接入占比(%)，卡顿次数占比(%)
+    # EPG响应时延(ms)，EPG响应总次数，EPG响应成功次数
     url = 'http://117.144.107.165:8088/evqmaster/report/reportaction!returnMiguData.action'
     form = {
         'paramData': '{\"secFrom\": \"' + startTime + ' 00:00:00\", \"secTo\": \"' + startTime + ' 00:00:00\", \"location\"'
@@ -50,7 +52,7 @@ def sqm_nei(cookie, day_sqm):
     tmp_dict = json.loads(f)
     sqm_dict = json.loads(tmp_dict['resultData'])
     # print(sqm_dict.keys())
-    fault = {0, 1, 2, 3, 4, 5, 6, 7, 8, 14, 15}
+    fault = {0, 1, 2, 3, 4, 5, 6, 7, 8, 14, 15}     # 14 就是 9 / 15 就是10
     list_count = list()
     list_total = list()
     for i in fault:
@@ -64,32 +66,123 @@ def sqm_nei(cookie, day_sqm):
         list_total.append(total_tmp)
     # print(list_total)
     # print(list_count)
+    # 先数据全部汇聚好，然后按公式算就成了 来来来欣赏一下飞思达的英文
+    # Latency	首缓冲时延
+    # DownSpeed	下载速率
+    # EPGLoadSuc	EPG响应成功率
+    # OnlineSucPlay	播放成功率
+    # timeProprot	卡顿时长占比
+    # wifiAcount	wifi接入占比
+    # UnitTCaton	单位时间(h)卡顿次数
+    # CatonAcount	卡顿次数占比(%)
+    # EPGLoadDelay	EPG响应时延(ms)
+    # EPGRequests	EPG响应总次数
+    # EPGReponses	EPG响应成功次数
+    # LoginSuc	登录成功率(%)
+    res = list()
 
-    # 卡顿时间占比 = 卡顿时长 / 下载时长
-    lag_duration = list_total[2] / 1000000
-    total_duration = list_total[6]
-    print('卡顿时间占比:', round(lag_duration / total_duration * 100, 2))
+    Latency = round(list_total[4]/list_count[4]/1000, 2)
+    DownSpeed = round(list_total[9]*8/list_total[6]/1024/1024, 2)
+    EPGLoadSuc = round(sqm_dict['epg'][0]['Responses'] / sqm_dict['epg'][0]['Requests'] * 100, 2)
+    OnlineSucPlay = round(list_total[8] / list_total[7] * 100, 2)
+    timeProprot = round(list_total[2] / 1000000 / list_total[6] * 100, 2)
 
-    # 卡顿次数占比 = 15 / 7 * 100
-    lag_times = list_total[10]
-    total_times = list_total[7]  # 播放节目数
-    print('卡顿次数占比:', round(lag_times / total_times * 100, 2))
+    access_wifi = 0
+    access_total = 0
+    for item in sqm_dict['net'][0]['DistStreamDevice'].split('@'):
+        tmp = item.split('#')
+        if tmp[0] == '2':
+            access_wifi = int(tmp[1])
+        access_total += int(tmp[1])
+    wifiAcount = round(access_wifi / access_total * 100, 2)
 
-    # 首帧缓冲时长
-    print('首帧缓冲时长(S):', round(list_total[4] / list_count[4] / 1000000, 2))  # 秒
+    UnitTCaton = round(list_total[3]*3600/list_total[6], 2)
+    CatonAcount = round(list_total[10]*100/list_total[7], 2)
+    EPGLoadDelay = round(sqm_dict['epg'][0]['TotEpgRspTime'] / sqm_dict['epg'][0]['CntEpgRspTime'] / 1000, 2)
+    EPGRequests = sqm_dict['epg'][0]['Requests']
+    EPGReponses = sqm_dict['epg'][0]['Responses']
+    LoginSuc = round(sqm_dict['epgSuc'][0]['Responses'] / sqm_dict['epgSuc'][0]['Requests'] * 100, 2)
+    res.extend([Latency, DownSpeed, EPGLoadSuc, OnlineSucPlay, timeProprot, wifiAcount, UnitTCaton, CatonAcount,
+                EPGLoadDelay, EPGRequests, EPGReponses, LoginSuc])
 
-    # 电视播放成功率
-    print('电视播放成功率', round(list_total[8] / list_total[7] * 100, 2))
+    # 用户卡顿分布
+    url = 'http://117.144.107.165:8088/evqmaster/report/reportaction!returnKpiData.action'
+    form = {
+        'paramData': '{\"location\": 4, \"secFrom\": \"' + startTime + ' 00:00:00\", \"secTo\": \"' + startTime + ' 00:00:00\", \"dimension\": \"1\", \"idfilter\": \"4\", \"type\": \"usercard\", \"dataType\": \"1\"}'
+    }
 
-    # EPG加载成功率 加载成功率 和 登录成功率
-    # print(sqm_dict['epg'])
-    # print(sqm_dict['epgSuc'])
-    print('EPG加载成功率', round(sqm_dict['epg'][0]['Responses'] / sqm_dict['epg'][0]['Requests'] * 100, 2))
+    f = ww.post_web_page(url, form, cookie)
+    tmp_index = f.find('GrnDevices')
+    f = f[tmp_index:]
+    tmp_normal_device = f[f.find(':') + 1:f.find(',')]
+    tmp_index = f.find('RedDevices')
+    f = f[tmp_index:]
+    tmp_red_device = f[f.find(':') + 1:f.find(',')]
+    tmp_index = f.find('YlwDevices')
+    f = f[tmp_index:]
+    tmp_ylw_device = f[f.find(':') + 1:f.find(',')]
+    tmp_index = f.find('BlueDevices')
+    f = f[tmp_index:]
+    f = f[f.find(':') + 1:]
+    tmp_blue_device = ''
+    for i in f:
+        if i.isdigit():
+            tmp_blue_device = tmp_blue_device + i
+        else:
+            continue
+    laggy_device_ratio = 100 - (float(tmp_normal_device) / (
+                float(tmp_normal_device) + float(tmp_blue_device) + float(tmp_ylw_device) + float(
+            tmp_red_device)) * 100)
+    res.append(round(laggy_device_ratio, 2))
 
-    # 卡顿时间占比, 首帧缓冲时长, 电视播放成功率, EPG加载成功率
-    return (round(lag_duration / total_duration * 100, 2),
-            round(list_total[4] / list_count[4] / 1000000, 2), round(list_total[8] / list_total[7] * 100, 2),
-            round(sqm_dict['epg'][0]['Responses'] / sqm_dict['epg'][0]['Requests'] * 100, 2))
+    # SQM峰值流用户数
+    # 系统特性 取某一日的值时需要始末日期一致
+    form = {
+        'paramData': '{\"location\": 4, \"secFrom\": \"' + startTime + ' 00:00:00\", \"secTo\": \"' + startTime + ' 00:00:00\", \"dimension\": \"1\",\"idfilter\": \"4\", \"type\": \"activeuser\", \"dataType\": \"1\"}'
+    }
+    url = 'http://117.144.107.165:8088/evqmaster/report/reportaction!returnKpiData.action'
+    f = ww.post_web_page(url, form, cookie)
+    # print(f)
+    tmp = f[f.find('maxStreamSTBs') + 18:]
+    maxStreamSTBs = f[f.find('maxStreamSTBs') + 18: f.find('maxStreamSTBs') + 18 + tmp.index('\\')]
+    res.append(maxStreamSTBs)
+
+    # SQM终端盒子总数
+    url = 'http://117.144.107.165:8088/evqmaster/networkaction!returnAreaDetailByID.action'
+    form = {
+        'paramData': '{\"id\":4,\"KPIUTCSec\":\"2000-01-01 00:00:00\",\"SampleInterval\":86400,\"ty'
+                     'pe\":\"2\",\"realtime\":\"realtime\"}'
+    }
+    f = ww.post_web_page(url, form, cookie)
+    tmp_index = f.find('上海市(')
+    tmp_index_ed = f[tmp_index:].find(')')
+    sum_box = f[tmp_index + 4:tmp_index + tmp_index_ed]
+    res.append(sum_box)
+
+    return res
+    # # 卡顿时间占比 = 卡顿时长 / 下载时长
+    # print('卡顿时间占比:', round(list_total[2] / 1000000 / list_total[6] * 100, 2))
+    #
+    # # 卡顿次数占比 = 15 / 7 * 100
+    # lag_times = list_total[10]
+    # total_times = list_total[7]  # 播放节目数
+    # print('卡顿次数占比:', round(lag_times / total_times * 100, 2))
+    #
+    # # 首帧缓冲时长
+    # print('首帧缓冲时长(S):', round(list_total[4] / list_count[4] / 1000000, 2))  # 秒
+    #
+    # # 电视播放成功率
+    # print('电视播放成功率', round(list_total[8] / list_total[7] * 100, 2))
+    #
+    # # EPG加载成功率 加载成功率 和 登录成功率
+    # # print(sqm_dict['epg'])
+    # # print(sqm_dict['epgSuc'])
+    # print('EPG加载成功率', round(sqm_dict['epg'][0]['Responses'] / sqm_dict['epg'][0]['Requests'] * 100, 2))
+    #
+    # # 卡顿时间占比, 首帧缓冲时长, 电视播放成功率, EPG加载成功率
+    # return (round(lag_duration / total_duration * 100, 2),
+    #         round(list_total[4] / list_count[4] / 1000000, 2), round(list_total[8] / list_total[7] * 100, 2),
+    #         round(sqm_dict['epg'][0]['Responses'] / sqm_dict['epg'][0]['Requests'] * 100, 2))
 
 
 def elk_query(day_elk):

@@ -39,6 +39,8 @@ def sqm_nei(cookie):
                      '\": false, \"bIncludeShanxi\": false}'
     }
     f = ww.post_web_page(url, form, cookie)
+    print(f)
+    exit()
     tmp_dict = json.loads(f)
     sqm_dict = json.loads(tmp_dict['resultData'])
     # print(sqm_dict.keys())
