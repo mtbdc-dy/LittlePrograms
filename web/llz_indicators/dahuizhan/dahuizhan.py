@@ -12,6 +12,8 @@
     1、SQM
     2、ELK
     3、普天拨测
+
+打包命令: pyinstaller -F -i img\f2.ico web\llz_indicators\dahuizhan\dahuizhan.py
 """
 
 import web.webCrawler.webcrawler as ww
@@ -82,7 +84,7 @@ def sqm_nei(cookie, day_sqm):
     res = list()
 
     Latency = round(list_total[4]/list_count[4]/1000, 2)
-    DownSpeed = round(list_total[9]*8/list_total[6]/1024/1024, 2)
+    # DownSpeed = round(list_total[9]*8/list_total[6]/1024/1024, 2)
     EPGLoadSuc = round(sqm_dict['epg'][0]['Responses'] / sqm_dict['epg'][0]['Requests'] * 100, 2)
     OnlineSucPlay = round(list_total[8] / list_total[7] * 100, 2)
     timeProprot = round(list_total[2] / 1000000 / list_total[6] * 100, 2)
@@ -94,16 +96,18 @@ def sqm_nei(cookie, day_sqm):
         if tmp[0] == '2':
             access_wifi = int(tmp[1])
         access_total += int(tmp[1])
-    wifiAcount = round(access_wifi / access_total * 100, 2)
+    # wifiAcount = round(access_wifi / access_total * 100, 2)
 
     UnitTCaton = round(list_total[3]*3600/list_total[6], 2)
     CatonAcount = round(list_total[10]*100/list_total[7], 2)
     EPGLoadDelay = round(sqm_dict['epg'][0]['TotEpgRspTime'] / sqm_dict['epg'][0]['CntEpgRspTime'] / 1000, 2)
     EPGRequests = sqm_dict['epg'][0]['Requests']
     EPGReponses = sqm_dict['epg'][0]['Responses']
-    LoginSuc = round(sqm_dict['epgSuc'][0]['Responses'] / sqm_dict['epgSuc'][0]['Requests'] * 100, 2)
-    res.extend([Latency, DownSpeed, EPGLoadSuc, OnlineSucPlay, timeProprot, wifiAcount, UnitTCaton, CatonAcount,
-                EPGLoadDelay, EPGRequests, EPGReponses, LoginSuc])
+    # LoginSuc = round(sqm_dict['epgSuc'][0]['Responses'] / sqm_dict['epgSuc'][0]['Requests'] * 100, 2)
+    # res.extend([Latency, DownSpeed, EPGLoadSuc, OnlineSucPlay, timeProprot, wifiAcount, UnitTCaton, CatonAcount,
+    #             EPGLoadDelay, EPGRequests, EPGReponses, LoginSuc])
+    res.extend([Latency, EPGLoadSuc, OnlineSucPlay, timeProprot, UnitTCaton, CatonAcount,
+                EPGLoadDelay, EPGRequests, EPGReponses])
 
     # 用户卡顿分布
     url = 'http://117.144.107.165:8088/evqmaster/report/reportaction!returnKpiData.action'
@@ -142,22 +146,9 @@ def sqm_nei(cookie, day_sqm):
     }
     url = 'http://117.144.107.165:8088/evqmaster/report/reportaction!returnKpiData.action'
     f = ww.post_web_page(url, form, cookie)
-    # print(f)
-    tmp = f[f.find('maxStreamSTBs') + 18:]
-    maxStreamSTBs = f[f.find('maxStreamSTBs') + 18: f.find('maxStreamSTBs') + 18 + tmp.index('\\')]
-    res.append(maxStreamSTBs)
-
-    # SQM终端盒子总数
-    url = 'http://117.144.107.165:8088/evqmaster/networkaction!returnAreaDetailByID.action'
-    form = {
-        'paramData': '{\"id\":4,\"KPIUTCSec\":\"2000-01-01 00:00:00\",\"SampleInterval\":86400,\"ty'
-                     'pe\":\"2\",\"realtime\":\"realtime\"}'
-    }
-    f = ww.post_web_page(url, form, cookie)
-    tmp_index = f.find('上海市(')
-    tmp_index_ed = f[tmp_index:].find(')')
-    sum_box = f[tmp_index + 4:tmp_index + tmp_index_ed]
-    res.append(sum_box)
+    tmp_dict = json.loads(f)
+    sqm_dict = json.loads(tmp_dict['resultData'])
+    res.extend([sqm_dict[0]['maxActiveSTBs'], sqm_dict[0]['maxStreamSTBs'], sqm_dict[0]['TotalDevices']])
 
     return res
     # # 卡顿时间占比 = 卡顿时长 / 下载时长
