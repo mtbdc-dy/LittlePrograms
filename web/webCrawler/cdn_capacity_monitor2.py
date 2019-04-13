@@ -280,46 +280,7 @@ tmp = f[f.find('maxStreamSTBs') + 18:]
 maxStreamSTBs = f[f.find('maxStreamSTBs') + 18: f.find('maxStreamSTBs') + 18 + tmp.index('\\')]
 print('峰值流用户数:', maxStreamSTBs)
 
-# SQM终端盒子总数
-url = 'http://117.144.107.165:8088/evqmaster/networkaction!returnAreaDetailByID.action'
-form = {
-    'paramData': '{\"id\":4,\"KPIUTCSec\":\"2000-01-01 00:00:00\",\"SampleInterval\":86400,\"ty'
-                 'pe\":\"2\",\"realtime\":\"realtime\"}'
-}
-f = ww.post_web_page(url, form, cookie)
-tmp_index = f.find('上海市(')
-tmp_index_ed = f[tmp_index:].find(')')
-sum_box = f[tmp_index+4:tmp_index + tmp_index_ed]
 
-# SQM故障用户占比
-url = 'http://117.144.107.165:8088/evqmaster/report/reportaction!returnKpiData.action'
-form = {
-    'paramData': '{\"location\": 4, \"secFrom\": \"' + startTime + ' 00:00:00\", \"secTo\": \"' + startTime + ' 00:00:00\", \"dimension\": \"1\", \"idfilter\": \"4\", \"type\": \"usercard\", \"dataType\": \"1\"}'
-}
-
-f = ww.post_web_page(url, form, cookie)
-tmp_index = f.find('GrnDevices')
-f = f[tmp_index:]
-tmp_normal_device = f[f.find(':')+1:f.find(',')]
-tmp_index = f.find('RedDevices')
-f = f[tmp_index:]
-tmp_red_device = f[f.find(':') + 1:f.find(',')]
-tmp_index = f.find('YlwDevices')
-f = f[tmp_index:]
-tmp_ylw_device = f[f.find(':') + 1:f.find(',')]
-tmp_index = f.find('BlueDevices')
-f = f[tmp_index:]
-f = f[f.find(':') + 1:]
-tmp_blue_device = ''
-for i in f:
-    if i.isdigit():
-        tmp_blue_device = tmp_blue_device + i
-    else:
-        continue
-laggy_device_ratio = 100 - (float(tmp_normal_device)/(float(tmp_normal_device)+float(tmp_blue_device)+float(tmp_ylw_device)+float(tmp_red_device)) * 100)
-
-
-# SQM取NEI相关
 # SQM取NEI相关
 def sqm_nei(cookie):
     url = 'http://117.144.107.165:8088/evqmaster/report/reportaction!returnMiguData.action'
@@ -374,7 +335,7 @@ def sqm_nei(cookie):
             round(sqm_dict['epg'][0]['Responses'] / sqm_dict['epg'][0]['Requests'] * 100, 2))
 
 
-lag_time_proportion, lag_count_proportion, first_frame_latency, tv_success_ratio, epg_success_ratio = sqm_nei(cookie)
+# lag_time_proportion, lag_count_proportion, first_frame_latency, tv_success_ratio, epg_success_ratio = sqm_nei(cookie)
 print()
 
 '''partX CMNET出口数据统计报表'''
@@ -442,9 +403,7 @@ table_content = """<meta http-equiv="Content-Type" content="text/html; charset=u
 csv_content = [startTime] + ['{:.2f}'.format(maxStreamSTBs/10000)] + ['{:.2f}'.format(ott_max_rate)] +\
               ['%.2f' % ott_mean_rate] + ['{:.2f}'.format(ott_max_rate/OTT_total_capacity*100)] +\
               ['{:.2f}'.format(max_user/10000)] + ['{:.2f}'.format(max_rate)] + ['{:.2f}'.format(mean_rate)] +\
-              ['{:.2f}'.format(max_rate/IPTV_total_capacity*100)] + ['{:.2f}'.format(laggy_device_ratio)] +\
-              [sum_box] + [lag_time_proportion] + [lag_count_proportion] + [first_frame_latency] + [tv_success_ratio] +\
-              [epg_success_ratio]
+              ['{:.2f}'.format(max_rate/IPTV_total_capacity*100)]
 print('email_content: ', email_content)
 # print('csv_content:', csv_content)
 user = [
