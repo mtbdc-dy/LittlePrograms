@@ -22,7 +22,7 @@ import time
 
 # Constant
 filename = 'dahuizhan.xlsx'         # 文件名
-companies = ['huawei', 'hy', 'zte', 'fonsview']        # 平面
+companies = ['zte', 'huawei', 'hy', 'fonsview']        # 平面
 # companies = []
 
 
@@ -44,8 +44,7 @@ def requ_post(u, form):
     request = urllib.request.Request(u, headers=header, data=json_info)
     response = urllib.request.urlopen(request)
     f = response.read().decode("utf8")
-    print(f)
-    exit()
+    # print(f)
     return json.loads(f)
 
 
@@ -73,10 +72,11 @@ for cj in companies:
     }
 
     print(url, my_form)
-
     dict_tmp = requ_post(url, my_form)
     print(dict_tmp)
+    elk_rate_dict = dict_tmp['aggregations']['group_by_time']['buckets']
 
-
-
+    a = lambda x: x['data_rate']['value']
+    print(round(max(list(map(a, [x for x in elk_rate_dict]))) / 1024 / 1024 / 1024 / 300 * 8, 2))
+    exit()
 
