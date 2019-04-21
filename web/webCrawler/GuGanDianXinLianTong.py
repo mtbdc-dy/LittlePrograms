@@ -39,13 +39,15 @@ Note!!!
 """
 n = 0
 
-# 爬取 网络全景可视化管控系统 ——业务分析
+# 爬取 网络全景可视化管控系统 ——业务分析(历史)
 # 入境流量
 file_name = 'gugandianxinliantong.csv'  # 输出文件名
 tb = '2018-06-04'   # default beginDate'2018-06-04'
 te = '2018-06-05'   # default endDate'2018-06-05'
 list = []   # 上海移动
 list_direct = []    # 上海移动直连
+list_outflow = []   # 出境流量
+list_direct_outflow = []    # 出境流量
 url = 'https://117.136.129.122/cmnet/viewAnaServiceList.htm'
 cookie = web.webCrawler.login.login_wangluoquanjingkeshihua()
 header = {
@@ -146,12 +148,14 @@ for i in range(7):
     response = urllib.request.urlopen(request, context=context)
     f = response.read().decode('UTF8')
     # print(f)
-    f = f[f.find("平均值")+62:f.find("平均值")+200]
-    ans = f[f.find('>')+1: f.find('>') + 11]
+    soup = BeautifulSoup(f, 'html.parser')
+    links = soup.find_all('td', align='right')
+    ans = links[8].get_text()
     ans = float(ans.replace(',', ''))
-    list.append(ans)
     print(ans)
-    time.sleep(random.randint(0, 2))
+    list.append(ans)
+    list_outflow.append(float(links[9].get_text().replace(',', '')))
+    time.sleep(random.randint(0, 1))
 
     # 用户群：上海移动直连
     #
@@ -168,16 +172,19 @@ for i in range(7):
     ans = float(ans.replace(',', ''))
     print(ans)
     list_direct.append(ans)
+    list_direct_outflow.append(float(links[9].get_text().replace(',', '')))
+
 
     # 存入CSV文件
-    row = [list[i]] + [list_direct[i]]
+    row = [list[i]] + [list_direct[i]] + [list_outflow[i]] + [list_direct_outflow[i]]
     writer.writerow(row)
-    time.sleep(random.randint(0, 2))
+    time.sleep(random.randint(0, 1))
 
 row = [sum(list)/len(list) + sum(list_direct)/len(list_direct)]
 writer.writerow(row)
 
 fo.close()
+
 print('run part 2')
 with open('GuGanDianXinLianTong_part2.py', 'r', encoding='UTF-8') as f:
     exec(f.read())

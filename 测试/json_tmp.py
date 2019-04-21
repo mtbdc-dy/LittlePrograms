@@ -14,7 +14,6 @@ tmp_dict = json.loads(s)
 "EDIT SCRIPT FROM HERE"
 elk_rate_dict = tmp_dict['aggregations']['group_by_time']['buckets']
 
-print(elk_rate_dict)
 
 a = lambda x: x['data_rate']['value']
 print(round(max(list(map(a, [x for x in elk_rate_dict])))/1024/1024/1024/300*8, 2))
