@@ -13,7 +13,7 @@
     2、ELK
     3、普天拨测
 
-打包命令: pyinstaller -F -i img\f2.ico web\llz_indicators\dahuizhan\dahuizhan.py
+打包命令: pyinstaller -F -i img\dahuizhan.ico web\llz_indicators\dahuizhan\dahuizhan.py
 """
 
 import web.webCrawler.webcrawler as ww
