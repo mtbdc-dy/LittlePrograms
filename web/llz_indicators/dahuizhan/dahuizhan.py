@@ -13,7 +13,7 @@
     2、ELK
     3、普天拨测
 
-打包命令: pyinstaller -F -i img\f2.ico web\llz_indicators\dahuizhan\dahuizhan.py
+打包命令: pyinstaller -F -i img\dahuizhan.ico web\llz_indicators\dahuizhan\dahuizhan.py
 """
 
 import web.webCrawler.webcrawler as ww
@@ -202,6 +202,38 @@ def elk_query(day_elk):
             print(url, my_form)
             dict_tmp = requ_post(url, my_form)
             tmp_content.append(dict_tmp['count'])
+
+    '''流量查询'''
+    for cj in companies:  # 厂家
+        url = 'http://117.144.106.34:5601/api/console/proxy?path=%2F{}_sh{}%2F_search%3Fsize%3D0&method=POST' \
+            .format(cj, yesterday)
+        my_form = {
+            "aggs": {
+                "group_by_time": {
+                    "date_histogram": {
+                        "field": "@timestamp",
+                        "interval": "5m",
+                        "format": "yyyy-MM-dd HH:mm"
+                    },
+                    "aggs": {
+                        "data_rate": {
+                            "sum": {
+                                "field": "filesize"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        print(url, my_form)
+        dict_tmp = requ_post(url, my_form)
+        print(dict_tmp)
+        elk_rate_dict = dict_tmp['aggregations']['group_by_time']['buckets']
+        a = lambda x: x['data_rate']['value']
+        tmp_content.append(round(max(list(map(a, [x for x in elk_rate_dict]))) / 1024 / 1024 / 1024 / 300 * 8, 2))
+        tmp_content.append(round(sum(list(map(a, [x for x in elk_rate_dict])))
+                                 / len(list(map(a, [x for x in elk_rate_dict]))) / 1024 / 1024 / 1024 / 300 * 8, 2))
+
     return tmp_content
 
 
