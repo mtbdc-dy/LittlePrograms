@@ -165,7 +165,7 @@ def huawei():
 
 print('华为：')
 huawei_ott, ott_peak_period, huawei_mean_ott = huawei()
-
+# huawei_ott, ott_peak_period, huawei_mean_ott = 103.87, '20:35-21:35', 52.4
 
 # p2 烽火
 def fenghuo():
