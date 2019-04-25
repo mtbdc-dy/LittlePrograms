@@ -108,36 +108,22 @@ def huawei():
 
     time_end = str(md.get_today_zero_stamp())
     time_start = str(int(time_end) - 24 * 3600)
-    # print(time_start, time_end)
-
-    # 奉贤分组
-    # url = 'https://39.134.87.216:31943/rest/pm/history'
-    # form = {
-    #     'param': r'{"pageIndex":1,"historyTimeRange":0,"beginTime":' + time_start + r'000,"endTime":' + time_end + r'000,"isGetGraphicGroupData":true,"mo2Index":"[{\"dn\":\"com.huawei.hvs.pop=2101535\",\"indexId\":\"11735\",\"displayValue\":\"\",\"aggrType\":2}]","pmViewPage":"historyPm","isQueryOriginal":false}'
-    # }
-    # # print(form)
-    # form_data = urllib.parse.urlencode(form).encode('utf8')
-    # f = post_ssl(url, form_data)
-    # # print(f)
-    # huawei_dict = json.loads(f)
-    # huawei_list = huawei_dict['result']['groupQueryData'][0][0]['indexValues']
-    # # print(huawei_list)
-    # HW_FX_ott_rate = list()
-    #
-    # for item in huawei_list:
-    #     HW_FX_ott_rate.append(float(item['indexValue']))
-    # HW_ott_rate = max(HW_FX_ott_rate)
-    # print(max(HW_FX_ott_rate))
 
     HW_ott_rate = 0
     url = 'https://39.134.87.216:31943/rest/pm/history'
+    # form = b'param=%7B%22pageIndex%22%3A1%2C%22historyTimeRange%22%3A0%2C%22beginTime%22%3A' +\
+    #        bytes(str(time_start), encoding='utf-8') + b'000%2C%22endTime%22%3A' +\
+    #        bytes(str(time_end), encoding='utf-8') +\
+    #        b'000%2C%22isGetGraphicGroupData%22%3Atrue%2C%22isMonitorView%22%3Atrue%2C%22mo2Index%22%3A%22%5B%7B%5C%22' \
+    #        b'dn%5C%22%3A%5C%22com.huawei.cdn.pop%3D21020e3%5C%22%2C%5C%22indexId%5C%22%3A%5C%2211735%5C%22%2C%5C%22di' \
+    #        b'splayValue%5C%22%3A%5C%22%5C%22%2C%5C%22aggrType%5C%22%3A2%7D%5D%22%7D'
     form = b'param=%7B%22pageIndex%22%3A1%2C%22historyTimeRange%22%3A0%2C%22beginTime%22%3A' +\
            bytes(str(time_start), encoding='utf-8') + b'000%2C%22endTime%22%3A' +\
            bytes(str(time_end), encoding='utf-8') +\
-           b'000%2C%22isGetGraphicGroupData%22%3Atrue%2C%22isMonitorView%22%3Atrue%2C%22mo2Index%22%3A%22%5B%7B%5C%22' \
-           b'dn%5C%22%3A%5C%22com.huawei.hvs.pop%3D2101531%5C%22%2C%5C%22indexId%5C%22%3A%5C%2211735%5C%22%2C%5C%22di' \
-           b'splayValue%5C%22%3A%5C%22%5C%22%2C%5C%22aggrType%5C%22%3A2%7D%5D%22%7D'
+           b'000%2C%22isGetGraphicGroupData%22%3Atrue%2C%22mo2Index%22%3A%22%5B%7B%5C%22dn%5C%22%3A%5C%22com.huawei.cdn.pop%3D21020e3%5C%22%2C%5C%22indexId%5C%22%3A%5C%2213256%5C%22%2C%5C%22displayValue%5C%22%3A%5C%22%5C%22%2C%5C%22aggrType%5C%22%3A2%7D%5D%22%2C%22pmViewPage%22%3A%22historyPm%22%2C%22isQueryOriginal%22%3Afalse%7D'
     # form = b'param=%7B%22pageIndex%22%3A1%2C%22historyTimeRange%22%3A0%2C%22beginTime%22%3A1546185600000%2C%22endTime%22%3A1546272000000%2C%22isGetGraphicGroupData%22%3Atrue%2C%22mo2Index%22%3A%22%5B%7B%5C%22dn%5C%22%3A%5C%22com.huawei.hvs.pop%3D2101535%5C%22%2C%5C%22indexId%5C%22%3A%5C%2211735%5C%22%2C%5C%22displayValue%5C%22%3A%5C%22%5C%22%2C%5C%22aggrType%5C%22%3A2%7D%5D%22%2C%22pmViewPage%22%3A%22historyPm%22%2C%22isQueryOriginal%22%3Afalse%7D'
+    # form = b'param=%7B%22pageIndex%22%3A1%2C%22historyTimeRange%22%3A0%2C%22beginTime%22%3A1556070480000%2C%22endTime%22%3A1556156880000%2C%22isGetGraphicGroupData%22%3Atrue%2C%22mo2Index%22%3A%22%5B%7B%5C%22dn%5C%22%3A%5C%22com.huawei.cdn.pop%3D21020e3%5C%22%2C%5C%22indexId%5C%22%3A%5C%2213256%5C%22%2C%5C%22displayValue%5C%22%3A%5C%22%5C%22%2C%5C%22aggrType%5C%22%3A2%7D%5D%22%2C%22pmViewPage%22%3A%22historyPm%22%2C%22isQueryOriginal%22%3Afalse%7D'
+
     f = post_ssl(url, form)
     # print(f)
     huawei_dict = json.loads(f)
