@@ -11,5 +11,7 @@ a.extend([2, 3])
 print(a)
 a.pop()
 
+b = [1, 2, 4, 0]
+b.sort()
 
-print(a)
+print(b)
