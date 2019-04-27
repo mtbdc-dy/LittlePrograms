@@ -1,34 +1,26 @@
+# -*- coding: utf-8 -*-
+# @Time : 2019/4/26,026 20:15
+# @Author : 徐缘
+# @FileName: add_zte_server_hosts_allow.py
+# @Software: PyCharm
+
+
 import paramiko
-import chardet
 import time
+import csv
+
+# sshd:211.136.99.92/255.255.255.255
+filename = 'zte_server_list.csv'
+f = open(filename, 'r')
+reader = csv.reader(f)
 
 
-"""
-API: http://docs.paramiko.org/en/2.4/api/channel.html?highlight=invoke_shell
-"""
-def hello():
-    # 创建SSH对象
-    ssh = paramiko.SSHClient()
-    # 允许连接不在know_hosts文件中的主机
-    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    # 连接服务器
-    ssh.connect('117.185.13.195', 22, 'llz@shmc', 'sw_76@Shmc')
-
-    # 执行命令
-    stdin, stdout, stderr = ssh.exec_command('dis arp')
-    # 获取命令结果
-    # print(type(stdout.read()))
-    print(str(stdout.read()))
-    ret = chardet.detect(stdout.read())
-    print(ret)
-    # 关闭连接
-    ssh.close()
-
-
-def swith_user():
+def swith_user(server_info):
+    print('最近台数： \033[32;0m{:d}\033[0mG'.format(server_info[0]))
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    ssh.connect('39.137.36.100', 22222, 'zxisec', 'SHYD@uss100')
+    # '39.137.36.100', 22222, 'zxisec', 'SHYD@uss100'
+    ssh.connect(server_info[0], server_info[1], server_info[2], server_info[3])
     channel = ssh.invoke_shell()
 
     channel.send("su - root\n")
@@ -38,7 +30,7 @@ def swith_user():
     time.sleep(2)                       # 中兴服务器不按套路出牌
     print(channel.recv(1024))           # maximum number of bytes to read.
 
-    channel.send("%s\n" % 'SHYD@uss100')
+    channel.send("%s\n" % server_info[4])
     while not channel.recv_ready():
         print("Authenticating...")
         time.sleep(5)
@@ -58,10 +50,12 @@ def swith_user():
 
     channel.send("%s\n" % "history")
     while not channel.recv_ready():
-        print("Restart sshd...")
+        print("show shell history...")
         time.sleep(2)
     print(channel.recv(1024))
 
 
-if __name__ == '__main__':
-    swith_user()
+for item in reader:
+    swith_user(item)
+
+
