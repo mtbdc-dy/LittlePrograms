@@ -2,6 +2,7 @@ import re
 import collections
 
 
+
 Line = '123ge-11/2/9asd'
 m = re.search(r'[A-Za-z]*-\d*/\d*/\d*', Line)
 # \w
@@ -21,3 +22,9 @@ common to the least.  If n is None, then list all element counts.
 '''
 res = collections.Counter(w for w in words if w not in ban).most_common(1)[0][0]
 print(res)
+print(2 ** 2, 2 ** 0.5)
+a = 2.2
+
+
+a = collections.deque()
+
