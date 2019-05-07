@@ -53,3 +53,13 @@ print(df1.A < 0.3)
 print(df1[df1.A < 0.3])     # 还有这种写法的啊??
 print(df1[df1.A < 0.3].B)   # 链式操作
 
+
+v = np.arange(1, 21)
+tx = pd.Series(v)
+tx.index = pd.date_range('2018-12-01', periods = 20, freq = "d")
+print(tx.index)
+# tf = tx.resample("4d").sum()
+# print(tx)
+# print(tf)
+
+tx.to_csv('pandas.csv')
