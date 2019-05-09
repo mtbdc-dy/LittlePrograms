@@ -2,6 +2,8 @@ from IPy import IP
 
 ip = IP('183.192.8.0/22')
 ip_1 = IP('183.192.12.0/22')
+
+
 print(ip + ip_1)
 print(ip.len())
 print(ip)
