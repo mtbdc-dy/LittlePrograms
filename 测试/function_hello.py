@@ -14,6 +14,7 @@ foo.bar()
 print(type(foo))
 
 
+# 闭包函数
 def deco(func):
     string = 'I am deco'
 

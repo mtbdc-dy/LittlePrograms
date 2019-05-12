@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Time : 2019/4/10,010 12:19
 # @Author : 徐缘
-# @FileName: array_hello.py
+# @FileName: list_hello.py
 # @Software: PyCharm
 
 
