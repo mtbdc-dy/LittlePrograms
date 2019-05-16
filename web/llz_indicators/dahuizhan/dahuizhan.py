@@ -227,7 +227,7 @@ def elk_query(day_elk):
         }
         print(url, my_form)
         dict_tmp = requ_post(url, my_form)
-        print(dict_tmp)
+        # print(dict_tmp)
         elk_rate_dict = dict_tmp['aggregations']['group_by_time']['buckets']
         a = lambda x: x['data_rate']['value']
         tmp_content.append(round(max(list(map(a, [x for x in elk_rate_dict]))) / 1024 / 1024 / 1024 / 300 * 8, 2))
