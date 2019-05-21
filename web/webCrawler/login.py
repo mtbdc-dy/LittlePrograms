@@ -17,6 +17,7 @@ from selenium.webdriver import ActionChains
 from selenium.common.exceptions import TimeoutException
 import ssl
 import urllib
+import http.cookiejar
 """
 """
 
@@ -406,9 +407,43 @@ def fonsview_demo():
     return
 
 
+# ELK
+def elk():
+    url = 'https://117.144.106.34:5601/api/v1/auth/login'
+    ssl._create_default_https_context = ssl._create_unverified_context
+    header = {
+        'Accept': 'application/json, text/plain, */*',
+        # 'Accept-Encoding': 'gzip, deflate, br',
+        # 'Accept-Language': 'zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+        'Content-Length': '54',
+        'Content-Type': 'application/json;charset=utf-8',
+        'Host': '117.144.106.34:5601',
+        'kbn-version': '6.6.1',
+        'Pragma': 'no-cache',
+        'Referer': 'https://117.144.106.34:5601/login?type=basicauthLogout',
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) '
+                      'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36',
+    }
+    form = {
+        'password': 'Cl0lTaULdjw0uVcH4S1N',
+        'username': 'admin'
+    }
+    post_data = urllib.parse.urlencode(form).encode('utf8')
+    request = urllib.request.Request(url, post_data, headers=header)
+    # 获取Cookie
+    cj = http.cookiejar.CookieJar()
+    opener_cookie = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
+    opener_cookie.open(request)
+    # print(r.read().decode('utf-8'))
+    print(cj)
+    return cj
+
+
 if __name__ == '__main__':
 
-    print(fonsview_demo())
+    print(elk())
     print()
 
 
