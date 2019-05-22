@@ -1,23 +1,27 @@
 # keep this file local, please!
 
-import web.webCrawler.webcrawler as ww
-import random
-import myPackages.number_base_conversion
-import myPackages.pic_processing as mp
-import myPackages.getime as md
 import time
-import requests
-import datetime
+import random
 import json  # eoms用json传了RSA公钥
 import rsa
 import base64
+import ssl
+import urllib.request
+import urllib.parse
+import urllib.error
+import http.cookiejar
 from selenium.webdriver import Chrome
 from selenium.webdriver.common.keys import Keys
+
+import web.webCrawler.webcrawler as ww
+import myPackages.number_base_conversion
+import myPackages.pic_processing as mp
+import myPackages.getime as md
+import requests
+import datetime
 from selenium.webdriver import ActionChains
 from selenium.common.exceptions import TimeoutException
-import ssl
-import urllib
-import http.cookiejar
+
 """
 """
 
@@ -410,19 +414,19 @@ def fonsview_demo():
 # ELK
 def elk():
     url = 'https://117.144.106.34:5601/api/v1/auth/login'
-    ssl._create_default_https_context = ssl._create_unverified_context
+    ssl._create_default_https_context = ssl._create_unverified_context      # 信任所有证书
     header = {
-        'Accept': 'application/json, text/plain, */*',
+        # 'Accept': 'application/json, text/plain, */*',
         # 'Accept-Encoding': 'gzip, deflate, br',
         # 'Accept-Language': 'zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2',
-        'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive',
-        'Content-Length': '54',
-        'Content-Type': 'application/json;charset=utf-8',
-        'Host': '117.144.106.34:5601',
+        # 'Cache-Control': 'no-cache',
+        # 'Connection': 'keep-alive',
+        # 'Content-Length': '54',
+        # 'Content-Type': 'application/json;charset=utf-8',
+        # 'Host': '117.144.106.34:5601',
         'kbn-version': '6.6.1',
-        'Pragma': 'no-cache',
-        'Referer': 'https://117.144.106.34:5601/login?type=basicauthLogout',
+        # 'Pragma': 'no-cache',
+        # 'Referer': 'https://117.144.106.34:5601/login?type=basicauthLogout',
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) '
                       'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36',
     }
@@ -436,15 +440,21 @@ def elk():
     cj = http.cookiejar.CookieJar()
     opener_cookie = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
     opener_cookie.open(request)
-    # print(r.read().decode('utf-8'))
-    print(cj)
-    return cj
+    # print(cj)
+    cookie = ''
+    for i, item in enumerate(cj):
+        if i == 0:
+            cookie = item.name + '=' + item.value
+        else:
+            cookie = cookie + '; ' + item.name + '=' + item.value
+    print(cookie)
+    return cookie
 
 
 if __name__ == '__main__':
-
-    print(elk())
+    elk()
     print()
+
 
 
 

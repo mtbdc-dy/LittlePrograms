@@ -265,17 +265,15 @@ def putian_query(day_putian):
 
 
 if __name__ == '__main__':
-    wl.elk()
-    exit()
+    elk_cookie = wl.elk()
     ssl._create_default_https_context = ssl._create_unverified_context
     form = {
         "query": {'match_all': {}}
     }
-
     json_info = bytes(json.dumps(form), 'utf8')
     header = {
         'Content-Type': 'application/json',
-        'Cookie': 'searchguard_authentication=Fe26.2**58b9b06dca6c80d397da9f2a8de3d0e8c443a22f743e68c5d6e19ab6f83722e0*ImAxfRbmIEfZRFUIXslNxw*pn8F9R3Vhjz5x9wqBEQZjGGHQTmIuX9dqLRtpRn2xF6ViIezM6rplIEvy7LhmACuNDc6j7Wc2lkd3tZUMEWD7Sp1eYTi_XDAH1kkdc-vdK0Aa_R8tdHBJzx4OLeCntAY-HvbIfTCE8GnkwIP_GSR8HRtDnUkLGRL0pak4uVN-VTz4-6Q3v8NHYwRcaPkm2bILc9hy8adTbcwceXAD0gqdk5U2eCsl4ZkxMRr0IgmHbA**79a781f9685e2c7d5be49c91586db4b783c442b59a1e9cca85f27fa28bd33f9c*4kAyVrI8pN99pW1mR-QwamTa-LhCu2qtWQHhqWKZYhs; searchguard_storage=Fe26.2**4885c3cdb8c5a24bd52729c23dd7983529a89eea2b837f47c1e54472d9817b3a*WOymcqiVRHOMSzZS4PpXTw*weosPbNsIa2SOFOlUioSCll1O4oowQq-pxSW2ukeUtVllcOSqnN2_sSoaCmFaGyrUbxbMbZ4iO2EU6bOU-dCO_QfCzlCfnSoygLh4edUjvBPzVlmsKMm7APwuy93bdfi2FjFWf5kEym7G9GXAB0RT1IsGH5gNGXy5FtgXQmeTjJrZO3ldHtM1gQzPMJaPJlsGAEXKdsOWlyrqntbsNFWnuv8NY8I990EGqYxD6v4x9hwmjWSMCAp7jR63W8B5ff0**16b78b18e1c284718efa4ccfa7d7ae30783c43fc18c8afd273a8b5aefe42b858*lg0qzB3LqQVtj8F8cQ9taajzNdYwxUjtl8gMdR-NPW8',
+        'Cookie': elk_cookie,
         'kbn-version': '6.6.1',
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) '
                       'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36',

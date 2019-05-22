@@ -1,22 +1,21 @@
 # encoding=utf8
 
+import time
+import random
+import ssl
+import socket
 import urllib.request
 import urllib.parse
-import time
+import urllib.error
 import http.cookiejar
+from PIL import Image   # 这个包叫pillow就很奇怪
+import matplotlib.pyplot as plt
 import csv, codecs
 from bs4 import BeautifulSoup
-import random
-import urllib.error
-import ssl
 import datetime
-from PIL import Image   # 这个包叫pillow就很奇怪
-import socket
 import threading
 import matplotlib
-import matplotlib.pyplot as plt
 # matplotlib.use('Agg')
-
 # print('from the webcrawler.py')
 
 
@@ -246,6 +245,7 @@ def get_cookie_without_form(url):
     return cj
 
 
+# 不用提交form 但是有cookie
 def get_cookie_without_form_cookie(*url):
     ssl._create_default_https_context = ssl._create_unverified_context
     header = {

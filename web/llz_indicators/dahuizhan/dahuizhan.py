@@ -14,19 +14,21 @@
     3、普天拨测
 
 打包命令: pyinstaller -F -i img\dahuizhan.ico web\llz_indicators\dahuizhan\dahuizhan.py
+        pyinstaller -F web\llz_indicators\dahuizhan\dahuizhan.py
 """
 
-import web.webCrawler.webcrawler as ww
-import urllib.request
-import urllib.parse
 import json
 import xlrd
-from bs4 import BeautifulSoup
-import datetime
-from xlutils.copy import copy
-import time
-import web.webCrawler.login as wl
 import sys
+import datetime
+import ssl
+import urllib.request
+import urllib.parse
+from bs4 import BeautifulSoup
+from xlutils.copy import copy
+import web.webCrawler.login as wl
+import web.webCrawler.webcrawler as ww
+
 
 
 # Constant
@@ -176,16 +178,20 @@ def sqm_nei(cookie, day_sqm):
     #         round(sqm_dict['epg'][0]['Responses'] / sqm_dict['epg'][0]['Requests'] * 100, 2))
 
 
-def elk_query(day_elk):
+def elk_query(cookie, day_elk):
 
     def requ_post(u, form):
+        ssl._create_default_https_context = ssl._create_unverified_context
+
         json_info = bytes(json.dumps(form), 'utf8')
         header = {
             'Content-Type': 'application/json',
-            'kbn-version': '6.4.2',
+            'Cookie': cookie,
+            'kbn-version': '6.6.1',     # 6.4.2 -> 6.6.1
             'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) '
                           'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36',
         }
+        print(u, cookie)
         request = urllib.request.Request(u, headers=header, data=json_info)
         response = urllib.request.urlopen(request)
         f = response.read().decode("utf8")
@@ -194,7 +200,7 @@ def elk_query(day_elk):
     yesterday = day_elk.strftime('%Y.%m.%d')
     tmp_content = list()
     for cj in companies:    # 厂家
-        url = 'http://117.144.106.34:5601/api/console/proxy?path=%2F{}_sh{}%2F_count&method=POST'.format(cj, yesterday)
+        url = 'https://117.144.106.34:5601/api/console/proxy?path=%2F{}_sh{}%2F_count&method=POST'.format(cj, yesterday)
         for status in query_curl.keys():
             my_form = {
                 "query": query_curl[status]
@@ -205,7 +211,7 @@ def elk_query(day_elk):
 
     '''流量查询'''
     for cj in companies:  # 厂家
-        url = 'http://117.144.106.34:5601/api/console/proxy?path=%2F{}_sh{}%2F_search%3Fsize%3D0&method=POST' \
+        url = 'https://117.144.106.34:5601/api/console/proxy?path=%2F{}_sh{}%2F_search%3Fsize%3D0&method=POST' \
             .format(cj, yesterday)
         my_form = {
             "aggs": {
@@ -241,11 +247,6 @@ def putian_query(day_putian):
     startTime = day_putian.strftime('%Y-%m-%d')
     endTime = (day_putian + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
 
-    # http://10.221.17.131:9091/report/bizman/common/result.jsp?timename=jiakuandahuizhan
-    # http://10.221.17.131:9091/report/bizman/common/report.jsp?timename=jiakuandahuizhan&reportType=&cac=5614146&iam=15614135&timename=jiakuandahuizhan&change=true&sid=null&reportFileName=1552455614217&iam=15614135&page=null&pageSizeCus=null&timetype=day&datefromto=2019-04-03~2019-04-04&bar=true
-    # url = 'http://10.221.17.131:9091/report/bizman/common/report.jsp?timename=jiakuandahuizhan&reportType=&cac=56141' \
-    #       '46&iam=15614135&timename=jiakuandahuizhan&change=true&sid=null&reportFileName=1552455614217&iam=15614135&' \
-    #       'page=null&pageSizeCus=null&timetype=day&datefromto={}~{}&bar=true'.format(startTime, endTime)
     # url = 'http://10.221.17.131:9091/report/bizman/common/report.jsp?timename=jiakuandahuizhan&reportType=&cac=2762197&iam=12675442&timename=jiakuandahuizhan&change=true&sid=null&reportFileName=1554792716199&u=r&page=null&pageSizeCus=null&timetype=customday&datefromto=2019-04-02~2019-04-02'
     url = 'http://10.221.17.131:9091/report/bizman/common/report.jsp?timename=jiakuandahuizhan&reportType=&cac=2762197&iam=12675442&timename=jiakuandahuizhan&change=true&sid=null&reportFileName=1554792716199&u=r&page=null&pageSizeCus=null&timetype=customday&datefromto={}~{}'.format(startTime, startTime)
     print(url)
@@ -289,6 +290,7 @@ if __name__ == '__main__':
 
     # 查询准备
     cookie_sqm = wl.sqm_117()   # 登录SQM
+    cookie_elk = wl.elk()       # 登录ELK
 
     # 开始查询
     for i in range(delta.days):
@@ -304,7 +306,7 @@ if __name__ == '__main__':
             csv_content.append(item)
 
         # elk
-        result = elk_query(day_query)
+        result = elk_query(cookie_elk, day_query)
         for item in result:
             csv_content.append(item)
 
