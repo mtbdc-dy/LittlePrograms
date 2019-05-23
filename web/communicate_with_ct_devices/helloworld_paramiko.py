@@ -64,4 +64,5 @@ def swith_user():
 
 
 if __name__ == '__main__':
-    swith_user()
+    hello()
+    # swith_user()

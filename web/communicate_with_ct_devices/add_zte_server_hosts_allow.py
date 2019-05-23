@@ -16,7 +16,7 @@ reader = csv.reader(f)
 
 
 def swith_user(server_info):
-    print('最近台数： \033[32;0m{:d}\033[0mG'.format(server_info[0]))
+    print('当前IP： \033[32;0m{}\033[0m'.format(server_info[0]))
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     # '39.137.36.100', 22222, 'zxisec', 'SHYD@uss100'
