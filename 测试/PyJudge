@@ -1,4 +1,0 @@
-# py 判段测试
-
-a = (True == 1)
-print(a)

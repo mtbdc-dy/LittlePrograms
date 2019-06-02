@@ -5,6 +5,9 @@
 # @Software: PyCharm
 
 
+"""
+二进制运算
+"""
 a = 1
 b = 4
 print(a ^ b)    # 按位异或运算符

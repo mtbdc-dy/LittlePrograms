@@ -9,6 +9,8 @@ import datetime
 
 now = datetime.datetime.now()
 print(now)
+
+'''通过字符串生成datetime对象'''
 pre_update_day = datetime.datetime.strptime('2019-03-04', '%Y-%m-%d')       # %Y-%m-%d %H:%M:%S
 print(pre_update_day)
 delta = now - pre_update_day

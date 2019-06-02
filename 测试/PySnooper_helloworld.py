@@ -8,6 +8,10 @@
 import math
 import pysnooper
 
+"""
+详细调试器
+"""
+
 
 @pysnooper.snoop()
 def number_to_bits(number):

@@ -6,7 +6,7 @@
 def singleNumber(nums):
     res = 0
     for num in nums:
-        res ^= num      # res = res ^ num
+        res ^= num      # res = res ^ num 异或，相同的数字会抵消掉
         print(res)
     return res
 
