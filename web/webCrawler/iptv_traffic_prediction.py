@@ -47,7 +47,7 @@ font = FontProperties(fname=r"../../src/simsun.ttc", size=10)   # 給Plt的图�
 
 if __name__ == '__main__':
     # Input
-    f = open(filename, 'r')
+    f = open(filename, 'r', encoding='utf8')
     reader = csv.reader(f)
 
     # Output 没用到，算法简单，低运算成本
@@ -64,7 +64,7 @@ if __name__ == '__main__':
     for item in islice(reader, 1, None):    # 从第二行开始读
         raw_data.append(item)
     earliest_recorded_day = datetime.datetime.strptime(raw_data[-used_days][0], '%Y-%m-%d')
-
+    latest_recorded_day = datetime.datetime.strptime(raw_data[-1][0], '%Y-%m-%d')
     print('可用历史数据天数:', len(raw_data))
     print('使用数据天数:', used_days)
     print('预测天数:', prediction_days)
@@ -79,9 +79,8 @@ if __name__ == '__main__':
         x_show.append(current_day)
 
     x_predict = list()  # x轴展示的日期，预测时段
-    now = datetime.datetime.now()
+    now = latest_recorded_day
     delta = datetime.timedelta(days=1)
-    now = now - delta
     for i in range(prediction_days):
         x_predict.append(now)
         now = now + delta
@@ -107,7 +106,7 @@ if __name__ == '__main__':
         # plt.gca().xaxis.set_major_locator(mdates.DayLocator())
 
         plt.plot(x_show, (x * float(model.coef_)) + float(model.intercept_), 'b-', label=node)  # 预测直线（历史部分）
-        plt.plot(x_predict, (np.array([i for i in range(used_days, used_days + prediction_days)]) * float(model.coef_))
+        plt.plot(x_predict, (np.array([i for i in range(used_days-1, used_days + prediction_days-1)]) * float(model.coef_))
                  + float(model.intercept_), 'g-')  # 预测直线（未来部分）
         plt.plot(x_show + x_predict, ([nodes_bandwidth[node]] * (used_days+prediction_days)), 'r-')         # 节点100%带宽预警
         plt.plot(x_show + x_predict, ([nodes_bandwidth[node] * 0.8] * (used_days+prediction_days)), 'c-')   # 节点80%带宽预警

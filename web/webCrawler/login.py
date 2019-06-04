@@ -91,8 +91,8 @@ def zte_anyservice_uniportal_v2():
     url = 'https://117.135.56.61:8443/frame/login.action'
     form = {
         'authCodeable': 'false',
-        'password': 'tgNxV4VE9BlKZXt1G6f9CQ==',
-        'userName': 'super'
+        'password': 'p2K8/TkfsQ6hpdE0h+JaZA==',
+        'userName': 'llz'
     }
     ww.post_web_page_ssl(url, form, cookie)
     return cookie
