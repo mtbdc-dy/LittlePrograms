@@ -43,7 +43,7 @@ def query_ottnode_zte(n, cookie):
     #     print(max(encodedjson[item]))
     # exit()
     upstreamband = max(encodedjson['upstreamband'])
-    concurrent = max(encodedjson['concurrent'])
+    concurrent = max(encodedjson['concurrent'])     # 并发用户数吗
     bandwidth = max(encodedjson['bandwidth'])   # date rate
     mean = sum(encodedjson['bandwidth'])/len(encodedjson['bandwidth'])
 
