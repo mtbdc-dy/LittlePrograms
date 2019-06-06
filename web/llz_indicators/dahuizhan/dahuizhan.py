@@ -250,6 +250,7 @@ def putian_query(day_putian):
     startTime = day_putian.strftime('%Y-%m-%d')
     endTime = (day_putian + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
 
+    # http://10.221.17.131:9091/report/bizman/common/result.jsp?timename=jiakuandahuizhan
     # url = 'http://10.221.17.131:9091/report/bizman/common/report.jsp?timename=jiakuandahuizhan&reportType=&cac=2762197&iam=12675442&timename=jiakuandahuizhan&change=true&sid=null&reportFileName=1554792716199&u=r&page=null&pageSizeCus=null&timetype=customday&datefromto=2019-04-02~2019-04-02'
     url = 'http://10.221.17.131:9091/report/bizman/common/report.jsp?timename=jiakuandahuizhan&reportType=&cac=2762197&iam=12675442&timename=jiakuandahuizhan&change=true&sid=null&reportFileName=1554792716199&u=r&page=null&pageSizeCus=null&timetype=customday&datefromto={}~{}'.format(startTime, startTime)
     print(url)
@@ -314,9 +315,9 @@ if __name__ == '__main__':
             csv_content.append(item)
 
         # putian
-        result = putian_query(day_query)
-        for item in result:
-            csv_content.append(item)
+        # result = putian_query(day_query)
+        # for item in result:
+        #     csv_content.append(item)
 
         for j, item in enumerate(csv_content):
             newWs.write(n_rows + i, j, item)

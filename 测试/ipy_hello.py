@@ -11,7 +11,9 @@ reader = f.readlines()
 for item in reader:
     ip = IP(item)
 
-    print(ip.strNormal(0), '', end='')
+    # print(ip.strNormal(0), '', end='')
+    print(ip.strNormal(3))
+    continue
     # print(ip.strNormal(1))
     # print(ip.strNormal(2))
     # print(ip.strNormal(3))
