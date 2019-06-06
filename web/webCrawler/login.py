@@ -152,6 +152,33 @@ def sqm_117():
     return cookie
 
 
+def sqm_10():
+    # 获取cookie
+    url = 'http://10.222.4.87:8088/evqmaster/CheckCode'
+    cj = ww.get_cookie_without_form(url)
+    cookie = ''
+    for item in cj:
+        cookie = item.name + '=' + item.value
+    print(cookie)
+    # cookie = 'JSESSIONID=859D1BE9728F46E71C2B765186B593A1'
+
+    # 获取验证码 加random 是为了改一下请求 那样就不会去缓存中获取这张图片了
+    url = 'http://10.222.4.87:8088/evqmaster/CheckCode?' + str(random.random())
+    ww.get_validate_code(url, cookie)
+    pwd = input('输入验证码，谢谢')
+
+    # 提交登入表单
+    url = 'http://10.222.4.87:8088/evqmaster/configaction!login.action'
+    form = {
+        'username': 'xuyuan',
+        'password': '2EF60361839CBA359266E62F16E21A7A',
+        'checkcode': pwd
+    }
+
+    ww.post_web_page(url, form, cookie)
+    return cookie
+
+
 def sqm_117_auto_recognize_captcha():
     cookie = 'ERROR'
     # 获取cookie

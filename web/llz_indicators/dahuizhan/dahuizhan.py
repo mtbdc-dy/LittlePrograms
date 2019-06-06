@@ -43,10 +43,13 @@ query_curl = {                          # elk_search query中语句
 
 
 def sqm_nei(cookie, day_sqm):
+    addr = 'http://117.144.107.165:8088'
+    addr = 'http://10.222.4.87:8088'
+
     startTime = day_sqm.strftime('%Y-%m-%d')
     # 业务关键指标（首缓冲时延(ms)，EPG响应成功率(%)，在线播放成功率(%)，卡顿时间占比(%)，wifi接入占比(%)，卡顿次数占比(%)
     # EPG响应时延(ms)，EPG响应总次数，EPG响应成功次数
-    url = 'http://117.144.107.165:8088/evqmaster/report/reportaction!returnMiguData.action'
+    url = addr + '/evqmaster/report/reportaction!returnMiguData.action'
     form = {
         'paramData': '{\"secFrom\": \"' + startTime + ' 00:00:00\", \"secTo\": \"' + startTime + ' 00:00:00\", \"location\"'
                      ': 4, \"dimension\": \"platform\", \"platform\": \"\", \"tType\": 2, \"isMigu\": false, \"isMiguShanxi'
@@ -112,7 +115,7 @@ def sqm_nei(cookie, day_sqm):
                 EPGLoadDelay, EPGRequests, EPGReponses])
 
     # 用户卡顿分布
-    url = 'http://117.144.107.165:8088/evqmaster/report/reportaction!returnKpiData.action'
+    url = addr + '/evqmaster/report/reportaction!returnKpiData.action'
     form = {
         'paramData': '{\"location\": 4, \"secFrom\": \"' + startTime + ' 00:00:00\", \"secTo\": \"' + startTime + ' 00:00:00\", \"dimension\": \"1\", \"idfilter\": \"4\", \"type\": \"usercard\", \"dataType\": \"1\"}'
     }
@@ -146,7 +149,7 @@ def sqm_nei(cookie, day_sqm):
     form = {
         'paramData': '{\"location\": 4, \"secFrom\": \"' + startTime + ' 00:00:00\", \"secTo\": \"' + startTime + ' 00:00:00\", \"dimension\": \"1\",\"idfilter\": \"4\", \"type\": \"activeuser\", \"dataType\": \"1\"}'
     }
-    url = 'http://117.144.107.165:8088/evqmaster/report/reportaction!returnKpiData.action'
+    url = addr + '/evqmaster/report/reportaction!returnKpiData.action'
     f = ww.post_web_page(url, form, cookie)
     tmp_dict = json.loads(f)
     sqm_dict = json.loads(tmp_dict['resultData'])
@@ -289,7 +292,7 @@ if __name__ == '__main__':
     print('待查询的天数：', delta.days)
 
     # 查询准备
-    cookie_sqm = wl.sqm_117()   # 登录SQM
+    cookie_sqm = wl.sqm_10()   # 登录SQM
     cookie_elk = wl.elk()       # 登录ELK
 
     # 开始查询
