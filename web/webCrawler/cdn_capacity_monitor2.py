@@ -207,6 +207,11 @@ print('烽火：')
 fenghuo_ott_fx, fenghuo_ott_yp, fenghuo_ott, fenghuo_mean_ott = wl.fonsview()
 
 
+try:
+    print('OTT sum:', fenghuo_ott + huawei_ott)
+except:
+    print("Ott error")
+
 # p3 中兴
 def zte():
     cookie = wl.zte_anyservice_uniportal_v2()
