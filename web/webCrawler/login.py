@@ -330,7 +330,7 @@ def fonsview():
     driver.close()
     # driver.close()
     # driver.quit()
-    return float(fx), float(yp), float(fh_hz), float(fh_mean_hz)
+    return float(fx)/1.074, float(yp)/1.074, float(fh_hz)/1.074, float(fh_mean_hz)/1.074
 
 
 # 这个废了
