@@ -1,69 +1,35 @@
 # -*- coding: utf-8 -*-
+# @Time : 2019-06-10 21:56
+# @Author : 徐缘
+# @FileName: eoms_complaints_work_sheet.py
+# @Software: PyCharm
 
-import re
-import urllib
-import urllib.parse
-import xlrd
-import xlwt
-import sys
-import web.webCrawler.login
+"""
+主要是用于爬取个人投诉单的内容，作为NLP训练的数据。
+0： IT
+1： CDN
+2： 短信
+3： wLAN
+"""
+
 import web.webCrawler.webcrawler as ww
-import myPackages.getime
 import datetime
-import csv
 from lxml import etree  # 爬取页面元素
+import csv
 
 
-'''
-这是之前培训爬虫和大数据时做词云时使用的爬虫，爬取全上海公司的投诉单。
-下面表单里和后面url里的时间可能需要手动修改
-'''
 now = datetime.datetime.now()
-start_time = '2018-09-01'
-# end_time = '2018-10-28'
+start_time = '2019-05-01'
+# end_time = '2018-06-01'
 end_time = now.strftime('%Y-%m-%d+%H:%M:%S')
 end_time_url = now.strftime('%Y-%m-%d+%H%%3A%M%%3A%S')  # 2018-09-24+04%3A27%3A45
-filename = 'eoms_complaints.txt'
-g = open(filename, 'w')
-
+filename = 'eoms_complaints.csv'
+g = open(filename, 'a')
 
 row = 1
-# """
-# 爬eoms
-# cookie看起来是不会变的，但是每个电脑又有不同，也不知道他在哪里生成的
-# """
-#
-# cookie = web.webCrawler.login.eoms()
-#
-# # 通用任务工单分支菜单
-# url = 'http://10.221.246.100/eoms35/xtree.do?method=nav'
-# form = {
-#     'node':	'1007'
-# }
-# f = ww.post_web_page(url, form, cookie)
-# # print(f)
-#
-# # 工单查询表单
-# """
-# 这里post时还是之前的cookie
-# get页面的时候突然换了个cookie，不是很懂
-# """
-# url = 'http://10.221.246.100/eoms35/log/tawCommonLogOperators.do?method=saveLog'
-# form = {
-#     'href': 'http://10.221.246.108/eoms35/sheet/commontask/commontask.do?method=showQueryPage&amp;type=interface&amp;interface=interface&amp;userName=pdsjdlz',
-#     'id': '100706',
-#     'text':	"工单查询"
-# }
-# ww.post_web_page(url, form, cookie)
-#
-# cookie = 'JSESSIONID=0000DUlWKdFqa7ob9tuvNPqBMId:1ag9kvec7'
-# url = 'http://10.221.246.108/eoms35/sheet/commontask/commontask.do?method=showQueryPage&type=interface&interface=interface&userName=pdsjdlz'
-# f = ww.get_web_page(url, cookie)
-# # print(f)
-
-# 任务单查询
-# cookie = 'JSESSIONID=0000UtivNKgIKyywfLHVuIypbDj:1ag9bqcd9'
-cookie = 'JSESSIONID=0000EXUdVeYqqO8BowhyzBRj1up:1ag9bq1lq'
+# 投诉单查询
+# cookie = 'JSESSIONID=0000EXUdVeYqqO8BowhyzBRj1up:1ag9bq1lq'
+cookie = 'JSESSIONID=0000_jIu_Cjo9XeURD82DCdVsZl:1ag7gqe3n'
 # url = 'http://10.221.246.108/eoms35/sheet/commontask/commontask.do?method=performQuery'
 url = 'http://10.221.246.104/eoms35/sheet/complaint/complaint.do?method=performQuery'
 form = {
@@ -152,8 +118,6 @@ for p in range(page):
         f_detail = f_detail[:f_detail.find('<')]
         print(f_detail)
         g.write(f_detail + '\n')
-
-
 
 
 
