@@ -479,7 +479,7 @@ def elk():
 
 
 if __name__ == '__main__':
-    elk()
+    sqm_117()
     print()
 
 
