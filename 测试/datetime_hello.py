@@ -8,6 +8,9 @@
 import datetime
 
 now = datetime.datetime.now()
+pre_update_day = datetime.datetime.strptime('2015-01-01', '%Y-%m-%d')
+delta = now - pre_update_day
+print(delta.days)
 print(now)
 
 '''通过字符串生成datetime对象'''

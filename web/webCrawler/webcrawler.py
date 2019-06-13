@@ -19,7 +19,7 @@ import matplotlib
 # print('from the webcrawler.py')
 
 
-def get_web_page(url, cookie=''):
+def get_web_page(url, cookie='', num=2):
     print(cookie)
     header = {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) '
@@ -30,8 +30,12 @@ def get_web_page(url, cookie=''):
     request = urllib.request.Request(url, headers=header)
     # 读取页面
     response = urllib.request.urlopen(request)
-    f = response.read().decode("utf8")
-    time.sleep(1)
+    try:
+        f = response.read().decode("utf8")
+    except:
+        if num > 0:
+            f = get_web_page(url, cookie, num-1)
+    time.sleep(0.5)
     return f
 
 
@@ -272,7 +276,7 @@ def get_cookie_without_form_cookie(*url):
     return cj
 
 
-def post_web_page(url, my_form, cookie):
+def post_web_page(url, my_form, cookie, num=2):
     header = {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) '
                       'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36',
@@ -283,9 +287,12 @@ def post_web_page(url, my_form, cookie):
     form_data = urllib.parse.urlencode(my_form).encode('utf8')
     # 读取页面
     response = urllib.request.urlopen(request, data=form_data)  # context=context
-
-    f = response.read().decode("utf8")
-    time.sleep(random.randint(1, 2))
+    try:
+        f = response.read().decode("utf8")
+    except:
+        if num > 0:
+            f = post_web_page(url, my_form, cookie, num-1)
+    time.sleep(0.8)
     return f
 
 
