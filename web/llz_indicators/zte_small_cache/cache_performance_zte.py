@@ -12,6 +12,10 @@ import json
 import csv
 import datetime
 
+"""
+    账号：llz/Ll@shmc1
+"""
+
 
 filename = 'output.csv'
 
@@ -112,7 +116,7 @@ if __name__ == '__main__':
     elif delta.days < 0:
         print("Date Error")
         exit()
-    print('待查询的天数：', delta.days)
+    print(' nmb：', delta.days)
 
     cookie = wl.zte_cdn_omc()
     for i in range(delta.days):

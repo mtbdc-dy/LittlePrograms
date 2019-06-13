@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # keep this file local, please!
 
 import time
@@ -62,18 +63,18 @@ def zte_cdn_omc():
     print(cookie)
 
     # cookie = 'JSESSIONID=4CD5A39212EAA84F77E3BE9817B6AC09'
-    url = 'https://39.134.88.198:8443/authimg'
-    ww.get_validate_code(url, cookie)
+    # url = 'https://39.134.88.198:8443/authimg'
+    # ww.get_validate_code(url, cookie)
 
     url = 'https://39.134.88.198:8443/frame/login.action'
 
-    pwd = input('输入验证码，谢谢')
+    # pwd = input('输入验证码，谢谢')
 
     form = {
         'authCodeable': 'false',
-        'password': 'uhwKs+gkcar7DaaGuXAiW59bly4=',
-        'userName': 'super',
-        'validateCode': pwd
+        'password': 'p2K8/TkfsQ6hpdE0h+JaZA==',
+        'userName': 'llz',
+        # 'validateCode': pwd
     }
 
     ww.post_web_page_ssl(url, form, cookie)
@@ -479,7 +480,7 @@ def elk():
 
 
 if __name__ == '__main__':
-    sqm_117()
+    zte_cdn_omc()
     print()
 
 

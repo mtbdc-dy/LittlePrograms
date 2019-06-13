@@ -35,11 +35,11 @@ import web.webCrawler.webcrawler as ww
 filename = 'dahuizhan.xls'         # 文件名
 
 companies = ['huawei', 'hy', 'fonsview', 'zte']        # 平面
-query_curl = {                          # elk_search query中语句
+query_curl = {
     "5xx": {"wildcard": {"httpstatus": "5??"}},
     "all": {"wildcard": {"httpstatus": "*"}}
     # "all": {"wildcard": {"httpstatus": "???"}}
-}
+}   # elk_search query中语句
 
 
 def sqm_nei(cookie, day_sqm):
@@ -246,6 +246,83 @@ def elk_query(cookie, day_elk):
     return tmp_content
 
 
+def zte_query(cookie, day_zte):
+    services = ['QQcache', 'BIGCACHE', 'SMALLcache']
+    begin = day_zte.strftime('%Y-%m-%d')
+    end = (day_zte + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+
+    def hit_ratio(s):
+        # 节点状态码
+        url = 'https://39.134.88.198:8443/stat/requesthit_query.action'
+        form = {
+            'offset': '8',
+            'beginDate': begin + ' 00:00:00',
+            'endDate': end + ' 00:00:00',
+            'areaid': '',
+            'nodeid': s,
+            'deviceid': '',
+            'apptype': '',
+            'servicemode': '',
+            'cachetype': '',
+            'inserttypeid': '',
+            'terminalid': '',
+            'domaintype': '1',
+            'domain': '',
+        }
+        f = ww.post_web_page_ssl(url, form, cookie)
+        # print(f)
+        tmp_dict = json.loads(f)
+
+        "EDIT SCRIPT FROM HERE"
+        tmp_dict = tmp_dict['message']
+
+        hit = 0
+        miss = 0
+
+        for item in tmp_dict:
+            hit += int(item['hitsnum'])
+            miss += int(item['missnum'])
+
+        return hit, miss
+
+    def download_rate(s):
+        # 下载速率
+        url = 'https://39.134.88.198:8443/stat/userdown_query.action'
+        form = {
+            'offset': '8',
+            'beginDate': begin + ' 00:00:00',
+            'endDate': end + ' 00:00:00',
+            'areaid': '',
+            'nodeid': s,
+            'deviceid': '',
+            'servicemode': '',
+            'cachetype': '',
+            'inserttypeid': '',
+            'terminalid': '',
+            'ratetype': '',
+            'domain': '',
+        }
+        f = ww.post_web_page_ssl(url, form, cookie)
+        tmp_dict = json.loads(f)
+
+        "EDIT SCRIPT FROM HERE"
+        download_rate = tmp_dict['message']['messageline']
+
+        userdownload = 0
+        for item in download_rate:
+            userdownload += float(item['userdownload'])
+        userdownload = userdownload / len(download_rate) / 1024 / 1024
+        return round(userdownload, 2)
+
+    tmp_content = list()
+    for service in services:
+        for item in hit_ratio(service):
+            tmp_content.append(item)
+    for service in services:
+        tmp_content.append(download_rate(service))
+    return tmp_content
+
+
 def putian_query(day_putian):
     startTime = day_putian.strftime('%Y-%m-%d')
     endTime = (day_putian + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
@@ -295,6 +372,7 @@ if __name__ == '__main__':
     # 查询准备
     cookie_sqm = wl.sqm_10()   # 登录SQM
     cookie_elk = wl.elk()       # 登录ELK
+    cookie_zte = wl.zte_cdn_omc()   # 登录中兴CDN IAM
 
     # 开始查询
     for i in range(delta.days):
@@ -311,6 +389,11 @@ if __name__ == '__main__':
 
         # elk
         result = elk_query(cookie_elk, day_query)
+        for item in result:
+            csv_content.append(item)
+
+        # zte
+        result = zte_query(cookie_zte, day_query)
         for item in result:
             csv_content.append(item)
 
