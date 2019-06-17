@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+# @Time : 2019-06-17 21:29
+# @Author : 徐缘
+# @FileName: bert_title2vector.py
+# @Software: PyCharm
+
 import tensorflow as tf
 from myPackages.bert import modeling
 import collections
@@ -7,7 +13,7 @@ import json
 import csv
 import matplotlib.pyplot as plt                 # 加载matplotlib用于数据的可视化
 from sklearn.decomposition import PCA           # 加载PCA算法包
-
+import threading
 
 """
 输入一个句子会返回一个句向量。那我的下游任务怎么弄。首先肯定得是有监督的模型。
@@ -126,13 +132,6 @@ print('####################################')
 restore_saver = tf.train.Saver()
 restore_saver.restore(sess, init_checkpoint)    # 加载预训练的参数
 
-a = response_request('我叫徐缘。')      # 从
-b = json.loads(a)
-# print(b)    # [[x, x, x]]
-# print(b[0])
-# print(len(b[0]))    # 768 / 3 = 256
-
-
 # 最重要的是，将文本输入然后将输出保存。
 filename = 'title.csv'
 f = open(filename, 'r')
@@ -195,3 +194,4 @@ plt.scatter(green_x, green_y, c='g', marker='.')
 plt.scatter(black_x, black_x, c='c', marker='x')
 plt.scatter(yellow_x, yellow_x, c='m', marker='-')
 plt.show()
+
