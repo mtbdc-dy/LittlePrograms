@@ -9,7 +9,7 @@ g = open(file_output, 'r', encoding='utf-8')
 f = open(filename, 'r')
 reader = csv.reader(g)
 print(type(reader))
-for item in reader:
+for item in list(reader):
     print(item[0])
     break
 f.close()
@@ -21,7 +21,7 @@ print('3 4')
     测试CSV文件写入
 '''
 
-g = open(file_output, 'w')
+g = open('output/o.csv', 'w')
 writer = csv.writer(g)
 tmp = ['你好', '啊']
 writer.writerow(tmp)

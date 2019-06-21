@@ -15,6 +15,13 @@ def name2label(name):
 
 
 if __name__ == '__main__':
+    a = [[x for x in range(10)]] * 10
+    print(a)
+    b = np.array(a)
+    print(b)
+    exit()
+
+
     MAX_CAPTCHA = 4
     CHAR_SET_LEN = 36
     IMAGE_HEIGHT = 20
@@ -26,3 +33,6 @@ if __name__ == '__main__':
     a = np.zeros([2, 1])
     print(batch_x)
     print(a)
+    print(np.save(a))
+
+

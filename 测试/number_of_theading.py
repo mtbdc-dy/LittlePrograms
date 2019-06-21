@@ -1,7 +1,11 @@
 import threading
 import time, random, sys
 
-
+"""
+最多最多2047个线程
+ps aux | wc -l 364个进程   10个差不多了额。
+sony 242 垃圾
+"""
 class Counter:
     def __init__(self):
         self.lock = threading.Lock()
