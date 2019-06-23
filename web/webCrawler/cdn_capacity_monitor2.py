@@ -268,7 +268,7 @@ if __name__ == '__main__':
 
     print('华为：')    # p1 华为
     huawei_ott, ott_peak_period, huawei_mean_ott = hw()
-    huawei_ott, ott_peak_period, huawei_mean_ott = 103.87, '20:35-21:35', 52.4
+    # huawei_ott, ott_peak_period, huawei_mean_ott = 103.87, '20:35-21:35', 52.4
     print('烽火：')    # p2 烽火
     fenghuo_ott_fx, fenghuo_ott_yp, fenghuo_ott, fenghuo_mean_ott = wl.fonsview()
     try:
@@ -304,7 +304,7 @@ if __name__ == '__main__':
                     .format(maxStreamSTBs/10000, ott_max_rate, ott_max_rate/OTT_total_capacity*100) \
                     + '</br><br>IPTV峰值时间段: ' + iptv_peak_period +\
                     '; IPTV峰值流用户数: {:.2f}万人; IPTV峰值流速: {:.2f}Gbps; IPTV利用率: {:.2f}%。'\
-                        .format(max_user_zte/10000, max_rate_zte, max_rate_zte/IPTV_total_capacity*100) + '</br>'
+                    .format(max_user_zte/10000, max_rate_zte, max_rate_zte/IPTV_total_capacity*100) + '</br>'
     # email_content = '(' + startTime + ')' + email_content
     # 邮件表格
     table_content = """<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
