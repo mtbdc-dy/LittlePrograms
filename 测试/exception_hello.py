@@ -6,6 +6,6 @@
 
 
 try:
-    b = 1
-except:
+    b = 1 + a
+except NameError:
     print('warning: Tensorflow is not found.')

@@ -1,4 +1,15 @@
 import math
+a = [1, -2] * 10
+square = lambda j: j * j
+print(a)
+a.sort(key=lambda x: x * x, reverse=True)
+print(a)
+
+a = ['aa', 'dc', 'c']
+print(a)
+print(a.sort())
+exit()
+
 a = [1]
 b = [10]
 print(a + b)

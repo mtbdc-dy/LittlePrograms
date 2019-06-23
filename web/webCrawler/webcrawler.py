@@ -153,12 +153,13 @@ def get_validate_code(*url):
         g.close()
 
         def part1():
-            img = plt.imread("validateCode0.jpeg")      # 用pyplot会快很多呀
-            plt.imshow(img)
-            plt.show()
+            # img = plt.imread("validateCode0.jpeg")      # 用plt会快很多呀，但是community版本好像不太支持
+            # plt.imshow(img)
+            # plt.show()
+            # return
+            im = Image.open("validateCode0.jpeg")       # mac本身就不会等待进程，但是pc会。是什么时候更新了吗？？
+            im.show()
             return
-            # im = Image.open("validateCode0.jpeg")
-            # im.show()
         part1()
 
         # 单开一个线程打开图片
@@ -276,7 +277,8 @@ def get_cookie_without_form_cookie(*url):
     return cj
 
 
-def post_web_page(url, my_form, cookie, num=2):
+def post_web_page(url, my_form, cookie, num=1):
+    ssl._create_default_https_context = ssl.create_default_context      # ssl 关
     header = {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) '
                       'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36',
@@ -286,10 +288,12 @@ def post_web_page(url, my_form, cookie, num=2):
     # 编码
     form_data = urllib.parse.urlencode(my_form).encode('utf8')
     # 读取页面
-    response = urllib.request.urlopen(request, data=form_data)  # context=context
+    # print(request.get_method(), request.get_full_url(),header, form_data)
     try:
+        response = urllib.request.urlopen(request, data=form_data)  # context=context
         f = response.read().decode("utf8")
     except:
+        print(num)
         if num > 0:
             f = post_web_page(url, my_form, cookie, num-1)
     time.sleep(0.8)
@@ -305,13 +309,14 @@ def post_web_page_ssl(url, my_form, cookie):
         'Cookie': cookie
     }
 
-    proxy = {
-        'http': 'http://cmnet:cmnet@211.136.113.69:808'
-    }
+    # 这个代理不会还可以用吧，好像不行
+    # proxy = {
+    #     'http': 'http://cmnet:cmnet@211.136.113.69:808'
+    # }
     # 挂代理Handler
-    proxy_support = urllib.request.ProxyHandler(proxy)
-    opener = urllib.request.build_opener(proxy_support)
-    urllib.request.install_opener(opener)
+    # proxy_support = urllib.request.ProxyHandler(proxy)
+    # opener = urllib.request.build_opener(proxy_support)
+    # urllib.request.install_opener(opener)
     # 伪装浏览器申请
 
     request = urllib.request.Request(url, headers=header)

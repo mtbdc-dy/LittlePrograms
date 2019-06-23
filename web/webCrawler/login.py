@@ -133,7 +133,7 @@ def sqm_117():
     cookie = ''
     for item in cj:
         cookie = item.name + '=' + item.value
-    print(cookie)
+    # print(cookie)
     # cookie = 'JSESSIONID=859D1BE9728F46E71C2B765186B593A1'
 
     # 获取验证码 加random 是为了改一下请求 那样就不会去缓存中获取这张图片了
@@ -148,7 +148,7 @@ def sqm_117():
         'password': '2EF60361839CBA359266E62F16E21A7A',
         'checkcode': pwd
     }
-
+    # print('sqm117', url, form, cookie)
     ww.post_web_page(url, form, cookie)
     return cookie
 
@@ -480,8 +480,9 @@ def elk():
 
 
 if __name__ == '__main__':
-    zte_cdn_omc()
+    print(sqm_117())
     print()
+
 
 
 

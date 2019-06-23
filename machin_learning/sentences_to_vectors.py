@@ -10,12 +10,12 @@ import math
 from multiprocessing import Process
 
 
-num_of_process = 8     # 9个还有点勉强     sony 5个也是轻松能稳住的
+num_of_process = 7     # 8个还有点勉强，风扇刷刷响。7个明显快了很多     sony 2个也是轻松能稳住的 ^_^
 
 
 def run_process(r, file):
     import myPackages.bert.bert_sentence_vector as mb
-    ret = mb.list_to_vectors(r)
+    ret = mb.list_to_vectors(r, 34)
     g = open('output/'+file+'.csv', 'w')
     writer = csv.writer(g)
     for item in ret:

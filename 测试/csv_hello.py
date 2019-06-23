@@ -25,3 +25,5 @@ g = open('output/o.csv', 'w')
 writer = csv.writer(g)
 tmp = ['你好', '啊']
 writer.writerow(tmp)
+
+
