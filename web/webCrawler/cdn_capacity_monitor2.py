@@ -64,8 +64,8 @@ def hw():
     roarand = ww.get_web_page_ssl(url_hw, cookie_hw)    # 华为OMC HTTP HEAD里一个特殊字段
 
     def post_ssl(u, my_form):
-        # ssl._create_default_https_context = ssl.create_unverified_context
-        context = ssl._create_unverified_context()  # 访问了一个类的受保护成员警告
+        ssl._create_default_https_context = ssl._create_unverified_context
+        # context = ssl._create_unverified_context()  # 访问了一个类的受保护成员警告
         header = {
             'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) '
                           'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36',
@@ -73,13 +73,13 @@ def hw():
             'Cookie': cookie_hw
         }
 
-        proxy = {
-            'http': 'http://cmnet:cmnet@211.136.113.69:808'
-        }
-        # 挂代理Handler
-        proxy_support = urllib.request.ProxyHandler(proxy)
-        opener = urllib.request.build_opener(proxy_support)
-        urllib.request.install_opener(opener)
+        # proxy = {
+        #     'http': 'http://cmnet:cmnet@211.136.113.69:808'
+        # }
+        # # 挂代理Handler
+        # proxy_support = urllib.request.ProxyHandler(proxy)
+        # opener = urllib.request.build_opener(proxy_support)
+        # urllib.request.install_opener(opener)
         # 伪装浏览器申请
 
         request = urllib.request.Request(u, headers=header)
@@ -87,7 +87,8 @@ def hw():
         # form_data = urllib.parse.urlencode(my_form).encode('utf8')
         form_data = my_form
         # 读取页面
-        response = urllib.request.urlopen(request, data=form_data, context=context)  # context=context
+        # response = urllib.request.urlopen(request, data=form_data, context=context)  # context=context
+        response = urllib.request.urlopen(request, data=form_data)
 
         f = response.read().decode("utf8")
         time.sleep(random.randint(0, 1))
@@ -269,14 +270,14 @@ if __name__ == '__main__':
     print('华为：')    # p1 华为
     huawei_ott, ott_peak_period, huawei_mean_ott = hw()
     # huawei_ott, ott_peak_period, huawei_mean_ott = 103.87, '20:35-21:35', 52.4
-    print('烽火：')    # p2 烽火
-    fenghuo_ott_fx, fenghuo_ott_yp, fenghuo_ott, fenghuo_mean_ott = wl.fonsview()
-    try:
-        print('OTT sum:', fenghuo_ott + huawei_ott)
-    except NameError:
-        print("Ott error")
-    print('中兴：')    # p3 中兴
-    max_user_zte, max_rate_zte, mean_rate_zte, iptv_peak_period = zte()
+    # print('烽火：')    # p2 烽火
+    # fenghuo_ott_fx, fenghuo_ott_yp, fenghuo_ott, fenghuo_mean_ott = wl.fonsview()
+    # try:
+    #     print('OTT sum:', fenghuo_ott + huawei_ott)
+    # except NameError:
+    #     print("Ott error")
+    # print('中兴：')    # p3 中兴
+    # max_user_zte, max_rate_zte, mean_rate_zte, iptv_peak_period = zte()
     print('SQM：')
     maxStreamSTBs = sqm()
     # lag_time_proportion, lag_count_proportion, first_frame_latency, tv_success_ratio, epg_success_ratio\
