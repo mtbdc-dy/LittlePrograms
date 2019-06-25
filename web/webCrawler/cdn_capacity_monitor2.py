@@ -270,20 +270,19 @@ if __name__ == '__main__':
     print('华为：')    # p1 华为
     huawei_ott, ott_peak_period, huawei_mean_ott = hw()
     # huawei_ott, ott_peak_period, huawei_mean_ott = 103.87, '20:35-21:35', 52.4
-    # print('烽火：')    # p2 烽火
-    # fenghuo_ott_fx, fenghuo_ott_yp, fenghuo_ott, fenghuo_mean_ott = wl.fonsview()
-    # try:
-    #     print('OTT sum:', fenghuo_ott + huawei_ott)
-    # except NameError:
-    #     print("Ott error")
-    # print('中兴：')    # p3 中兴
-    # max_user_zte, max_rate_zte, mean_rate_zte, iptv_peak_period = zte()
+    print('烽火：')    # p2 烽火
+    fenghuo_ott_fx, fenghuo_ott_yp, fenghuo_ott, fenghuo_mean_ott = wl.fonsview()
+    try:
+        print('OTT sum:', fenghuo_ott + huawei_ott)
+    except NameError:
+        print("Ott error")
+    print('中兴：')    # p3 中兴
+    max_user_zte, max_rate_zte, mean_rate_zte, iptv_peak_period = zte()
     print('SQM：')
     maxStreamSTBs = sqm()
     # lag_time_proportion, lag_count_proportion, first_frame_latency, tv_success_ratio, epg_success_ratio\
     #     = sqm_nei(cookie)
     print()
-    exit()
 
     '''part5 准备邮件内容'''
     # 数据准备和格式转换
