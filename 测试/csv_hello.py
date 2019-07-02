@@ -21,7 +21,7 @@ print('3 4')
     测试CSV文件写入
 '''
 
-g = open('output/o.csv', 'w')
+g = open('output/o.csv', 'w', newline='')
 writer = csv.writer(g)
 tmp = ['你好', '啊']
 writer.writerow(tmp)
