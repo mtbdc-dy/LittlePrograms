@@ -127,6 +127,7 @@ restore_saver = tf.train.Saver()
 restore_saver.restore(sess, init_checkpoint)    # 加载预训练的参数
 
 a = response_request('我叫徐缘。')      # 从
+exit()
 b = json.loads(a)
 # print(b)    # [[x, x, x]]
 # print(b[0])
