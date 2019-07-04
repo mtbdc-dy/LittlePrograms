@@ -398,9 +398,9 @@ if __name__ == '__main__':
             csv_content.append(item)
 
         # putian
-        # result = putian_query(day_query)
-        # for item in result:
-        #     csv_content.append(item)
+        result = putian_query(day_query)
+        for item in result:
+            csv_content.append(item)
 
         for j, item in enumerate(csv_content):
             newWs.write(n_rows + i, j, item)
