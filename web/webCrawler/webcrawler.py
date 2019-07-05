@@ -8,7 +8,7 @@ import urllib.request
 import urllib.parse
 import urllib.error
 import http.cookiejar
-from PIL import Image   # 这个包叫pillow就很奇怪
+from PIL import Image   # 虽然使用的是Pillow，但它是由PIL fork而来，因此还是要从PIL中进行import.
 import matplotlib.pyplot as plt
 import csv, codecs
 from bs4 import BeautifulSoup
@@ -155,12 +155,12 @@ def get_validate_code(*url):
         g.close()
 
         def part1():
-            # img = plt.imread("validateCode0.jpeg")      # 用plt会快很多呀，但是community版本好像不太支持
-            # plt.imshow(img)
-            # plt.show()
-            # return
-            im = Image.open("validateCode0.jpeg")       # mac本身就不会等待进程，但是pc会。是什么时候更新了吗？？
-            im.show()
+            img = plt.imread("validateCode0.jpeg")      # 用plt会快很多呀，但是community版本好像不太支持
+            plt.imshow(img)
+            plt.show()
+
+            # im = Image.open("validateCode0.jpeg")       # mac本身就不会等待进程，但是pc会。是什么时候更新了吗？？
+            # im.show()
             return
         part1()
 
