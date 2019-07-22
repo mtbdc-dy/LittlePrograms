@@ -1,42 +1,57 @@
-sheetIdStringExpression: like
-main.sheetId: 
-titleStringExpression: like
-main.title: 
-main.status: 
-statusChoiceExpression: 1
-task.taskName: 
-sendRoleIdStringExpression: in
-main.sendRoleId: 
-sendDeptIdStringExpression: in
-main.sendDeptId: 
-sendUserIdStringExpression: in
-main.sendUserId: 
-operateRoleIdStringExpression: in
-link.operateRoleId: 
-operateDeptIdStringExpression: in
-link.operateDeptId: 10223
-operateUserIdStringExpression: in
-link.operateUserId: 
-parentCorrelationStringExpression: like
-main.parentCorrelation: 
-customPhoneStringExpression: like
-main.customPhone: 
-toDeptIdStringExpression: in
-showArea: 
-main.toDeptId: 
-main.complaintType1: 
-complaintType1ChoiceExpression: 
-main.complaintType2: 
-main.complaintType: 
-main.complaintType4: 
-main.complaintType5: 
-main.complaintType6: 
-main.complaintType7: 
-main.sendTime: 
-sendTimeStartDateExpression: >=
-sendTimeStartDate: 2019-05-01 00:00:00
-sendTimeLogicExpression: and
-sendTimeEndDateExpression: <=
-sendTimeEndDate: 2019-06-01 23:28:56
-queryType: record
-method.save: 提交
+isPost	1
+deviceName	所有设备
+devGrpName	骨干电信联通互联全部
+groupName	上海移动
+clusterName	所有用户组
+userTypeName	所有用户分类
+userName	所有用户
+netName	所有流向
+peerName	所有邻居
+transitName	转接
+provinceName	所有省份
+ispName	所有运营商
+countryName	所有国家地区
+regionTypeName	所有区域类型
+encapTypeName	所有封装类型
+serviceName	所有大类
+analyseItems	0,
+analyseItemsName	所有大类,
+queryPost	0
+boneDomainIds	1,2,3,4,5,6,7,8,9,10,11,12,13
+boneDomain	1000
+domainId	0
+analyseMask	8
+analyseType	1
+svcId	0
+subServiceId	0
+deviceType	2
+devGrpId	57
+deviceId	0
+filterMask	32
+filterMaskNet	256
+userGroupId	5310000
+userClusterId	0
+userTypeId	0
+isInUser	0
+userId	0
+netId	0
+province	0
+isp	0
+country	0
+regionType	0
+encapTypeId	-1
+transitIdChg	0
+peerId	0
+transitId	1
+isSum	0
+chartType	1
+orderType	65793
+isMerge	0
+showData	65536
+topN	20
+timeType	2
+beginDate	2019-07-15
+beginHour	20
+endDate	2019-07-15
+endHour	21
+timeInterval	-1

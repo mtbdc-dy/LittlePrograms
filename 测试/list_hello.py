@@ -1,4 +1,8 @@
 import math
+a = [1]
+a = a + [2]
+print(a)
+
 a = [1, -2] * 10
 square = lambda j: j * j
 print(a)

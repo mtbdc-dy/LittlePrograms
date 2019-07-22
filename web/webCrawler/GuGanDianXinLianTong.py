@@ -33,6 +33,11 @@ except ImportError:
         except ImportError:
           print("Failed to import ElementTree from any known place")
 
+import time
+
+time_start = time.time()    # 计算程序运行时间
+
+
 """
 Note!!!
 超过几天，n就赋值几，默认设为0。
@@ -174,7 +179,6 @@ for i in range(7):
     list_direct.append(ans)
     list_direct_outflow.append(float(links[9].get_text().replace(',', '')))
 
-
     # 存入CSV文件
     row = [list[i]] + [list_direct[i]] + [list_outflow[i]] + [list_direct_outflow[i]]
     writer.writerow(row)
@@ -185,8 +189,9 @@ writer.writerow(row)
 
 fo.close()
 
+print('part1 cost: ', time.time()-time_start)
 print('run part 2')
 with open('GuGanDianXinLianTong_part2.py', 'r', encoding='UTF-8') as f:
     exec(f.read())
 
-
+print('totally cost', time.time()-time_start)
