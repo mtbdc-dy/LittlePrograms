@@ -33,9 +33,9 @@ except ImportError:
         except ImportError:
           print("Failed to import ElementTree from any known place")
 
-import time
-
-time_start = time.time()    # 计算程序运行时间
+# import time
+#
+# time_start = time.time()    # 计算程序运行时间
 
 
 """
@@ -189,9 +189,9 @@ writer.writerow(row)
 
 fo.close()
 
-print('part1 cost: ', time.time()-time_start)
+# print('part1 cost: ', time.time()-time_start)
 print('run part 2')
 with open('GuGanDianXinLianTong_part2.py', 'r', encoding='UTF-8') as f:
     exec(f.read())
 
-print('totally cost', time.time()-time_start)
+# print('totally cost', time.time()-time_start)

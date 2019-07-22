@@ -26,11 +26,11 @@ n = 0
 # 读取之前认证过的cookie
 f = open(file_name, 'r')
 reader = csv.reader(f)
-# cookie = wl.login_wangluoquanjingkeshihua()
-for item in reader:
-    cookie = item[0]
-    n = int(item[1])
-    break
+cookie = wl.login_wangluoquanjingkeshihua()
+# for item in reader:
+#     cookie = item[0]
+#     n = int(item[1])
+#     break
 print(cookie)
 f.close()
 
@@ -48,7 +48,7 @@ writer = csv.writer(f)
 # 获取时间
 now = datetime.datetime.now() - datetime.timedelta(days=n)
 
-for i in range(1):
+for i in range(7):
     raw_row = list()    # 生的行
     delta_begin = datetime.timedelta(days=7 - i)
     delta_end = datetime.timedelta(days=6 - i)
