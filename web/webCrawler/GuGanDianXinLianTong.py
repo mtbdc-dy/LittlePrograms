@@ -41,6 +41,7 @@ except ImportError:
 """
 Note!!!
 超过几天，n就赋值几，默认设为0。
+pyinstaller -F web\webCrawler\GuGanDianXinLianTong.py
 """
 n = int(input('超过几天就填几：'))
 
