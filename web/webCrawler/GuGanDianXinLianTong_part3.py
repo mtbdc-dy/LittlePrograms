@@ -26,11 +26,11 @@ n = 0
 # 读取之前认证过的cookie
 f = open(file_name, 'r')
 reader = csv.reader(f)
-cookie = wl.login_wangluoquanjingkeshihua()
-# for item in reader:
-#     cookie = item[0]
-#     n = int(item[1])
-#     break
+# cookie = wl.login_wangluoquanjingkeshihua()
+for item in reader:
+    cookie = item[0]
+    n = int(item[1])
+    break
 print(cookie)
 f.close()
 
