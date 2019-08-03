@@ -30,14 +30,15 @@ import web.webCrawler.login as wl
 import web.webCrawler.webcrawler as ww
 
 
-
 # Constant
 filename = 'dahuizhan.xls'         # 文件名
 
 companies = ['huawei', 'hy', 'fonsview', 'zte']        # 平面
 query_curl = {
-    "5xx": {"wildcard": {"httpstatus": "5??"}},
-    "all": {"wildcard": {"httpstatus": "*"}}
+    "5xx": {"bool": {"must": [{"wildcard": {"httpstatus": "5??"}}],
+                     "must_not": [{"term": {"cache_server_ip": "127.0.0.1"}}]}},
+    "all": {"bool": {"must": [{"wildcard": {"httpstatus": "???"}}],
+                     "must_not": [{"term": {"cache_server_ip": "127.0.0.1"}}]}}
     # "all": {"wildcard": {"httpstatus": "???"}}
 }   # elk_search query中语句
 
@@ -328,8 +329,9 @@ def putian_query(day_putian):
     endTime = (day_putian + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
 
     # http://10.221.17.131:9091/report/bizman/common/result.jsp?timename=jiakuandahuizhan
-    # url = 'http://10.221.17.131:9091/report/bizman/common/report.jsp?timename=jiakuandahuizhan&reportType=&cac=2762197&iam=12675442&timename=jiakuandahuizhan&change=true&sid=null&reportFileName=1554792716199&u=r&page=null&pageSizeCus=null&timetype=customday&datefromto=2019-04-02~2019-04-02'
-    url = 'http://10.221.17.131:9091/report/bizman/common/report.jsp?timename=jiakuandahuizhan&reportType=&cac=2762197&iam=12675442&timename=jiakuandahuizhan&change=true&sid=null&reportFileName=1554792716199&u=r&page=null&pageSizeCus=null&timetype=customday&datefromto={}~{}'.format(startTime, startTime)
+    url = 'http://10.221.17.131:9091/report/bizman/common/report.jsp?timename=jiakuandahuizhan&reportType=&cac=27621' \
+          '97&iam=12675442&timename=jiakuandahuizhan&change=true&sid=null&reportFileName=1554792716199&u=r&page=null' \
+          '&pageSizeCus=null&timetype=customday&datefromto={}~{}'.format(startTime, startTime)
     print(url)
 
     f = ww.get_web_page(url)
