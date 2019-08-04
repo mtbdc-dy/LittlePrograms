@@ -29,7 +29,7 @@ if __name__ == '__main__':
     # es = Elasticsearch("https://117.144.106.34:9200", http_auth=('admin', 'Cl0lTaULdjw0uVcH4S1N'),
     #                    ca_certs="/elasticsearch/elasticsearch-6.6.1/config/root-ca.pem")
 
-    print(es.info())
+    # print(es.info())
 
     index_today = datetime.datetime.now().strftime('%Y.%m.%d')
     # querybody = {
@@ -71,7 +71,7 @@ if __name__ == '__main__':
                     "hostname": {
                         "terms": {
                             "field": "beat.hostname.keyword",
-                            "size": 10
+                            "size": 30
                         }
                     }
                 }
@@ -84,7 +84,7 @@ if __name__ == '__main__':
 
     print(warning)
 
-    if len(warning) > 0:
-        user = ['xuyuan2@sh.chinamobile.com']
-        ret = mm.mail139_mine('DoNotReply ELK日志服务器检查' + index_today, warning, user)
+    # if len(warning) > 0:
+    #     user = ['xuyuan2@sh.chinamobile.com']
+    #     ret = mm.mail139_mine('DoNotReply ELK日志服务器检查' + index_today, warning, user)
 
