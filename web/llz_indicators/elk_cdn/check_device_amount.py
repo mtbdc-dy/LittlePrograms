@@ -22,12 +22,13 @@ if __name__ == '__main__':
         'huaweiott': 13
     }
 
-    es = Elasticsearch("https://117.144.106.34:9200", http_auth=('admin', 'Cl0lTaULdjw0uVcH4S1N'),
-                       ca_certs=r"../../../elasticsearch_key/root-ca.pem")
+    # Pycharm环境位置
+    # es = Elasticsearch("https://117.144.106.34:9200", http_auth=('admin', 'Cl0lTaULdjw0uVcH4S1N'),
+    #                    ca_certs=r"../../../elasticsearch_key/root-ca.pem")
 
     # 部署环境位置
-    # es = Elasticsearch("https://117.144.106.34:9200", http_auth=('admin', 'Cl0lTaULdjw0uVcH4S1N'),
-    #                    ca_certs="/elasticsearch/elasticsearch-6.6.1/config/root-ca.pem")
+    es = Elasticsearch("https://117.144.106.34:9200", http_auth=('admin', 'Cl0lTaULdjw0uVcH4S1N'),
+                       ca_certs="/elasticsearch/elasticsearch-6.6.1/config/root-ca.pem")
 
     # print(es.info())
 
@@ -53,6 +54,18 @@ if __name__ == '__main__':
     for item in server_nums.keys():
         querybody = {
             "size": 0,
+            "query": {
+                "bool": {
+                    "filter": {
+                        "range": {
+                            "@timestamp": {
+                                "gt": "now-5m",
+                                "lt": "now"
+                            }
+                        }
+                    }
+                }
+            },
             "aggs": {
                 "type_count": {
                     "cardinality": {
@@ -67,6 +80,18 @@ if __name__ == '__main__':
             # print(item, 'current:', num, 'total:', server_nums[item])
             warning = warning + '[{}]current: {},total: {}\n'.format(item, num, server_nums[item])
             querybody = {
+                "query": {
+                    "bool": {
+                        "filter": {
+                            "range": {
+                                "@timestamp": {
+                                    "gt": "now-5m",
+                                    "lt": "now"
+                                }
+                            }
+                        }
+                    }
+                },
                 "aggs": {
                     "hostname": {
                         "terms": {
@@ -84,7 +109,12 @@ if __name__ == '__main__':
 
     print(warning)
 
-    # if len(warning) > 0:
-    #     user = ['xuyuan2@sh.chinamobile.com']
-    #     ret = mm.mail139_mine('DoNotReply ELK日志服务器检查' + index_today, warning, user)
+    if len(warning) > 0:
+        # user = ['xuyuan2@sh.chinamobile.com']
+        user = ['xuyuan2@sh.chinamobile.com', 'wangyinchao@sh.chinamobile.com', 'yushu@sh.chinamobile.com',
+                'zhengsen@sh.chinamobile.com', 'zhouqihui@sh.chinamobile.com', 'chenhuanmin@sh.chinamobile.com',
+                'yangjie@sh.chinamobile.com', 'xiongyt@sh.chinamobile.com', 'wucaili@sh.chinamobile.com',
+                'dingy@sh.chinamobile.com', 'fenghongyu@sh.chinamobile.com', 'xuzicheng@sh.chinamobile.com']
+        # 'wuqian@sh.chinamobile.com','tanmiaomiao@sh.chinamobile.com', 'sufeng@sh.chinamobile.com'
+        ret = mm.mail139_mine('DoNotReply ELK日志服务器检查' + index_today, warning, user)
 
