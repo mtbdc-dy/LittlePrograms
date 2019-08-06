@@ -23,6 +23,7 @@ n = 0
 f = open(file_name, 'r')
 reader = csv.reader(f)
 direct = 0
+print("Reading gugandianxinblabla.csv")
 for i, item in enumerate(reader):
     print(item)
     if i == 0:
@@ -32,6 +33,7 @@ for i, item in enumerate(reader):
         direct += float(item[1])
     if i == 7:
         break
+print()
 
 # print(cookie)
 f.close()
@@ -133,21 +135,19 @@ for i in range(7):
         "其他-上海（骨干）",
         # "GI = 0.00",
         "上海移动骨干-深圳福江科技限速",
-        "IDC-上海（骨干）-策略地址1",
+        "IDC-上海（骨干）-策略地址1",         # 这个好像没了
         "IDC-上海（骨干）-策略地址2",
         "Cache-上海(骨干)-小文件",
         "2/3/4G-上海（骨干）"
     ]
 
     soup = BeautifulSoup(f, 'html.parser')
-    string = ''
-
     trs1 = soup.find('tbody')
     trs = trs1.find_all('tr')
+
     usrs_dict.clear()
     for tr in trs:
         tds = tr.find_all('td')
-
         users = tds[1].text.strip()  # 网内用户
         if users == 'GI':
             print('\033[1;32mGI appers!! But im afraid i wont be able to notice this little poor sentence.\033[0m')
