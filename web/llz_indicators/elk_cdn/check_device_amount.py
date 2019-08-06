@@ -5,7 +5,10 @@
 # @Software: PyCharm
 
 
+import sys
+import socket
 import datetime
+
 
 from elasticsearch import Elasticsearch
 import myPackages.mailtools as mm
@@ -21,15 +24,19 @@ if __name__ == '__main__':
         'zte': 21,
         'huaweiott': 13
     }
+    # # 获取本机电脑名
+    # myname = socket.getfqdn(socket.gethostname())
+    # # 获取本机ip
+    # myaddr = socket.gethostbyname(myname)
 
-    # Pycharm环境位置
-    # es = Elasticsearch("https://117.144.106.34:9200", http_auth=('admin', 'Cl0lTaULdjw0uVcH4S1N'),
-    #                    ca_certs=r"../../../elasticsearch_key/root-ca.pem")
-
-    # 部署环境位置
-    es = Elasticsearch("https://117.144.106.34:9200", http_auth=('admin', 'Cl0lTaULdjw0uVcH4S1N'),
-                       ca_certs="/elasticsearch/elasticsearch-6.6.1/config/root-ca.pem")
-
+    if sys.platform == 'linux':
+        # 部署环境位置
+        es = Elasticsearch("https://117.144.106.34:9200", http_auth=('admin', 'Cl0lTaULdjw0uVcH4S1N'),
+                           ca_certs="/elasticsearch/elasticsearch-6.6.1/config/root-ca.pem")
+    else:
+        # Pycharm环境位置
+        es = Elasticsearch("https://117.144.106.34:9200", http_auth=('admin', 'Cl0lTaULdjw0uVcH4S1N'),
+                           ca_certs=r"../../../elasticsearch_key/root-ca.pem")
     # print(es.info())
 
     index_today = datetime.datetime.now().strftime('%Y.%m.%d')
@@ -104,11 +111,11 @@ if __name__ == '__main__':
             response_byte = es.search(index=item + '_sh' + index_today, body=querybody)
             hostname_list = response_byte["aggregations"]["hostname"]["buckets"]
             hostnames = [hostname_list[x]["key"] for x in range(0, len(hostname_list))]
-            warning = warning + hostnames.__repr__() + '\n\r'
+            warning = warning + sorted(hostnames).__repr__() + '\n\r'
             # print(hostnames)
-
     print(warning)
 
+    # exit()
     if len(warning) > 0:
         # user = ['xuyuan2@sh.chinamobile.com']
         user = ['xuyuan2@sh.chinamobile.com', 'wangyinchao@sh.chinamobile.com', 'yushu@sh.chinamobile.com',
