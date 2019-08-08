@@ -185,6 +185,7 @@ for i in range(7):
     writer.writerow(row)
     time.sleep(random.randint(0, 1))
 
+# 骨干电信联通入境流量 均值
 row = [round(sum(list)/len(list) + sum(list_direct)/len(list_direct), 2)]
 writer.writerow(row)
 

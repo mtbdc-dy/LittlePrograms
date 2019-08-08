@@ -515,7 +515,7 @@ for i in range(7):
         'orderType': '65793',
         'isMerge': '0',
         'showData': '65536',
-        'topN': '20',
+        'topN': '100',
         'timeType': '2',
         'beginDate': tb.strftime('%Y-%m-%d'),
         'beginHour': '20',
@@ -548,7 +548,7 @@ for i in range(7):
     trs1 = soup.find('tbody')
     trs = trs1.find_all('tr')
     usr_dict.clear()
-    total = 0
+    # total = 0
     for tr in trs:
         tds = tr.find_all('td')
         users = tds[1].text.strip()  # 网内用户
@@ -556,8 +556,8 @@ for i in range(7):
             if users == item:
                 usr_dict[item] = tds[4].text.strip()
     print(usr_dict)
-    for item in list_users:
-        total = total + float(usr_dict[item].replace(',', ''))
+    # for item in list_users:
+    #     total = total + float(usr_dict[item].replace(',', ''))
     # ["%.2f" % total]
     raw_row = raw_row + [usr_dict['P2P下载']] + [usr_dict['P2P流媒体']] + \
         [usr_dict['流媒体']] + [usr_dict['即时通信']] + [usr_dict['下载']]

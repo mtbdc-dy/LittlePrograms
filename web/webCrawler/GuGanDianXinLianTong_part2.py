@@ -87,7 +87,7 @@ my_form = {
     'orderType': '65793',
     'isMerge': '0',
     'showData': '65536',
-    'topN': '300',  # 可以调大一点以免选不到数据（没选到数据会报错）调大会增长处理时间。
+    'topN': '500',  # 可以调大一点以免选不到数据（没选到数据会报错）调大会增长处理时间。
     'timeType': '2',
     'beginDate': '2018-06-06',
     'beginHour': '8',
@@ -132,13 +132,24 @@ for i in range(7):
         "IDC-上海（骨干）",
         "家客-上海（骨干）",
         "集客-上海（骨干）",
-        "其他-上海（骨干）",
-        # "GI = 0.00",
-        "上海移动骨干-深圳福江科技限速",
-        "IDC-上海（骨干）-策略地址1",         # 这个好像没了
-        "IDC-上海（骨干）-策略地址2",
+        "2/3/4G-上海（骨干）",
+        "Cache-上海(骨干)-大文件",
         "Cache-上海(骨干)-小文件",
-        "2/3/4G-上海（骨干）"
+        "CDN-上海（骨干）",
+        "CDN内容中心-上海",
+        "IPTV组播地址-上海",
+        "上海移动骨干-深圳福江科技限速",
+        # "其他-上海（骨干）",
+        # "IDC-上海（骨干）-策略地址1",         # 这个好像没了
+        # "IDC-上海（骨干）-策略地址2",
+    ]
+
+    cdn_users = [
+        "Cache-上海(骨干)-大文件",
+        "Cache-上海(骨干)-小文件",
+        "CDN-上海（骨干）",
+        "CDN内容中心-上海",
+        "IPTV组播地址-上海",
     ]
 
     soup = BeautifulSoup(f, 'html.parser')
@@ -149,12 +160,26 @@ for i in range(7):
     for tr in trs:
         tds = tr.find_all('td')
         users = tds[1].text.strip()  # 网内用户
-        if users == 'GI':
-            print('\033[1;32mGI appers!! But im afraid i wont be able to notice this little poor sentence.\033[0m')
+        # if "上海" in users:
+        #     print(users)
+        if "上海" not in users:
+            continue
         for item in list_users:
             if users == item:
                 usrs_dict[item] = float(tds[4].text.strip().replace(',', ''))
-    average_idc = average_idc + usrs_dict['IDC-上海（骨干）'] + usrs_dict["IDC-上海（骨干）-策略地址1"] + usrs_dict["IDC-上海（骨干）-策略地址2"]
+
+    cdn = 0
+    for item in cdn_users:
+        list_users.remove(item)
+        try:
+            cdn += usrs_dict[item]
+
+        except KeyError:
+            print('KeyError:', item)
+    usrs_dict["CDN"] = cdn
+    print(list_users)
+
+    average_idc = average_idc + usrs_dict['IDC-上海（骨干）']
     average_fc = average_fc + usrs_dict['家客-上海（骨干）']
     average_gc = average_gc + usrs_dict['集客-上海（骨干）']
     average_2g3g4g = average_2g3g4g + usrs_dict['2/3/4G-上海（骨干）']
