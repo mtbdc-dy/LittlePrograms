@@ -5,6 +5,8 @@
 # @Software: PyCharm
 
 
+""""在/root/shayxu_projects的路径下运行"""
+# sys.path.append("/root/shayxu_projects")  # 项目目录
 import sys
 import socket
 import datetime
@@ -24,12 +26,11 @@ if __name__ == '__main__':
         'zte': 21,
         'huaweiott': 13
     }
-    # # 获取本机电脑名
-    # myname = socket.getfqdn(socket.gethostname())
-    # # 获取本机ip
-    # myaddr = socket.gethostbyname(myname)
 
-    if sys.platform == 'linux':
+    # 获取本机ip
+    address = socket.gethostbyname(socket.gethostname())
+
+    if address == '117.144.106.34':
         # 部署环境位置
         es = Elasticsearch("https://117.144.106.34:9200", http_auth=('admin', 'Cl0lTaULdjw0uVcH4S1N'),
                            ca_certs="/elasticsearch/elasticsearch-6.6.1/config/root-ca.pem")
@@ -39,7 +40,13 @@ if __name__ == '__main__':
                            ca_certs=r"../../../elasticsearch_key/root-ca.pem")
     # print(es.info())
 
+    test_flag = 0
+    try:
+        test_flag = sys.argv[1]
+    except IndexError:
+        print()
     index_today = datetime.datetime.now().strftime('%Y.%m.%d')
+
     # querybody = {
     #     "query": {
     #         "bool": {
@@ -117,12 +124,15 @@ if __name__ == '__main__':
 
     # exit()
     if len(warning) > 0:
-        # user = ['xuyuan2@sh.chinamobile.com']
-        user = ['xuyuan2@sh.chinamobile.com', 'wangyinchao@sh.chinamobile.com', 'yushu@sh.chinamobile.com',
-                'zhengsen@sh.chinamobile.com', 'zhouqihui@sh.chinamobile.com', 'chenhuanmin@sh.chinamobile.com',
-                'yangjie@sh.chinamobile.com', 'xiongyt@sh.chinamobile.com', 'wucaili@sh.chinamobile.com',
-                'dingy@sh.chinamobile.com', 'fenghongyu@sh.chinamobile.com', 'xuzicheng@sh.chinamobile.com', 'zhangzhongkaihy@139.com', 'zhangxuan7704@fiberhome.com', 'ranyinjiang@huawei.com', 
-				'maojie9@huawei.com', 'wangzilongshb@126.com']
+        if address == '117.144.106.34' and not test_flag:
+            user = ['xuyuan2@sh.chinamobile.com', 'wangyinchao@sh.chinamobile.com', 'yushu@sh.chinamobile.com',
+                    'zhengsen@sh.chinamobile.com', 'zhouqihui@sh.chinamobile.com', 'chenhuanmin@sh.chinamobile.com',
+                    'yangjie@sh.chinamobile.com', 'xiongyt@sh.chinamobile.com', 'wucaili@sh.chinamobile.com',
+                    'dingy@sh.chinamobile.com', 'fenghongyu@sh.chinamobile.com', 'xuzicheng@sh.chinamobile.com', 'zhangzhongkaihy@139.com', 'zhangxuan7704@fiberhome.com', 'ranyinjiang@huawei.com',
+                    'maojie9@huawei.com', 'wangzilongshb@126.com']
+        else:
+            user = ['xuyuan2@sh.chinamobile.com']
         # 'wuqian@sh.chinamobile.com','tanmiaomiao@sh.chinamobile.com', 'sufeng@sh.chinamobile.com'
+        print(user, test_flag)
         ret = mm.mail139_mine('DoNotReply ELK日志服务器检查' + index_today, warning, user)
 
