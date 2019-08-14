@@ -25,6 +25,8 @@ if __name__ == '__main__':
 
     # 获取昨日日期
     index_today = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y.%m.%d')
+    index_today_csv = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y.%m.%d')
+    print(index_today_csv)
     # 修改前 2019.08.10,32561,374220422
     # 修改后 2019.08.10,32561,374220422
 
@@ -38,8 +40,6 @@ if __name__ == '__main__':
         test_flag = sys.argv[1]
     except IndexError:
         print()
-
-
 
     if address == '117.144.106.34':
         # 部署环境位置
@@ -131,7 +131,7 @@ if __name__ == '__main__':
     # csv 家宽端到端
     if address == '117.144.106.34' and not test_flag:
         # 打开输出文件
-        f = open("httpstatus/data/cdn_httpstatus_" + index_today + '.csv', 'w')
+        f = open("httpstatus/data/cdn_httpstatus_" + index_today_csv + '.csv', 'w')
         writer = csv.writer(f)
 
         csv_content = [index_today, sum(companies_count[x][1] for x in companies_cdn),
