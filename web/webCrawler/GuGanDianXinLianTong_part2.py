@@ -177,6 +177,7 @@ for i in range(7):
         except KeyError:
             print('KeyError:', item)
     usrs_dict["CDN"] = cdn
+    list_users.append("CDN")
     print(list_users)
 
     average_idc = average_idc + usrs_dict['IDC-上海（骨干）']
@@ -192,6 +193,7 @@ for i in range(7):
 
 row = [average_idc/7] + [average_fc/7] + [(average_gc+direct)/7] + [average_2g3g4g/7]
 writer.writerow(row)
+writer.writerow(["Part2 END."])
 fo.close()
 print('run part 3')
 with open('GuGanDianXinLianTong_part3.py', 'r', encoding='UTF-8') as f:
