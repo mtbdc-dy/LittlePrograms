@@ -480,7 +480,7 @@ def elk():
 
 
 if __name__ == '__main__':
-    print(sqm_117())
+    print(zte_anyservice_uniportal_v2())
     print()
 
 
