@@ -187,6 +187,7 @@ for i in range(7):
 
 # 骨干电信联通入境流量 均值
 row = [round(sum(list)/len(list) + sum(list_direct)/len(list_direct), 2)]
+writer.writerow(["入境流量均值:"])
 writer.writerow(row)
 writer.writerow(["Part1 END."])
 fo.close()
