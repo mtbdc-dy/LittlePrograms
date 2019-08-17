@@ -43,11 +43,11 @@ if __name__ == '__main__':
 
     if address == '117.144.106.34':
         # 部署环境位置
-        es = Elasticsearch("https://117.144.106.34:9200", http_auth=('admin', 'Cl0lTaULdjw0uVcH4S1N'),
+        es = Elasticsearch("https://117.144.106.35:9200", http_auth=('admin', 'Cl0lTaULdjw0uVcH4S1N'),
                            ca_certs="/elasticsearch/elasticsearch-6.6.1/config/root-ca.pem")
     else:
         # Pycharm环境位置
-        es = Elasticsearch("https://117.144.106.34:9200", http_auth=('admin', 'Cl0lTaULdjw0uVcH4S1N'),
+        es = Elasticsearch("https://117.144.106.35:9200", http_auth=('admin', 'Cl0lTaULdjw0uVcH4S1N'),
                            ca_certs=r"../../../elasticsearch_key/root-ca.pem")
     # print(es.info())
     warning = ''

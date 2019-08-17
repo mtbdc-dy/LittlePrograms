@@ -21,7 +21,7 @@ if __name__ == '__main__':
     companies = ['huawei', 'hy', 'fonsview', 'zte', 'huaweiott']  # 平面
     server_nums = {
         'huawei': 14,
-        'hy': 17,
+        'hy': 13,
         'fonsview': 6,
         'zte': 21,
         'huaweiott': 13
