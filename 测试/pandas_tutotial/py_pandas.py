@@ -5,7 +5,9 @@ import numpy as np
 import pandas as pd
 from pandas import Series, DataFrame
 import os
+import os
 
+print(os.getcwd())
 
 '''1、Series 就是“竖起来”的 list'''
 s = Series([1, 'hello', {'key': 'world', 'hao': 'lian'}, 'zhouman'])    # 创建Series对象
